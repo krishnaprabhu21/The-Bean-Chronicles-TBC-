@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useTheme } from '../../contexts/ThemeContext'
 import { useBookmarks } from '../../hooks/useBookmarks'
 import { SearchModal } from '../ui/SearchModal'
+import { LoveModal, getLoveCount, getHasUpvoted } from '../ui/LoveCounter'
 
 const navLinks = [
   { to: '/',               label: 'Home' },
@@ -70,6 +71,9 @@ export function Navbar() {
   const { theme, toggleTheme } = useTheme()
   const { count } = useBookmarks()
   const isLight = theme === 'light'
+  const [loveOpen, setLoveOpen] = useState(false)
+  const [displayLoveCount, setDisplayLoveCount] = useState(getLoveCount)
+  const [hasLoved, setHasLoved] = useState(getHasUpvoted)
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 40)
@@ -177,6 +181,42 @@ export function Navbar() {
               onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}
             >
               {isLight ? <MoonIcon /> : <SunIcon />}
+            </button>
+
+            {/* Brewed with Love button */}
+            <button
+              onClick={() => setLoveOpen(true)}
+              title="Brewed with Love"
+              className="w-9 h-9 hidden md:flex items-center justify-center rounded-full relative transition-all duration-200"
+              style={{
+                border: `1px solid ${hasLoved ? 'var(--color-accent)' : 'rgba(201,168,76,0.3)'}`,
+                color: hasLoved ? 'var(--color-accent)' : 'rgba(201,168,76,0.6)',
+                background: hasLoved ? 'var(--color-accent-dim)' : 'transparent',
+              }}
+              onMouseEnter={(e) => { if (!hasLoved) { e.currentTarget.style.background = 'rgba(201,168,76,0.08)'; e.currentTarget.style.color = '#C9A84C' } }}
+              onMouseLeave={(e) => { if (!hasLoved) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'rgba(201,168,76,0.6)' } }}
+            >
+              <svg width="14" height="15" viewBox="0 0 28 30" fill="none">
+                <path d="M14 9 C14 7,12 6,10.5 6 C9 6,7.5 7,7.5 8.5 C7.5 11.5,14 14,14 14 C14 14,20.5 11.5,20.5 8.5 C20.5 7,19 6,17.5 6 C16 6,14 7,14 9Z" fill="currentColor" />
+                <rect x="2" y="15" width="18" height="4.5" rx="2" stroke="currentColor" strokeWidth="1.7" fill="none" />
+                <rect x="3" y="18" width="16" height="10" rx="2.5" stroke="currentColor" strokeWidth="1.7" fill="none" />
+                <path d="M19 20 Q24 20 24 24 Q24 28 19 28" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" fill="none" />
+              </svg>
+              <span
+                className="absolute -top-1.5 -right-1.5 flex items-center justify-center rounded-full font-bold pointer-events-none"
+                style={{
+                  background: 'var(--color-accent)',
+                  color: 'var(--color-bg)',
+                  fontFamily: 'Space Mono, monospace',
+                  fontSize: '7px',
+                  minWidth: 16,
+                  height: 16,
+                  paddingLeft: 3,
+                  paddingRight: 3,
+                }}
+              >
+                {displayLoveCount > 999 ? '1k+' : displayLoveCount}
+              </span>
             </button>
 
             {/* Bookmarks icon */}
@@ -420,6 +460,14 @@ export function Navbar() {
       </AnimatePresence>
 
       <SearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
+      <LoveModal
+        isOpen={loveOpen}
+        onClose={() => {
+          setDisplayLoveCount(getLoveCount())
+          setHasLoved(getHasUpvoted())
+          setLoveOpen(false)
+        }}
+      />
     </>
   )
 }

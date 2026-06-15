@@ -4,186 +4,7 @@ import { AuthorBio } from "../components/ui/AuthorBio";
 import { authors } from "../data";
 import missionImg from "../assets/images/1000089029.jpg";
 import { SEO } from '../components/ui/SEO';
-
-// ── Love Counter ─────────────────────────────────────────────────────────────
-const LOVE_BASE = 247
-const BURST_ANGLES = [0, 45, 90, 135, 180, 225, 270, 315]
-const STEAM_HEARTS = [
-  { left: 28, delay: 0,    size: 11 },
-  { left: 46, delay: 0.6,  size: 15 },
-  { left: 64, delay: 1.25, size: 10 },
-]
-
-function LoveCounter() {
-  const [hasUpvoted, setHasUpvoted] = useState(() =>
-    localStorage.getItem('tbc-loved') === '1'
-  )
-  const [loveOffset] = useState(() => {
-    const stored = localStorage.getItem('tbc-love-seed')
-    if (stored !== null) return parseInt(stored, 10)
-    const seed = Math.floor(Math.random() * 14) + 4
-    localStorage.setItem('tbc-love-seed', seed.toString())
-    return seed
-  })
-  const [burst, setBurst] = useState(false)
-
-  const count = LOVE_BASE + loveOffset + (hasUpvoted ? 1 : 0)
-
-  const toggle = () => {
-    if (hasUpvoted) {
-      localStorage.setItem('tbc-loved', '0')
-      setHasUpvoted(false)
-    } else {
-      localStorage.setItem('tbc-loved', '1')
-      setHasUpvoted(true)
-      setBurst(true)
-      setTimeout(() => setBurst(false), 1400)
-    }
-  }
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.55 }}
-      className="flex flex-col items-center gap-5 text-center"
-    >
-      {/* Animated coffee cup */}
-      <div
-        className="relative cursor-pointer select-none"
-        style={{ width: 112, height: 112 }}
-        onClick={toggle}
-        title={hasUpvoted ? 'Remove love' : 'Show some love'}
-      >
-        <svg width="112" height="112" viewBox="0 0 80 90" fill="none" xmlns="http://www.w3.org/2000/svg">
-          {/* Saucer */}
-          <ellipse cx="40" cy="84" rx="28" ry="5" fill="var(--color-surface)" />
-          {/* Cup body */}
-          <rect x="12" y="42" width="48" height="40" rx="7" fill="var(--color-card)" stroke="var(--color-accent-border)" strokeWidth="1.5" />
-          {/* Coffee fill */}
-          <rect x="16" y="55" width="40" height="23" rx="4" fill={hasUpvoted ? 'var(--color-accent-dim)' : 'rgba(70,38,12,0.4)'} />
-          {/* Rim */}
-          <rect x="10" y="36" width="52" height="10" rx="5" fill="var(--color-surface)" stroke="var(--color-accent-border)" strokeWidth="1.5" />
-          {/* Handle */}
-          <path d="M60 51 Q73 51 73 62 Q73 73 60 73" stroke="var(--color-accent-border)" strokeWidth="2" strokeLinecap="round" fill="none" />
-          {/* Rim shimmer */}
-          <rect x="15" y="38" width="16" height="4" rx="2" fill="white" opacity="0.07" />
-        </svg>
-
-        {/* Floating steam hearts */}
-        {STEAM_HEARTS.map((h, i) => (
-          <motion.span
-            key={i}
-            style={{
-              position: 'absolute',
-              left: h.left,
-              top: 14,
-              fontSize: h.size,
-              color: hasUpvoted ? 'var(--color-accent)' : 'rgba(201,168,76,0.5)',
-              pointerEvents: 'none',
-              lineHeight: 1,
-            }}
-            animate={{ y: [0, -26, -52], opacity: [0, 1, 0] }}
-            transition={{
-              repeat: Infinity,
-              duration: 2.2 + i * 0.25,
-              delay: h.delay,
-              ease: 'easeOut',
-            }}
-          >
-            ♥
-          </motion.span>
-        ))}
-
-        {/* Burst hearts on upvote */}
-        <AnimatePresence>
-          {burst && BURST_ANGLES.map((angle, i) => (
-            <motion.span
-              key={`burst-${i}`}
-              style={{
-                position: 'absolute',
-                left: 56,
-                top: 44,
-                fontSize: 13,
-                color: 'var(--color-accent)',
-                pointerEvents: 'none',
-                lineHeight: 1,
-              }}
-              initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
-              animate={{
-                x: Math.cos((angle * Math.PI) / 180) * 58,
-                y: Math.sin((angle * Math.PI) / 180) * 58,
-                opacity: 0,
-                scale: 0.2,
-              }}
-              exit={{}}
-              transition={{ duration: 0.9, ease: 'easeOut', delay: i * 0.03 }}
-            >
-              ♥
-            </motion.span>
-          ))}
-        </AnimatePresence>
-      </div>
-
-      {/* Animated count */}
-      <AnimatePresence mode="wait">
-        <motion.p
-          key={count}
-          initial={{ y: -14, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.28, ease: 'easeOut' }}
-          className="font-display font-bold leading-none"
-          style={{
-            fontSize: 'clamp(3.2rem, 9vw, 5.5rem)',
-            color: hasUpvoted ? 'var(--color-accent)' : 'var(--color-text)',
-            letterSpacing: '-0.02em',
-          }}
-        >
-          {count.toLocaleString()}
-        </motion.p>
-      </AnimatePresence>
-
-      <p
-        className="text-[10px] uppercase tracking-[0.24em] -mt-1"
-        style={{ color: 'var(--color-text-muted)', fontFamily: 'Space Mono, monospace' }}
-      >
-        coffee lovers
-      </p>
-
-      {/* Toggle button */}
-      <motion.button
-        onClick={toggle}
-        whileTap={{ scale: 0.91 }}
-        whileHover={{ scale: 1.04 }}
-        className="flex items-center gap-2 px-6 py-3 rounded-full text-[11px] uppercase tracking-[0.16em] transition-colors duration-200 mt-1"
-        style={{
-          fontFamily: 'Space Mono, monospace',
-          background: hasUpvoted ? 'var(--color-accent-dim)' : 'transparent',
-          border: `1px solid ${hasUpvoted ? 'var(--color-accent-border)' : 'rgba(80,120,60,0.28)'}`,
-          color: hasUpvoted ? 'var(--color-accent)' : 'var(--color-text-muted)',
-        }}
-      >
-        <span style={{ fontSize: 14 }}>{hasUpvoted ? '♥' : '♡'}</span>
-        <span>{hasUpvoted ? "You're part of the brew" : 'Show some love'}</span>
-      </motion.button>
-
-      <p
-        style={{
-          color: 'var(--color-text-faint)',
-          fontFamily: 'Space Mono, monospace',
-          fontSize: '0.6rem',
-          letterSpacing: '0.07em',
-          maxWidth: '32ch',
-        }}
-      >
-        {hasUpvoted
-          ? 'Thank you for being part of the community ♥'
-          : 'Click the cup to add your love to the count'}
-      </p>
-    </motion.div>
-  )
-}
+import { LoveCounter } from '../components/ui/LoveCounter';
 
 const ROAST_OPTIONS = [
   { value: 'light',    label: 'Light Roast',  emoji: '☀️', desc: 'Just a quick question' },
@@ -450,7 +271,7 @@ export default function About() {
               src={missionImg}
               alt="Mission image"
               className="rounded-3xl w-full object-cover aspect-[4/3] md:aspect-auto"
-              style={{ height: "auto", maxHeight: "420px" }}
+              style={{ height: "auto" }}
             />
           </motion.div>
           <motion.div
@@ -549,7 +370,14 @@ export default function About() {
               Coffee souls who've found their home in The Bean Chronicles.
             </p>
           </motion.div>
-          <LoveCounter />
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.55 }}
+          >
+            <LoveCounter />
+          </motion.div>
         </div>
       </section>
 
