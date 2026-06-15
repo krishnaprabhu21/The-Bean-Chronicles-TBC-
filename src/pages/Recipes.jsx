@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { SEO } from "../components/ui/SEO";
 import { RecipeCard } from "../components/ui/RecipeCard";
 import { CategoryFilter } from "../components/ui/CategoryFilter";
 import { recipes, categories } from "../data";
@@ -13,6 +14,7 @@ export default function Recipes() {
 
   return (
     <div className="min-h-screen pt-24">
+      <SEO title="Recipes" description="Explore our collection of handcrafted coffee recipes — espresso, cold brew, lattes, pour over, and more." />
       {/* Header */}
       <section
         className="py-24 px-8 text-center relative"

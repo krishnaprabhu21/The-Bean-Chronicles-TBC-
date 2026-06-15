@@ -1,6 +1,10 @@
 import { lazy, Suspense } from "react";
 import { motion } from "framer-motion";
 import { CoffeeFlavoursSection } from "../components/sections/CoffeeFlavoursSection";
+import { OriginsEncyclopediaSection } from "../components/sections/OriginsEncyclopediaSection";
+import { ArticleCard, ArticleCardSkeleton } from "../components/ui/ArticleCard";
+import { useGuardianArticles } from "../hooks/useGuardianArticles";
+import { Loader } from "../components/ui/Loader";
 
 const CoffeeOriginsSection = lazy(() =>
   import("../components/sections/CoffeeOriginsSection").then((m) => ({
@@ -11,20 +15,14 @@ const CoffeeOriginsSection = lazy(() =>
 function OriginsLoader() {
   return (
     <div className="flex items-center justify-center py-20">
-      <div className="flex flex-col items-center gap-3">
-        <div
-          className="w-8 h-8 rounded-full border-2 animate-spin"
-          style={{ borderColor: "#D4A853", borderTopColor: "transparent" }}
-        />
-        <span className="text-cream/40 text-xs uppercase tracking-widest">
-          Loading map…
-        </span>
-      </div>
+      <Loader size={60} label="Loading map…" />
     </div>
   );
 }
 
 export default function CultureArticles() {
+  const { articles, loading, error } = useGuardianArticles({ pageSize: 12 })
+
   return (
     <div className="min-h-screen pt-24">
       {/* Header */}
@@ -61,6 +59,59 @@ export default function CultureArticles() {
       <Suspense fallback={<OriginsLoader />}>
         <CoffeeOriginsSection />
       </Suspense>
+
+      {/* Origins encyclopedia — filterable country cards */}
+      <div style={{ borderTop: "1px solid rgba(139,94,60,0.1)" }}>
+        <OriginsEncyclopediaSection />
+      </div>
+
+      {/* Live articles from The Guardian */}
+      <section className="w-full max-w-[1600px] mx-auto px-8 sm:px-14 xl:px-20 py-16 pb-28">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="mb-12"
+        >
+          <p className="label-ornate mb-5">Real-Time Coffee Journalism</p>
+          <div className="flex items-end justify-between gap-4 flex-wrap">
+            <h2 className="font-display text-4xl md:text-5xl text-parchment leading-tight">
+              Latest Articles
+            </h2>
+            <span
+              className="text-[10px] uppercase tracking-[0.2em] flex items-center gap-2"
+              style={{ color: 'rgba(201,168,76,0.5)', fontFamily: 'Space Mono, monospace' }}
+            >
+              <span
+                className="w-1.5 h-1.5 rounded-full animate-pulse"
+                style={{ background: '#C9A84C' }}
+              />
+              Live via The Guardian
+            </span>
+          </div>
+        </motion.div>
+
+        {error ? (
+          <p className="text-cream/40 text-sm py-12 text-center">Could not load articles. Check your connection.</p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {loading
+              ? Array.from({ length: 8 }).map((_, i) => <ArticleCardSkeleton key={i} />)
+              : articles.map((article, i) => (
+                  <motion.div
+                    key={article.id}
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.05, duration: 0.4 }}
+                  >
+                    <ArticleCard article={article} />
+                  </motion.div>
+                ))}
+          </div>
+        )}
+      </section>
     </div>
   );
 }

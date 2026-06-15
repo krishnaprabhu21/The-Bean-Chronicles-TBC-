@@ -3,6 +3,187 @@ import { useState } from "react";
 import { AuthorBio } from "../components/ui/AuthorBio";
 import { authors } from "../data";
 import missionImg from "../assets/images/1000089029.jpg";
+import { SEO } from '../components/ui/SEO';
+
+// ── Love Counter ─────────────────────────────────────────────────────────────
+const LOVE_BASE = 247
+const BURST_ANGLES = [0, 45, 90, 135, 180, 225, 270, 315]
+const STEAM_HEARTS = [
+  { left: 28, delay: 0,    size: 11 },
+  { left: 46, delay: 0.6,  size: 15 },
+  { left: 64, delay: 1.25, size: 10 },
+]
+
+function LoveCounter() {
+  const [hasUpvoted, setHasUpvoted] = useState(() =>
+    localStorage.getItem('tbc-loved') === '1'
+  )
+  const [loveOffset] = useState(() => {
+    const stored = localStorage.getItem('tbc-love-seed')
+    if (stored !== null) return parseInt(stored, 10)
+    const seed = Math.floor(Math.random() * 14) + 4
+    localStorage.setItem('tbc-love-seed', seed.toString())
+    return seed
+  })
+  const [burst, setBurst] = useState(false)
+
+  const count = LOVE_BASE + loveOffset + (hasUpvoted ? 1 : 0)
+
+  const toggle = () => {
+    if (hasUpvoted) {
+      localStorage.setItem('tbc-loved', '0')
+      setHasUpvoted(false)
+    } else {
+      localStorage.setItem('tbc-loved', '1')
+      setHasUpvoted(true)
+      setBurst(true)
+      setTimeout(() => setBurst(false), 1400)
+    }
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.55 }}
+      className="flex flex-col items-center gap-5 text-center"
+    >
+      {/* Animated coffee cup */}
+      <div
+        className="relative cursor-pointer select-none"
+        style={{ width: 112, height: 112 }}
+        onClick={toggle}
+        title={hasUpvoted ? 'Remove love' : 'Show some love'}
+      >
+        <svg width="112" height="112" viewBox="0 0 80 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+          {/* Saucer */}
+          <ellipse cx="40" cy="84" rx="28" ry="5" fill="var(--color-surface)" />
+          {/* Cup body */}
+          <rect x="12" y="42" width="48" height="40" rx="7" fill="var(--color-card)" stroke="var(--color-accent-border)" strokeWidth="1.5" />
+          {/* Coffee fill */}
+          <rect x="16" y="55" width="40" height="23" rx="4" fill={hasUpvoted ? 'var(--color-accent-dim)' : 'rgba(70,38,12,0.4)'} />
+          {/* Rim */}
+          <rect x="10" y="36" width="52" height="10" rx="5" fill="var(--color-surface)" stroke="var(--color-accent-border)" strokeWidth="1.5" />
+          {/* Handle */}
+          <path d="M60 51 Q73 51 73 62 Q73 73 60 73" stroke="var(--color-accent-border)" strokeWidth="2" strokeLinecap="round" fill="none" />
+          {/* Rim shimmer */}
+          <rect x="15" y="38" width="16" height="4" rx="2" fill="white" opacity="0.07" />
+        </svg>
+
+        {/* Floating steam hearts */}
+        {STEAM_HEARTS.map((h, i) => (
+          <motion.span
+            key={i}
+            style={{
+              position: 'absolute',
+              left: h.left,
+              top: 14,
+              fontSize: h.size,
+              color: hasUpvoted ? 'var(--color-accent)' : 'rgba(201,168,76,0.5)',
+              pointerEvents: 'none',
+              lineHeight: 1,
+            }}
+            animate={{ y: [0, -26, -52], opacity: [0, 1, 0] }}
+            transition={{
+              repeat: Infinity,
+              duration: 2.2 + i * 0.25,
+              delay: h.delay,
+              ease: 'easeOut',
+            }}
+          >
+            ♥
+          </motion.span>
+        ))}
+
+        {/* Burst hearts on upvote */}
+        <AnimatePresence>
+          {burst && BURST_ANGLES.map((angle, i) => (
+            <motion.span
+              key={`burst-${i}`}
+              style={{
+                position: 'absolute',
+                left: 56,
+                top: 44,
+                fontSize: 13,
+                color: 'var(--color-accent)',
+                pointerEvents: 'none',
+                lineHeight: 1,
+              }}
+              initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
+              animate={{
+                x: Math.cos((angle * Math.PI) / 180) * 58,
+                y: Math.sin((angle * Math.PI) / 180) * 58,
+                opacity: 0,
+                scale: 0.2,
+              }}
+              exit={{}}
+              transition={{ duration: 0.9, ease: 'easeOut', delay: i * 0.03 }}
+            >
+              ♥
+            </motion.span>
+          ))}
+        </AnimatePresence>
+      </div>
+
+      {/* Animated count */}
+      <AnimatePresence mode="wait">
+        <motion.p
+          key={count}
+          initial={{ y: -14, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.28, ease: 'easeOut' }}
+          className="font-display font-bold leading-none"
+          style={{
+            fontSize: 'clamp(3.2rem, 9vw, 5.5rem)',
+            color: hasUpvoted ? 'var(--color-accent)' : 'var(--color-text)',
+            letterSpacing: '-0.02em',
+          }}
+        >
+          {count.toLocaleString()}
+        </motion.p>
+      </AnimatePresence>
+
+      <p
+        className="text-[10px] uppercase tracking-[0.24em] -mt-1"
+        style={{ color: 'var(--color-text-muted)', fontFamily: 'Space Mono, monospace' }}
+      >
+        coffee lovers
+      </p>
+
+      {/* Toggle button */}
+      <motion.button
+        onClick={toggle}
+        whileTap={{ scale: 0.91 }}
+        whileHover={{ scale: 1.04 }}
+        className="flex items-center gap-2 px-6 py-3 rounded-full text-[11px] uppercase tracking-[0.16em] transition-colors duration-200 mt-1"
+        style={{
+          fontFamily: 'Space Mono, monospace',
+          background: hasUpvoted ? 'var(--color-accent-dim)' : 'transparent',
+          border: `1px solid ${hasUpvoted ? 'var(--color-accent-border)' : 'rgba(80,120,60,0.28)'}`,
+          color: hasUpvoted ? 'var(--color-accent)' : 'var(--color-text-muted)',
+        }}
+      >
+        <span style={{ fontSize: 14 }}>{hasUpvoted ? '♥' : '♡'}</span>
+        <span>{hasUpvoted ? "You're part of the brew" : 'Show some love'}</span>
+      </motion.button>
+
+      <p
+        style={{
+          color: 'var(--color-text-faint)',
+          fontFamily: 'Space Mono, monospace',
+          fontSize: '0.6rem',
+          letterSpacing: '0.07em',
+          maxWidth: '32ch',
+        }}
+      >
+        {hasUpvoted
+          ? 'Thank you for being part of the community ♥'
+          : 'Click the cup to add your love to the count'}
+      </p>
+    </motion.div>
+  )
+}
 
 const ROAST_OPTIONS = [
   { value: 'light',    label: 'Light Roast',  emoji: '☀️', desc: 'Just a quick question' },
@@ -30,9 +211,9 @@ function ContactForm() {
   }
 
   const inputStyle = {
-    background: '#0D1810',
+    background: 'var(--color-bg)',
     border: '1px solid rgba(80,120,60,0.25)',
-    color: '#E8DFD0',
+    color: 'var(--color-text)',
     fontFamily: 'Inter, sans-serif',
     fontSize: '14px',
     outline: 'none',
@@ -70,8 +251,8 @@ function ContactForm() {
             </svg>
           </div>
           <div>
-            <h3 className="font-display text-2xl mb-2" style={{ color: '#C9A84C' }}>Message Brewed!</h3>
-            <p className="text-sm leading-relaxed" style={{ color: 'rgba(232,223,208,0.55)', maxWidth: '28ch', margin: '0 auto' }}>
+            <h3 className="font-display text-2xl mb-2" style={{ color: 'var(--color-accent)' }}>Message Brewed!</h3>
+            <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-muted)', maxWidth: '28ch', margin: '0 auto' }}>
               Your message is steeping nicely. We'll get back to you before your cup goes cold.
             </p>
           </div>
@@ -79,7 +260,7 @@ function ContactForm() {
             onClick={() => { setSubmitted(false); setName(''); setEmail(''); setMessage(''); setRoast('') }}
             className="text-[10px] uppercase tracking-[0.18em] transition-colors duration-200"
             style={{ color: 'rgba(201,168,76,0.45)', fontFamily: 'Space Mono, monospace', background: 'none', border: 'none', cursor: 'pointer' }}
-            onMouseEnter={(e) => { e.currentTarget.style.color = '#C9A84C' }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--color-accent)' }}
             onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(201,168,76,0.45)' }}
           >
             Send another ↩
@@ -106,16 +287,16 @@ function ContactForm() {
                   onClick={() => setRoast(opt.value)}
                   className="flex flex-col items-center gap-2 py-4 px-3 rounded-2xl transition-all duration-200 text-center"
                   style={{
-                    background: roast === opt.value ? 'rgba(201,168,76,0.1)' : '#0D1810',
+                    background: roast === opt.value ? 'rgba(201,168,76,0.1)' : 'var(--color-bg)',
                     border: `1px solid ${roast === opt.value ? 'rgba(201,168,76,0.55)' : 'rgba(80,120,60,0.2)'}`,
                     cursor: 'pointer',
                   }}
                 >
                   <span style={{ fontSize: '22px', lineHeight: 1 }}>{opt.emoji}</span>
-                  <span className="font-display text-xs leading-snug" style={{ color: roast === opt.value ? '#C9A84C' : 'rgba(232,223,208,0.55)' }}>
+                  <span className="font-display text-xs leading-snug" style={{ color: roast === opt.value ? 'var(--color-accent)' : 'var(--color-text-muted)' }}>
                     {opt.label}
                   </span>
-                  <span className="text-[9px] uppercase tracking-wider" style={{ color: 'rgba(232,223,208,0.3)', fontFamily: 'Space Mono, monospace' }}>
+                  <span className="text-[9px] uppercase tracking-wider" style={{ color: 'var(--color-text-faint)', fontFamily: 'Space Mono, monospace' }}>
                     {opt.desc}
                   </span>
                 </button>
@@ -182,8 +363,8 @@ function ContactForm() {
             whileTap={!brewing ? { scale: 0.98 } : {}}
             className="self-start flex items-center gap-3 px-8 py-4 rounded-full font-medium uppercase tracking-[0.18em] transition-opacity duration-200"
             style={{
-              background: brewing ? 'rgba(201,168,76,0.4)' : '#C9A84C',
-              color: '#0D1810',
+              background: brewing ? 'var(--color-accent-border)' : 'var(--color-accent)',
+              color: 'var(--color-bg)',
               fontFamily: 'Inter, sans-serif',
               fontSize: '11px',
               cursor: brewing ? 'not-allowed' : 'pointer',
@@ -226,6 +407,7 @@ const values = [
 export default function About() {
   return (
     <div className="min-h-screen pt-24">
+      <SEO title="About" description="The Bean Chronicles — a coffee magazine built for the curious, the caffeinated, and the connoisseur." />
       {/* Hero */}
       <section
         className="py-20 px-6 text-center relative overflow-hidden"
@@ -320,7 +502,7 @@ export default function About() {
         >
           <span
             className="inline-block text-[10px] uppercase tracking-[0.22em] font-medium mb-4"
-            style={{ color: '#C9A84C', fontFamily: 'Space Mono, monospace' }}
+            style={{ color: 'var(--color-accent)', fontFamily: 'Space Mono, monospace' }}
           >
             The People Behind the Brew
           </span>
@@ -344,6 +526,33 @@ export default function About() {
         </div>
       </section>
 
+      {/* Love Counter */}
+      <section
+        className="w-full py-20"
+        style={{ background: 'var(--color-surface)', borderTop: '1px solid var(--color-border)', borderBottom: '1px solid var(--color-border)' }}
+      >
+        <div className="max-w-[1600px] mx-auto px-8 sm:px-14 xl:px-20">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-10"
+          >
+            <p className="label-ornate mb-4">Community Love</p>
+            <h2 className="font-display text-3xl sm:text-4xl mb-3" style={{ color: 'var(--color-text)' }}>
+              Brewed with Love
+            </h2>
+            <p
+              className="text-sm leading-relaxed"
+              style={{ color: 'var(--color-text-muted)', maxWidth: '40ch', margin: '0 auto' }}
+            >
+              Coffee souls who've found their home in The Bean Chronicles.
+            </p>
+          </motion.div>
+          <LoveCounter />
+        </div>
+      </section>
+
       {/* Contact Form */}
       <section className="w-full max-w-[1600px] mx-auto px-8 sm:px-14 xl:px-20 py-16 pb-28">
         <motion.div
@@ -354,7 +563,7 @@ export default function About() {
         >
           <span
             className="inline-block text-[10px] uppercase tracking-[0.22em] font-medium mb-4"
-            style={{ color: '#C9A84C', fontFamily: 'Space Mono, monospace' }}
+            style={{ color: 'var(--color-accent)', fontFamily: 'Space Mono, monospace' }}
           >
             Drop us a line
           </span>
@@ -364,7 +573,7 @@ export default function About() {
         </motion.div>
         <div
           className="max-w-2xl mx-auto rounded-3xl p-8 sm:p-10"
-          style={{ background: '#1C2B14', border: '1px solid rgba(80,120,60,0.2)' }}
+          style={{ background: 'var(--color-card)', border: '1px solid rgba(80,120,60,0.2)' }}
         >
           <ContactForm />
         </div>

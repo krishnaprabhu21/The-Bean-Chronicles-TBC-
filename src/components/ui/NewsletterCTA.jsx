@@ -56,7 +56,7 @@ export function NewsletterCTA() {
             <button
               type="submit"
               className="px-7 py-3.5 text-[10px] font-semibold uppercase tracking-[0.2em] transition-all duration-200"
-              style={{ background: '#C9A84C', color: '#0D1810', border: '1px solid #C9A84C', fontFamily: 'Inter, sans-serif' }}
+              style={{ background: 'var(--color-accent)', color: 'var(--color-bg)', border: '1px solid var(--color-accent)', fontFamily: 'Inter, sans-serif' }}
               onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.85')}
               onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
             >
@@ -68,7 +68,7 @@ export function NewsletterCTA() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             className="font-display text-xl italic"
-            style={{ color: '#C9A84C' }}
+            style={{ color: 'var(--color-accent)' }}
           >
             Welcome to the field notes. ✦
           </motion.div>

@@ -1,12 +1,12 @@
 import { motion } from 'framer-motion'
+import { SEO } from '../components/ui/SEO'
 import { HeroSection } from '../components/sections/HeroSection'
 import { FeaturedArticle } from '../components/sections/FeaturedArticle'
-import { ArticleCard } from '../components/ui/ArticleCard'
+import { ArticleCard, ArticleCardSkeleton } from '../components/ui/ArticleCard'
 import { RecipeCard } from '../components/ui/RecipeCard'
-import { CategoryFilter } from '../components/ui/CategoryFilter'
 import { NewsletterCTA } from '../components/ui/NewsletterCTA'
-import { articles, authors, recipes, categories } from '../data'
-import { useFilter } from '../hooks/useFilter'
+import { recipes } from '../data'
+import { useGuardianArticles } from '../hooks/useGuardianArticles'
 
 const fadeUp = {
   initial: { opacity: 0, y: 30 },
@@ -15,56 +15,65 @@ const fadeUp = {
   transition: { duration: 0.6, ease: 'easeOut' },
 }
 
+function FeaturedSkeleton() {
+  return (
+    <div
+      className="animate-pulse overflow-hidden"
+      style={{ border: '1px solid rgba(80,120,60,0.12)', background: '#1C2B14', minHeight: 360 }}
+    />
+  )
+}
+
 export default function Home() {
-  const featured = articles.filter((a) => a.featured)
-  const trending = articles.filter((a) => !a.featured).slice(0, 6)
-  const { filtered, active, setActive } = useFilter(articles)
+  const { articles, loading, error } = useGuardianArticles({ pageSize: 20 })
+  const featured = articles.slice(0, 2)
+  const trending  = articles.slice(2, 8)
   const brewOfTheDay = recipes[0]
 
   return (
     <div>
+      <SEO description="Coffee stories, brewing guides, recipes, and rituals for the discerning coffee mind. Explore origins, tasting notes, and more." />
       <HeroSection />
 
-      {/* Featured Articles */}
-      {featured.length > 0 && (
-        <section className="w-full max-w-[1600px] mx-auto px-8 sm:px-14 xl:px-20 py-20 sm:py-24">
-          <motion.div {...fadeUp} className="mb-12">
-            <p className="label-ornate mb-5">Featured Stories</p>
-            <h2 className="font-display text-4xl md:text-5xl text-parchment leading-tight">Editor's Picks</h2>
-          </motion.div>
+      {/* Featured Articles — Editor's Picks */}
+      <section className="w-full max-w-[1600px] mx-auto px-8 sm:px-14 xl:px-20 py-20 sm:py-24">
+        <motion.div {...fadeUp} className="mb-12">
+          <p className="label-ornate mb-5">Featured Stories</p>
+          <h2 className="font-display text-4xl md:text-5xl text-parchment leading-tight">Editor's Picks</h2>
+        </motion.div>
+        {error ? (
+          <p className="text-cream/40 text-sm py-12 text-center">Could not load articles. Check your connection.</p>
+        ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {featured.map((article) => {
-              const author = authors.find((a) => a.id === article.authorId)
-              return <FeaturedArticle key={article.id} article={article} author={author} />
-            })}
+            {loading
+              ? [0, 1].map((i) => <FeaturedSkeleton key={i} />)
+              : featured.map((article) => (
+                  <FeaturedArticle key={article.id} article={article} />
+                ))}
           </div>
-        </section>
-      )}
+        )}
+      </section>
 
-      {/* Trending Articles with filter */}
+      {/* Trending Now */}
       <section className="w-full max-w-[1600px] mx-auto px-8 sm:px-14 xl:px-20 py-16 sm:py-20">
-        <motion.div {...fadeUp} className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12">
-          <div>
-            <p className="label-ornate mb-5">What's Brewing</p>
-            <h2 className="font-display text-4xl md:text-5xl text-parchment leading-tight">Trending Now</h2>
-          </div>
-          <CategoryFilter categories={categories} active={active} onSelect={setActive} />
+        <motion.div {...fadeUp} className="mb-12">
+          <p className="label-ornate mb-5">What's Brewing</p>
+          <h2 className="font-display text-4xl md:text-5xl text-parchment leading-tight">Trending Now</h2>
         </motion.div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filtered.slice(0, 6).map((article, i) => {
-            const author = authors.find((a) => a.id === article.authorId)
-            return (
-              <motion.div
-                key={article.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.08, duration: 0.5 }}
-              >
-                <ArticleCard article={article} author={author} />
-              </motion.div>
-            )
-          })}
+          {loading
+            ? Array.from({ length: 6 }).map((_, i) => <ArticleCardSkeleton key={i} />)
+            : trending.map((article, i) => (
+                <motion.div
+                  key={article.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.08, duration: 0.5 }}
+                >
+                  <ArticleCard article={article} />
+                </motion.div>
+              ))}
         </div>
       </section>
 

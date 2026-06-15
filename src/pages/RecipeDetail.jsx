@@ -4,6 +4,40 @@ import { recipes, categories } from '../data'
 import { RecipeCard } from '../components/ui/RecipeCard'
 import { RecipeIcon } from '../components/ui/RecipeIcon'
 
+function printRecipe(recipe) {
+  const el = document.getElementById('recipe-print-root')
+  if (!el) return
+
+  el.innerHTML = `
+    <h1>${recipe.title}</h1>
+    <p class="print-meta">
+      Prep: ${recipe.prepTime} min &nbsp;·&nbsp;
+      Brew: ${recipe.brewTime} min &nbsp;·&nbsp;
+      Difficulty: ${['', 'Easy', 'Moderate', 'Intermediate', 'Advanced', 'Expert'][recipe.difficulty]} &nbsp;·&nbsp;
+      ${recipe.steps.length} steps · Serves 1
+    </p>
+    <div class="print-divider"></div>
+    <h2>Ingredients</h2>
+    <ul>
+      ${recipe.ingredients.map(i => `<li><strong>${i.amount}</strong> — ${i.item}</li>`).join('')}
+    </ul>
+    <div class="print-divider"></div>
+    <h2>Method</h2>
+    <ol>
+      ${recipe.steps.map(s => `
+        <li>
+          ${s.instruction}
+          ${s.tip ? `<div class="print-tip">💡 ${s.tip}</div>` : ''}
+        </li>
+      `).join('')}
+    </ol>
+    <p class="print-footer">The Bean Chronicles &nbsp;·&nbsp; thebeachronicles.com</p>
+  `
+
+  window.print()
+  el.innerHTML = ''
+}
+
 // ── Difficulty ───────────────────────────────────────────────────
 const DIFF_LABEL = ['', 'Easy', 'Moderate', 'Intermediate', 'Advanced', 'Expert']
 
@@ -257,7 +291,7 @@ function MethodStep({ step, totalSteps, isLast }) {
           style={{
             background: 'linear-gradient(135deg, #1C2B14, #0f1e0a)',
             border: '1.5px solid rgba(201,168,76,0.55)',
-            color: '#C9A84C',
+            color: 'var(--color-accent)',
             boxShadow: '0 0 0 4px rgba(201,168,76,0.06)',
           }}
         >
@@ -284,7 +318,7 @@ function MethodStep({ step, totalSteps, isLast }) {
         </p>
         <p
           className="leading-relaxed mb-4"
-          style={{ color: '#E8DFD0', fontSize: '1.05rem', lineHeight: 1.75 }}
+          style={{ color: 'var(--color-text)', fontSize: '1.05rem', lineHeight: 1.75 }}
         >
           {step.instruction}
         </p>
@@ -305,7 +339,7 @@ function MethodStep({ step, totalSteps, isLast }) {
               <path d="M9 18h6M10 22h4M12 2a7 7 0 0 1 7 7c0 2.5-1.5 4.5-3 6H8c-1.5-1.5-3-3.5-3-6a7 7 0 0 1 7-7z"/>
             </svg>
             <div>
-              <p className="font-semibold uppercase tracking-[0.16em] mb-1" style={{ color: '#C9A84C', fontSize: '10px' }}>
+              <p className="font-semibold uppercase tracking-[0.16em] mb-1" style={{ color: 'var(--color-accent)', fontSize: '10px' }}>
                 Pro Tip
               </p>
               <p className="text-sm italic leading-relaxed" style={{ color: 'rgba(232,223,208,0.68)' }}>
@@ -327,7 +361,7 @@ function StatPill({ label, value, accent = false }) {
         {label}
       </span>
       {typeof value === 'string' || typeof value === 'number' ? (
-        <span className="font-display text-2xl" style={{ color: accent ? '#C9A84C' : '#E8DFD0' }}>{value}</span>
+        <span className="font-display text-2xl" style={{ color: accent ? 'var(--color-accent)' : 'var(--color-text)' }}>{value}</span>
       ) : value}
     </div>
   )
@@ -346,7 +380,7 @@ export default function RecipeDetail() {
     : `${recipe.brewTime} min`
 
   return (
-    <div className="min-h-screen" style={{ background: '#0D1810' }}>
+    <div className="min-h-screen" style={{ background: 'var(--color-bg)' }}>
 
       {/* ── HERO ──────────────────────────────────────────────── */}
       <div className="flex flex-col md:flex-row" style={{ minHeight: '55vh', paddingTop: '4rem' }}>
@@ -393,13 +427,26 @@ export default function RecipeDetail() {
             {/* Title */}
             <h1
               className="font-display leading-tight mb-5"
-              style={{ color: '#E8DFD0', fontSize: 'clamp(2rem, 4vw, 3.25rem)' }}
+              style={{ color: 'var(--color-text)', fontSize: 'clamp(2rem, 4vw, 3.25rem)' }}
             >
               {recipe.title}
             </h1>
 
             {/* Gold rule */}
             <div style={{ width: 52, height: 2, background: 'linear-gradient(90deg, #C9A84C, transparent)', marginBottom: '1.75rem' }}/>
+
+            {/* Print button */}
+            <button
+              onClick={() => printRecipe(recipe)}
+              className="btn-outline flex items-center gap-2 mb-6 text-[10px]"
+              style={{ padding: '0.55rem 1.2rem' }}
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+                <rect x="6" y="14" width="12" height="8"/>
+              </svg>
+              Print Recipe
+            </button>
 
             {/* Stats grid */}
             <div className="grid grid-cols-2 gap-x-8 gap-y-5">
@@ -425,7 +472,7 @@ export default function RecipeDetail() {
         >
           {/* Section heading */}
           <div className="flex items-baseline gap-3 mb-2">
-            <h2 className="font-display text-3xl" style={{ color: '#C9A84C' }}>What You'll Need</h2>
+            <h2 className="font-display text-3xl" style={{ color: 'var(--color-accent)' }}>What You'll Need</h2>
             <span style={{ color: 'rgba(232,223,208,0.38)', fontSize: '13px' }}>
               {recipe.ingredients.length} ingredient{recipe.ingredients.length !== 1 ? 's' : ''}
             </span>
@@ -448,13 +495,13 @@ export default function RecipeDetail() {
                 {/* Icon badge */}
                 <div
                   className="w-12 h-12 flex items-center justify-center rounded-xl"
-                  style={{ background: '#0D1810', border: '1px solid rgba(201,168,76,0.15)' }}
+                  style={{ background: 'var(--color-bg)', border: '1px solid rgba(201,168,76,0.15)' }}
                 >
                   {getIngredientIcon(ing.item)}
                 </div>
                 {/* Amount + name */}
                 <div>
-                  <p className="text-xs font-bold mb-0.5" style={{ color: '#C9A84C' }}>
+                  <p className="text-xs font-bold mb-0.5" style={{ color: 'var(--color-accent)' }}>
                     {ing.amount}
                   </p>
                   <p className="text-xs leading-snug" style={{ color: 'rgba(232,223,208,0.65)' }}>
@@ -490,7 +537,7 @@ export default function RecipeDetail() {
                 Brewing Method
               </span>
             </div>
-            <h2 className="font-display text-4xl mb-4" style={{ color: '#E8DFD0' }}>
+            <h2 className="font-display text-4xl mb-4" style={{ color: 'var(--color-text)' }}>
               How to Make It
             </h2>
             <p style={{ color: 'rgba(232,223,208,0.48)', fontSize: '0.9rem', lineHeight: 1.8, maxWidth: '46ch' }}>
@@ -529,7 +576,7 @@ export default function RecipeDetail() {
               </svg>
             </div>
             <div>
-              <p className="font-semibold mb-0.5" style={{ color: '#C9A84C', fontSize: '0.875rem' }}>Ready to serve</p>
+              <p className="font-semibold mb-0.5" style={{ color: 'var(--color-accent)', fontSize: '0.875rem' }}>Ready to serve</p>
               <p style={{ color: 'rgba(232,223,208,0.45)', fontSize: '12px' }}>
                 Total time: {recipe.prepTime + recipe.brewTime >= 60
                   ? `${Math.floor((recipe.prepTime + recipe.brewTime) / 60)}h ${(recipe.prepTime + recipe.brewTime) % 60 ? `${(recipe.prepTime + recipe.brewTime) % 60}min` : ''}`
@@ -547,10 +594,10 @@ export default function RecipeDetail() {
         <section className="max-w-7xl mx-auto px-6 pb-24">
           <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, rgba(201,168,76,0.18), transparent)', marginBottom: '3.5rem' }}/>
           <div className="mb-9">
-            <span style={{ color: '#C9A84C', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.22em', fontWeight: 600 }}>
+            <span style={{ color: 'var(--color-accent)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.22em', fontWeight: 600 }}>
               More Recipes
             </span>
-            <h2 className="font-display text-2xl mt-1.5" style={{ color: '#E8DFD0' }}>You Might Also Like</h2>
+            <h2 className="font-display text-2xl mt-1.5" style={{ color: 'var(--color-text)' }}>You Might Also Like</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {related.map((r) => <RecipeCard key={r.id} recipe={r} />)}

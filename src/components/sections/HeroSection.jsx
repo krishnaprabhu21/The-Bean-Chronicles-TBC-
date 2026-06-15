@@ -33,16 +33,6 @@ export function HeroSection() {
         }}
       />
 
-      {/* Section number — top left */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.2, duration: 0.6 }}
-        className="absolute top-24 left-6 sm:left-10 section-num"
-      >
-        01 / Hero
-      </motion.div>
-
       {/* Stamp badge — top right */}
       <motion.div
         initial={{ opacity: 0, rotate: -10, scale: 0.8 }}
@@ -50,9 +40,9 @@ export function HeroSection() {
         transition={{ delay: 1.4, duration: 0.8, type: 'spring' }}
         className="absolute top-24 right-6 sm:right-10 stamp-badge hidden sm:flex"
       >
-        <span style={{ fontSize: '6px', letterSpacing: '0.18em', color: 'rgba(201,168,76,0.5)', textTransform: 'uppercase' }}>Field</span>
+        <span style={{ fontSize: '6px', letterSpacing: '0.18em', color: 'var(--color-accent-border)', textTransform: 'uppercase' }}>Field</span>
         <span style={{ fontSize: '11px', color: 'rgba(201,168,76,0.8)' }}>✦</span>
-        <span style={{ fontSize: '6px', letterSpacing: '0.18em', color: 'rgba(201,168,76,0.5)', textTransform: 'uppercase' }}>Notes</span>
+        <span style={{ fontSize: '6px', letterSpacing: '0.18em', color: 'var(--color-accent-border)', textTransform: 'uppercase' }}>Notes</span>
       </motion.div>
 
       {/* Main content — bottom-left editorial alignment */}
@@ -71,14 +61,14 @@ export function HeroSection() {
           initial="hidden"
           animate="show"
           className="font-display font-black leading-none mb-8"
-          style={{ fontSize: 'clamp(3.5rem, 9vw, 8.5rem)', color: '#E8DFD0' }}
+          style={{ fontSize: 'clamp(3.5rem, 9vw, 8.5rem)', color: 'var(--color-text-on-dark)' }}
         >
           {headline.map((lineText, i) => (
             <motion.span
               key={i}
               variants={line}
               className="block"
-              style={i === 2 ? { color: '#C9A84C', fontStyle: 'italic' } : {}}
+              style={i === 2 ? { color: 'var(--color-accent)', fontStyle: 'italic' } : {}}
             >
               {lineText}
             </motion.span>
@@ -91,7 +81,7 @@ export function HeroSection() {
           transition={{ duration: 0.6, delay: 0.9 }}
           className="max-w-md mb-10"
         >
-          <div className="w-12 h-px mb-6" style={{ background: 'rgba(201,168,76,0.5)' }} />
+          <div className="w-12 h-px mb-6" style={{ background: 'var(--color-accent-border)' }} />
           <p className="text-parchment/65 text-base md:text-lg leading-loose">
             From origin to cup — stories, recipes and rituals for the discerning coffee mind.
           </p>
@@ -109,7 +99,7 @@ export function HeroSection() {
               <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" />
             </svg>
           </Link>
-          <Link to="/culture" className="btn-outline">
+          <Link to="/culture" className="btn-outline" style={{ color: 'var(--color-text-on-dark)', borderColor: 'rgba(255,255,255,0.35)' }}>
             Coffee Origins
           </Link>
         </motion.div>
@@ -124,7 +114,7 @@ export function HeroSection() {
       >
         <span
           className="text-[9px] uppercase tracking-[0.25em] rotate-90 origin-center mb-2"
-          style={{ color: 'rgba(201,168,76,0.45)', fontFamily: 'Space Mono, monospace' }}
+          style={{ color: 'var(--color-accent-border)', fontFamily: 'Space Mono, monospace' }}
         >
           Scroll
         </span>

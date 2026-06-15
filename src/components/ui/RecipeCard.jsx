@@ -22,7 +22,7 @@ export function RecipeCard({ recipe }) {
       whileHover={{ y: -5 }}
       transition={{ type: 'spring', stiffness: 300, damping: 22 }}
       className="group overflow-hidden"
-      style={{ border: '1px solid rgba(80,120,60,0.2)', background: '#1C2B14' }}
+      style={{ border: '1px solid rgba(80,120,60,0.2)', background: 'var(--color-card)' }}
       onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'rgba(201,168,76,0.35)' }}
       onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(80,120,60,0.2)' }}
     >
@@ -45,30 +45,30 @@ export function RecipeCard({ recipe }) {
             <svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" strokeWidth="2">
               <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
             </svg>
-            <span className="text-[10px] uppercase tracking-[0.15em]" style={{ color: '#C9A84C', fontFamily: 'Space Mono, monospace' }}>{timeLabel}</span>
+            <span className="text-[10px] uppercase tracking-[0.15em]" style={{ color: 'var(--color-accent)', fontFamily: 'Space Mono, monospace' }}>{timeLabel}</span>
           </div>
         </div>
 
         <div className="p-5 sm:p-6">
           {category && (
-            <span className="inline-block text-[9px] uppercase tracking-[0.22em] font-medium mb-4" style={{ color: '#C9A84C' }}>
+            <span className="inline-block text-[9px] uppercase tracking-[0.22em] font-medium mb-4" style={{ color: 'var(--color-accent)' }}>
               {category.name}
             </span>
           )}
           <h3
             className="font-display text-lg leading-snug mb-4 line-clamp-2 transition-colors duration-200"
-            style={{ color: '#E8DFD0' }}
+            style={{ color: 'var(--color-text)' }}
           >
             {recipe.title}
           </h3>
-          <div className="flex flex-col gap-2 pt-4" style={{ borderTop: '1px solid rgba(80,120,60,0.15)' }}>
+          <div className="flex flex-col gap-2 pt-4" style={{ borderTop: '1px solid var(--color-border)' }}>
             <div className="flex items-center gap-1">
-              <span className="text-[10px] uppercase tracking-[0.15em] mr-2" style={{ color: 'rgba(232,223,208,0.4)' }}>Difficulty</span>
+              <span className="text-[10px] uppercase tracking-[0.15em] mr-2" style={{ color: 'var(--color-text-faint)' }}>Difficulty</span>
               {[1, 2, 3, 4, 5].map((n) => (
                 <BeanIcon key={n} filled={n <= recipe.difficulty} />
               ))}
             </div>
-            <span className="text-[10px] uppercase tracking-[0.12em]" style={{ color: 'rgba(232,223,208,0.35)' }}>
+            <span className="text-[10px] uppercase tracking-[0.12em]" style={{ color: 'var(--color-text-faint)' }}>
               {recipe.ingredients.length} Ingredients
             </span>
           </div>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { SEO } from '../components/ui/SEO';
 
 // ── Device data ─────────────────────────────────────────────────────────────
 
@@ -340,6 +341,33 @@ const devices = [
       { label: "Storage", value: "Submerged in water, refrigerated" },
     ],
   },
+  {
+    id: "channi",
+    name: "Channi",
+    tagline: "India's Ancient Strainer, Every Kitchen's Secret",
+    category: "Strainer Brewing",
+    origin: "Indian Subcontinent — centuries-old",
+    brewTime: "3–5 minutes",
+    difficulty: 1,
+    grind: "Coarse to Medium",
+    ratio: "1 : 10",
+    accentColor: "#C07A40",
+    description:
+      "The channi (Hindi: छन्नी) is a humble wire-mesh strainer — one of the oldest and most democratic coffee-brewing tools on the Indian subcontinent. Coarsely ground coffee is steeped directly in a small pot or saucepan of hot water for three to five minutes, then poured through the fine-mesh strainer into a cup or tumbler below. The mesh catches the grounds while allowing the brewed liquid — along with a small amount of desirable oils and micro-fines — to pass freely through. In Indian households, the same channi serves tea one morning and coffee the next, making it the most multi-purpose brewer in existence. The technique produces a cup that is bolder and more textured than paper-filtered methods, with a noticeable body and warmth that pairs beautifully with hot milk and sugar in the traditional Indian style. Found in every bazaar across the country for less than fifty rupees, the channi democratises good coffee: no electricity, no consumables, no technique beyond patience. It is the direct ancestor of the South Indian filter decoction method, and in many rural kitchens across Tamil Nadu, Karnataka, and Maharashtra, it remains the only brewer anyone has ever owned.",
+    flavourProfile: [
+      "Bold",
+      "Full Body",
+      "Earthy",
+      "Milk-Friendly",
+      "Rustic",
+    ],
+    tip: "Steep with the lid on the pot to trap heat and aromatic oils. Pour slowly through the channi — rushing creates turbulence that pushes fine particles through the mesh.",
+    specs: [
+      { label: "Filter", value: "Fine wire mesh (stainless steel)" },
+      { label: "Water Temp", value: "90–96 °C" },
+      { label: "Cost", value: "< ₹50 — universal kitchen tool" },
+    ],
+  },
 ];
 
 // ── SVG device icons ─────────────────────────────────────────────────────────
@@ -589,6 +617,32 @@ function DeviceIcon({ id, color = "#C9A84C" }) {
         <path d="M30 6 Q32 2 34 6" />
       </svg>
     ),
+    channi: (
+      <svg viewBox="0 0 64 80" width="100%" height="100%" {...s}>
+        {/* Long handle extending left */}
+        <line x1="4" y1="30" x2="22" y2="36" />
+        <ellipse cx="4" cy="30" rx="3" ry="2" />
+        {/* Strainer bowl — shallow round shape */}
+        <path d="M22 24 Q14 28 14 40 Q14 56 32 58 Q50 56 50 40 Q50 28 42 24 Z" />
+        {/* Rim ellipse across the top of bowl */}
+        <ellipse cx="32" cy="24" rx="10" ry="3" />
+        {/* Mesh grid inside bowl — horizontal lines */}
+        <line x1="18" y1="34" x2="46" y2="34" strokeOpacity="0.35" strokeDasharray="2 2" />
+        <line x1="16" y1="42" x2="48" y2="42" strokeOpacity="0.35" strokeDasharray="2 2" />
+        <line x1="17" y1="50" x2="47" y2="50" strokeOpacity="0.35" strokeDasharray="2 2" />
+        {/* Mesh grid — vertical lines */}
+        <line x1="24" y1="26" x2="22" y2="56" strokeOpacity="0.25" strokeDasharray="2 2" />
+        <line x1="32" y1="25" x2="32" y2="57" strokeOpacity="0.25" strokeDasharray="2 2" />
+        <line x1="40" y1="26" x2="42" y2="56" strokeOpacity="0.25" strokeDasharray="2 2" />
+        {/* Drip drops falling below */}
+        <circle cx="28" cy="66" r="1.5" fill={color} strokeWidth="0" />
+        <circle cx="36" cy="70" r="1.5" fill={color} strokeWidth="0" />
+        <circle cx="32" cy="62" r="1.2" fill={color} strokeWidth="0" opacity="0.6" />
+        {/* Cup / tumbler below */}
+        <path d="M20 72 L22 80 L42 80 L44 72 Z" strokeOpacity="0.45" />
+        <line x1="20" y1="72" x2="44" y2="72" strokeOpacity="0.45" />
+      </svg>
+    ),
   };
   return icons[id] || null;
 }
@@ -602,7 +656,7 @@ function DifficultyDots({ level }) {
         <span
           key={n}
           className="block w-1.5 h-1.5 rounded-full"
-          style={{ background: n <= level ? "#C9A84C" : "rgba(80,120,60,0.3)" }}
+          style={{ background: n <= level ? "var(--color-accent)" : "rgba(80,120,60,0.3)" }}
         />
       ))}
     </div>
@@ -619,7 +673,7 @@ function DeviceCard({ device, selected, onClick }) {
       className="relative flex flex-col items-center gap-5 px-3 py-7 sm:py-8 text-center w-full transition-all duration-200"
       style={{
         border: `1px solid ${selected ? device.accentColor + "80" : "rgba(80,120,60,0.2)"}`,
-        background: selected ? `${device.accentColor}0D` : "#1C2B14",
+        background: selected ? `${device.accentColor}0D` : "var(--color-card)",
         boxShadow: selected ? `0 0 28px ${device.accentColor}18` : "none",
         cursor: "pointer",
       }}
@@ -655,7 +709,7 @@ function DeviceCard({ device, selected, onClick }) {
         </span>
         <span
           className="block font-display text-sm sm:text-base leading-snug"
-          style={{ color: selected ? "#E8DFD0" : "rgba(232,223,208,0.72)" }}
+          style={{ color: selected ? "var(--color-text)" : "rgba(232,223,208,0.72)" }}
         >
           {device.name}
         </span>
@@ -702,7 +756,7 @@ function DeviceModal({ device, onClose }) {
       <motion.div
         className="relative z-10 w-full overflow-hidden flex flex-col sm:flex-row"
         style={{
-          background: "#162210",
+          background: "var(--color-surface)",
           border: "1px solid rgba(80,120,60,0.3)",
           maxWidth: "60rem",
           maxHeight: "92vh",
@@ -733,7 +787,7 @@ function DeviceModal({ device, onClose }) {
               >
                 Origin
               </p>
-              <p className="text-sm leading-snug" style={{ color: "#C9A84C" }}>
+              <p className="text-sm leading-snug" style={{ color: "var(--color-accent)" }}>
                 {device.origin}
               </p>
             </div>
@@ -747,7 +801,7 @@ function DeviceModal({ device, onClose }) {
               >
                 Brew Time
               </p>
-              <p className="text-sm" style={{ color: "#C9A84C" }}>
+              <p className="text-sm" style={{ color: "var(--color-accent)" }}>
                 {device.brewTime}
               </p>
             </div>
@@ -809,7 +863,7 @@ function DeviceModal({ device, onClose }) {
               onClick={onClose}
               className="flex items-center gap-2 transition-opacity duration-150 opacity-45 hover:opacity-100"
               style={{
-                color: "#E8DFD0",
+                color: "var(--color-text)",
                 fontFamily: "Space Mono, monospace",
                 fontSize: "10px",
                 textTransform: "uppercase",
@@ -847,8 +901,8 @@ function DeviceModal({ device, onClose }) {
             <div
               className="grid grid-cols-3 gap-6 py-6 mb-9"
               style={{
-                borderTop: "1px solid rgba(80,120,60,0.16)",
-                borderBottom: "1px solid rgba(80,120,60,0.16)",
+                borderTop: "1px solid var(--color-border)",
+                borderBottom: "1px solid var(--color-border)",
               }}
             >
               {specRow.map((spec, i) => (
@@ -864,7 +918,7 @@ function DeviceModal({ device, onClose }) {
                   </p>
                   <p
                     className="text-sm font-medium leading-snug"
-                    style={{ color: "#E8DFD0" }}
+                    style={{ color: "var(--color-text)" }}
                   >
                     {spec.value}
                   </p>
@@ -888,7 +942,7 @@ function DeviceModal({ device, onClose }) {
               <span
                 className="absolute -top-2.5 left-6 px-3 text-[9px] uppercase tracking-[0.2em]"
                 style={{
-                  background: "#162210",
+                  background: "var(--color-surface)",
                   color: device.accentColor,
                   fontFamily: "Space Mono, monospace",
                 }}
@@ -965,14 +1019,14 @@ function BrandsTab() {
       </svg>
       <p
         className="font-display text-2xl italic"
-        style={{ color: "rgba(232,223,208,0.3)" }}
+        style={{ color: "var(--color-text-faint)" }}
       >
         Brands — coming soon
       </p>
       <p
         className="text-sm uppercase tracking-[0.2em]"
         style={{
-          color: "rgba(201,168,76,0.25)",
+          color: "var(--color-accent-border)",
           fontFamily: "Space Mono, monospace",
         }}
       >
@@ -1137,7 +1191,7 @@ function RepoCard({ repo, index }) {
       whileHover={{ y: -4 }}
       className="flex flex-col gap-4 p-6 rounded-2xl transition-all duration-200 group"
       style={{
-        background: "#1C2B14",
+        background: "var(--color-card)",
         border: "1px solid rgba(80,120,60,0.2)",
         textDecoration: "none",
       }}
@@ -1165,7 +1219,7 @@ function RepoCard({ repo, index }) {
           </svg>
           <span
             className="font-display text-sm leading-snug truncate group-hover:text-ochre transition-colors duration-200"
-            style={{ color: "#E8DFD0" }}
+            style={{ color: "var(--color-text)" }}
           >
             {repo.name}
           </span>
@@ -1190,7 +1244,7 @@ function RepoCard({ repo, index }) {
       <p
         className="text-[10px] uppercase tracking-[0.16em] -mt-2"
         style={{
-          color: "rgba(201,168,76,0.45)",
+          color: "var(--color-accent-border)",
           fontFamily: "Space Mono, monospace",
         }}
       >
@@ -1200,7 +1254,7 @@ function RepoCard({ repo, index }) {
       {/* Description */}
       <p
         className="text-xs leading-relaxed flex-1"
-        style={{ color: "rgba(232,223,208,0.55)", lineHeight: 1.75 }}
+        style={{ color: "var(--color-text-muted)", lineHeight: 1.75 }}
       >
         {repo.desc}
       </p>
@@ -1266,7 +1320,7 @@ function CoffeeNerdsTab() {
         </p>
         <h2
           className="font-display text-3xl sm:text-4xl mb-4"
-          style={{ color: "#E8DFD0" }}
+          style={{ color: "var(--color-text)" }}
         >
           Built by Coffee Nerds
         </h2>
@@ -1290,7 +1344,7 @@ function CoffeeNerdsTab() {
             textDecoration: "none",
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.color = "#C9A84C";
+            e.currentTarget.style.color = "var(--color-accent)";
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.color = "rgba(201,168,76,0.55)";
@@ -1313,11 +1367,268 @@ function CoffeeNerdsTab() {
   );
 }
 
+// ── Coffee Types data ────────────────────────────────────────────────────────
+
+const coffeeTypes = [
+  // Espresso
+  { id: "espresso", name: "Espresso", category: "Espresso", icon: "espresso", description: "A strong concentrated coffee drink typically served in a small espresso cup. Commonly used as a base for lattes, cappuccinos, and macchiatos." },
+  { id: "ristretto", name: "Ristretto", category: "Espresso", icon: "espresso", description: "More concentrated than espresso, using half the water and a shorter extraction time. Thicker, richer in flavour, and less bitter." },
+  { id: "doppio", name: "Doppio", category: "Espresso", icon: "espresso", description: "A double-shot espresso served in a small cup, popular among enthusiasts who prefer stronger, bolder flavours." },
+  { id: "lungo", name: "Lungo", category: "Espresso", icon: "espresso", description: "A single shot brewed longer with more water. Less strong but more bitter than a regular espresso." },
+  { id: "long-black", name: "Long Black", category: "Espresso", icon: "tall", description: "Made by pouring a double shot of espresso over hot water. Features a frothy crema layer on top." },
+  { id: "espresso-romano", name: "Espresso Romano", category: "Espresso", icon: "espresso", description: "A single shot of espresso served with a slice of lemon. The lemon softens the bitterness and can be squeezed in or eaten between sips." },
+  { id: "guillermo", name: "Guillermo", category: "Espresso", icon: "espresso", description: "Two shots of espresso poured into a glass with two slices of lime. Can be served hot or over ice." },
+  // Black Coffee
+  { id: "americano", name: "Americano", category: "Black Coffee", icon: "mug", description: "Equal parts espresso and hot water. Enjoyed black or with a small amount of cream — strong flavour with less bitterness than espresso." },
+  { id: "red-eye", name: "Red-Eye Coffee", category: "Black Coffee", icon: "mug", description: "Regular drip coffee combined with espresso. Highly caffeinated and made for those who need a guaranteed energy boost." },
+  { id: "black-eye", name: "Black-Eye Coffee", category: "Black Coffee", icon: "mug", description: "Regular hot coffee with a double shot of espresso. High caffeine content with an intense, stronger flavour." },
+  { id: "black-coffee", name: "Black Coffee", category: "Black Coffee", icon: "mug", description: "Simply brewed ground coffee with no sugar or milk. Can be made with a variety of beans for different flavours and aromas." },
+  // Cold Brew
+  { id: "cold-brew-drink", name: "Cold Brew", category: "Cold Brew", icon: "iced", description: "Ground coffee steeped in cold water for 12–24 hours, then filtered. Less bitter and acidic than hot coffee." },
+  { id: "nitro-cold-brew", name: "Nitro Cold Brew", category: "Cold Brew", icon: "iced", description: "Nitrogen-infused cold brew — a thicker, creamier version of cold brew. Bold coffee with a smooth and creamy texture." },
+  // Cappuccino & Mocha
+  { id: "cappuccino", name: "Cappuccino", category: "Milk-Based", icon: "foam", description: "Equal parts espresso, steamed milk, and milk foam. Known for its creamy texture and smooth, balanced flavour." },
+  { id: "mocha", name: "Mocha", category: "Milk-Based", icon: "foam", description: "Made with steamed milk, chocolate syrup, and espresso, topped with foam. Chocolatey, sweet, rich, and indulgent — can be enjoyed hot or cold." },
+  // Iced Coffees
+  { id: "frappe", name: "Frappé", category: "Iced Coffee", icon: "iced", description: "Instant coffee, ice, sugar, and water mixed in a shaker or blender. Sometimes topped with cream or ice cream for a creamy dessert-like treat." },
+  { id: "iced-coffee", name: "Iced Coffee", category: "Iced Coffee", icon: "iced", description: "Regular coffee poured over ice, customisable with milk, cream, or flavoured syrups. A refreshing cold alternative to hot coffee." },
+  { id: "mazagran", name: "Mazagran", category: "Iced Coffee", icon: "iced", description: "Coffee or double espresso mixed with fresh lemon juice, sugar, and ice. A refreshing alternative during warmer weather." },
+  // Lattes
+  { id: "latte", name: "Latte", category: "Latte", icon: "foam", description: "Steamed milk and espresso with a layer of foam. Known for its mild and creamy taste — can be served hot or cold." },
+  { id: "flat-white", name: "Flat White", category: "Latte", icon: "foam", description: "Steamed milk poured over espresso with a higher espresso-to-milk ratio. Rich, bold flavour with a velvety texture." },
+  { id: "breve", name: "Breve", category: "Latte", icon: "foam", description: "Equal parts espresso and steamed half-and-half. Creamy, rich, and heavier textured — popular hot or over ice." },
+  // Macchiatos
+  { id: "macchiato", name: "Macchiato", category: "Macchiato", icon: "espresso", description: "Espresso with a small amount of steamed milk or foam on top. Strong and bold — can be served hot or over ice." },
+  { id: "long-macchiato", name: "Long Macchiato", category: "Macchiato", icon: "espresso", description: "A double espresso with a small amount of steamed milk on top. Stronger than a traditional macchiato with a small amount of creamy texture." },
+  // Specialty
+  { id: "cortado", name: "Cortado", category: "Specialty", icon: "espresso", description: "Two ounces of espresso diluted with two ounces of steamed milk. The less-foamy milk balances out the espresso's bitterness." },
+  { id: "dirty-chai", name: "Dirty Chai", category: "Specialty", icon: "mug", description: "Espresso combined with chai tea. Darker than regular chai with optional spices or sugar — served hot or cold." },
+  { id: "dalgona", name: "Dalgona Coffee", category: "Specialty", icon: "foam", description: "Whipped instant coffee, hot water, and sugar poured over cold or hot milk. Also known as 'whipped coffee'." },
+  // Dessert
+  { id: "irish-coffee", name: "Irish Coffee", category: "Dessert", icon: "mug", description: "Hot coffee, sugar, and Irish whiskey topped with cream or whipped cream. Served warm as an after-dinner drink." },
+  { id: "cafe-au-lait", name: "Café au Lait", category: "Dessert", icon: "mug", description: "Half hot coffee and half steamed milk with no froth. Served in a larger bowl or mug — known for simplicity and rich flavour." },
+  { id: "affogato", name: "Affogato", category: "Dessert", icon: "iced", description: "A scoop of ice cream or gelato drowned in hot espresso. A simple, tasty dessert combining espresso and gelato flavours." },
+  { id: "espresso-con-panna", name: "Espresso Con Panna", category: "Dessert", icon: "espresso", description: "A single or double shot of espresso topped with whipped cream. Strong, dessert-like, and indulgent." },
+  { id: "vienna-coffee", name: "Vienna Coffee", category: "Dessert", icon: "foam", description: "Double espresso topped with whisked whipped cream, dusted with cocoa powder or chocolate shavings." },
+  // Cultural / Regional
+  { id: "turkish-coffee", name: "Turkish Coffee", category: "Cultural", icon: "mug", description: "Fine ground coffee brewed in a copper cezve on a stovetop. Unfiltered, thick in texture, and rich in flavour — served with or without sugar." },
+  { id: "cuban-coffee", name: "Cuban Coffee", category: "Cultural", icon: "espresso", description: "Sweetened espresso (Cafecito) brewed in a moka pot, poured over 'espuma' — a sweet froth of whipped espresso and sugar." },
+  { id: "galao", name: "Galão", category: "Cultural", icon: "foam", description: "Portuguese coffee with one part espresso and three parts frothed steamed milk. Popular for breakfast or as an afternoon boost." },
+  { id: "antoccino", name: "Antoccino", category: "Cultural", icon: "foam", description: "Equal parts espresso and steamed milk. Served hot with a creamy, strong, and rich taste." },
+];
+
+const COFFEE_CATEGORIES = ["All", "Espresso", "Black Coffee", "Cold Brew", "Milk-Based", "Iced Coffee", "Latte", "Macchiato", "Specialty", "Dessert", "Cultural"];
+
+const CATEGORY_COLORS = {
+  "Espresso":    "#C9A84C",
+  "Black Coffee":"#6B8A5E",
+  "Cold Brew":   "#4A7A8A",
+  "Milk-Based":  "#9A7A5A",
+  "Iced Coffee": "#5A7A9A",
+  "Latte":       "#A07A5A",
+  "Macchiato":   "#8A6A4A",
+  "Specialty":   "#7A6A9A",
+  "Dessert":     "#9A5A6A",
+  "Cultural":    "#7A8A5A",
+};
+
+// Minimal SVG icons per cup type
+function CupIcon({ type = "mug", color = "#C9A84C" }) {
+  const s = { stroke: color, strokeWidth: "1.5", strokeLinecap: "round", strokeLinejoin: "round", fill: "none" };
+  if (type === "espresso") return (
+    <svg viewBox="0 0 40 40" width="36" height="36" {...s}>
+      <path d="M8 14 Q8 30 20 30 Q32 30 32 14"/>
+      <rect x="7" y="12" width="26" height="4" rx="2"/>
+      <path d="M32 16 Q38 16 38 20 Q38 24 32 24"/>
+      <line x1="7" y1="32" x2="33" y2="32"/>
+      <path d="M14 12 Q15 9 14 7" strokeOpacity="0.55"/>
+      <path d="M22 12 Q23 9 22 7" strokeOpacity="0.55"/>
+    </svg>
+  );
+  if (type === "tall") return (
+    <svg viewBox="0 0 40 40" width="36" height="36" {...s}>
+      <path d="M10 6 L12 36 Q12 38 20 38 Q28 38 28 36 L30 6 Z"/>
+      <line x1="10" y1="6" x2="30" y2="6"/>
+      <line x1="11" y1="16" x2="29" y2="16" strokeOpacity="0.4"/>
+      <ellipse cx="20" cy="5" rx="10" ry="2.5" strokeOpacity="0.55"/>
+    </svg>
+  );
+  if (type === "iced") return (
+    <svg viewBox="0 0 40 40" width="36" height="36" {...s}>
+      <path d="M10 6 L12 36 Q12 38 20 38 Q28 38 28 36 L30 6 Z"/>
+      <line x1="10" y1="6" x2="30" y2="6"/>
+      <ellipse cx="20" cy="5" rx="10" ry="2.5" strokeOpacity="0.55"/>
+      <line x1="20" y1="2" x2="20" y2="6"/>
+      <circle cx="16" cy="22" r="2" fill={color} strokeWidth="0"/>
+      <circle cx="24" cy="18" r="2" fill={color} strokeWidth="0"/>
+      <circle cx="20" cy="26" r="2" fill={color} strokeWidth="0"/>
+    </svg>
+  );
+  if (type === "foam") return (
+    <svg viewBox="0 0 40 40" width="36" height="36" {...s}>
+      <path d="M6 16 Q6 34 20 34 Q34 34 34 16"/>
+      <ellipse cx="20" cy="14" rx="14" ry="4"/>
+      <path d="M9 14 Q11 8 15 8 Q17 10 20 8 Q23 10 25 8 Q29 8 31 14" strokeOpacity="0.45"/>
+      <path d="M34 20 Q40 20 40 24 Q40 28 34 28"/>
+      <line x1="5" y1="34" x2="35" y2="34"/>
+    </svg>
+  );
+  // default: mug
+  return (
+    <svg viewBox="0 0 40 40" width="36" height="36" {...s}>
+      <rect x="5" y="12" width="24" height="22" rx="3"/>
+      <path d="M29 16 Q37 16 37 22 Q37 28 29 28"/>
+      <line x1="5" y1="28" x2="29" y2="28"/>
+      <path d="M11 12 Q12 9 11 6" strokeOpacity="0.6"/>
+      <path d="M18 12 Q19 9 18 6" strokeOpacity="0.6"/>
+    </svg>
+  );
+}
+
+function CoffeeTypeCard({ item, index }) {
+  const catColor = CATEGORY_COLORS[item.category] || "#C9A84C";
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.035, duration: 0.35 }}
+      whileHover={{ y: -4 }}
+      className="flex flex-col gap-4 p-6 rounded-2xl transition-all duration-200 group"
+      style={{ background: "var(--color-card)", border: "1px solid rgba(80,120,60,0.2)" }}
+      onMouseEnter={(e) => { e.currentTarget.style.borderColor = `${catColor}50` }}
+      onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(80,120,60,0.2)" }}
+    >
+      {/* Icon + category */}
+      <div className="flex items-start justify-between">
+        <div className="w-12 h-12 flex items-center justify-center rounded-xl" style={{ background: `${catColor}12`, border: `1px solid ${catColor}25` }}>
+          <CupIcon type={item.icon} color={catColor} />
+        </div>
+        <span
+          className="text-[9px] uppercase tracking-[0.18em] px-2.5 py-1 rounded-full"
+          style={{ background: `${catColor}14`, color: catColor, border: `1px solid ${catColor}30`, fontFamily: "Space Mono, monospace" }}
+        >
+          {item.category}
+        </span>
+      </div>
+      {/* Name */}
+      <h3 className="font-display text-base leading-snug" style={{ color: "var(--color-text)" }}>
+        {item.name}
+      </h3>
+      {/* Description */}
+      <p className="text-xs leading-relaxed flex-1" style={{ color: "rgba(232,223,208,0.52)", lineHeight: 1.8 }}>
+        {item.description}
+      </p>
+    </motion.div>
+  );
+}
+
+function CoffeeTypesTab() {
+  const [search, setSearch] = useState("");
+  const [activeCategory, setActiveCategory] = useState("All");
+
+  const filtered = coffeeTypes.filter(t =>
+    (activeCategory === "All" || t.category === activeCategory) &&
+    (t.name.toLowerCase().includes(search.toLowerCase()) ||
+     t.description.toLowerCase().includes(search.toLowerCase()))
+  );
+
+  return (
+    <div>
+      {/* Intro */}
+      <div className="mb-8 max-w-2xl">
+        <p className="text-[10px] uppercase tracking-[0.22em] mb-3" style={{ color: "rgba(201,168,76,0.5)", fontFamily: "Space Mono, monospace" }}>
+          The Complete Guide
+        </p>
+        <h2 className="font-display text-3xl sm:text-4xl mb-4" style={{ color: "var(--color-text)" }}>
+          Every Coffee You Need to Know
+        </h2>
+        <p className="text-sm leading-loose" style={{ color: "rgba(232,223,208,0.5)" }}>
+          From the humble black coffee to the theatrical Irish whiskey pour — a complete visual directory of 35+ coffee drinks across every style and tradition.
+        </p>
+      </div>
+
+      {/* Search + filter */}
+      <div className="flex flex-col sm:flex-row gap-4 mb-8">
+        <div className="relative max-w-xs">
+          <svg className="absolute left-3.5 top-1/2 -translate-y-1/2" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(201,168,76,0.45)" strokeWidth="2" strokeLinecap="round">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input
+            type="text"
+            placeholder="Search drinks..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="w-full pl-9 pr-4 py-2.5 text-sm rounded-xl outline-none"
+            style={{ background: "var(--color-surface)", border: "1px solid rgba(80,120,60,0.3)", color: "var(--color-text)", fontFamily: "Inter, sans-serif" }}
+          />
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {COFFEE_CATEGORIES.map(cat => {
+            const isActive = activeCategory === cat;
+            const catColor = CATEGORY_COLORS[cat] || "#C9A84C";
+            return (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className="px-3.5 py-1.5 rounded-full text-[10px] uppercase tracking-[0.14em] transition-all duration-200"
+                style={{
+                  fontFamily: "Space Mono, monospace",
+                  background: isActive ? (cat === "All" ? "var(--color-accent)" : catColor) : "transparent",
+                  color: isActive ? "var(--color-bg)" : "rgba(232,223,208,0.5)",
+                  border: `1px solid ${isActive ? (cat === "All" ? "var(--color-accent)" : catColor) : "rgba(80,120,60,0.25)"}`,
+                }}
+              >
+                {cat}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Count */}
+      <p className="text-[10px] uppercase tracking-[0.2em] mb-6" style={{ color: "rgba(201,168,76,0.35)", fontFamily: "Space Mono, monospace" }}>
+        {filtered.length} drink{filtered.length !== 1 ? "s" : ""}
+      </p>
+
+      {/* Grid */}
+      {filtered.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-24 gap-4">
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="rgba(201,168,76,0.25)" strokeWidth="1.4" strokeLinecap="round">
+            <rect x="5" y="12" width="24" height="22" rx="3"/>
+            <path d="M29 16 Q37 16 37 22 Q37 28 29 28"/>
+            <line x1="5" y1="28" x2="29" y2="28"/>
+          </svg>
+          <p className="font-display text-xl italic" style={{ color: "rgba(232,223,208,0.3)" }}>No drinks found</p>
+          <button onClick={() => { setSearch(""); setActiveCategory("All"); }} className="text-xs" style={{ color: "rgba(201,168,76,0.5)", fontFamily: "Space Mono, monospace" }}>
+            Clear filter →
+          </button>
+        </div>
+      ) : (
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeCategory + search}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
+          >
+            {filtered.map((item, i) => (
+              <CoffeeTypeCard key={item.id} item={item} index={i} />
+            ))}
+          </motion.div>
+        </AnimatePresence>
+      )}
+    </div>
+  );
+}
+
 // ── Tab definitions ───────────────────────────────────────────────────────────
 
 const TABS = [
   { id: "brewing-devices", label: "Brewing Devices" },
   { id: "brands", label: "Brands" },
+  { id: "coffee-types", label: "Coffee Types" },
   { id: "coffee-nerds", label: "Coffee Nerds" },
 ];
 
@@ -1333,6 +1644,12 @@ const TAB_HERO = {
     titleLine1: "Coffee",
     titleLine2: "Brands",
     desc: "Explore the world's finest roasters, cafés, and coffee labels — from century-old Italian houses to micro-lot specialty roasters rewriting the rulebook.",
+  },
+  "coffee-types": {
+    eyebrow: "The Coffee Menu",
+    titleLine1: "Coffee",
+    titleLine2: "Types",
+    desc: "From the humble black coffee to the theatrical Irish whiskey pour — a complete visual directory of 35+ coffee drinks across every style and cultural tradition.",
   },
   "coffee-nerds": {
     eyebrow: "Open Source Community",
@@ -1351,6 +1668,7 @@ export default function BrewingGuides() {
 
   return (
     <div className="min-h-screen pt-24">
+      <SEO title="Brewing Guides" description="From AeroPress to siphon — every major coffee brewing device, brand, and technique in one place." />
       {/* ── Modal overlay ────────────────────────────────────────────── */}
       <AnimatePresence>
         {selectedDevice && (
@@ -1384,7 +1702,7 @@ export default function BrewingGuides() {
                   <h1 className="font-display text-5xl sm:text-6xl md:text-7xl text-parchment leading-tight">
                     {TAB_HERO[activeTab].titleLine1}
                     <br />
-                    <span className="font-display italic" style={{ color: "#C9A84C" }}>
+                    <span className="font-display italic" style={{ color: "var(--color-accent)" }}>
                       {TAB_HERO[activeTab].titleLine2}
                     </span>
                   </h1>
@@ -1415,7 +1733,7 @@ export default function BrewingGuides() {
                 onClick={() => setActiveTab(tab.id)}
                 className="relative flex-shrink-0 px-6 py-2.5 text-[11px] font-medium uppercase tracking-[0.18em] transition-colors duration-200 focus:outline-none rounded-full"
                 style={{
-                  color: isActive ? "#0D1810" : "rgba(232,223,208,0.5)",
+                  color: isActive ? "var(--color-bg)" : "rgba(232,223,208,0.5)",
                   fontFamily: "Inter, sans-serif",
                   zIndex: 0,
                 }}
@@ -1424,7 +1742,7 @@ export default function BrewingGuides() {
                   <motion.span
                     layoutId="guidePill"
                     className="absolute inset-0 rounded-full"
-                    style={{ background: "#C9A84C", zIndex: -1 }}
+                    style={{ background: "var(--color-accent)", zIndex: -1 }}
                     transition={{ type: "spring", stiffness: 400, damping: 30 }}
                   />
                 )}
@@ -1494,6 +1812,19 @@ export default function BrewingGuides() {
             className="w-full max-w-[1600px] mx-auto px-4 sm:px-8 xl:px-16 pb-24"
           >
             <BrandsTab />
+          </motion.section>
+        )}
+
+        {activeTab === "coffee-types" && (
+          <motion.section
+            key="coffee-types"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.28 }}
+            className="w-full max-w-[1600px] mx-auto px-4 sm:px-8 xl:px-16 pb-24"
+          >
+            <CoffeeTypesTab />
           </motion.section>
         )}
 

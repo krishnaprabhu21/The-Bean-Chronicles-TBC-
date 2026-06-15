@@ -13,7 +13,7 @@ export function CategoryFilter({ categories, active, onSelect }) {
             onClick={() => onSelect(cat.slug)}
             className="relative flex-shrink-0 px-5 py-2.5 text-[10px] font-medium uppercase tracking-[0.18em] transition-colors duration-200 focus:outline-none rounded-full"
             style={{
-              color: isActive ? '#0D1810' : 'rgba(232,223,208,0.5)',
+              color: isActive ? 'var(--color-bg)' : 'var(--color-text-muted)',
               fontFamily: 'Inter, sans-serif',
             }}
           >
@@ -21,7 +21,7 @@ export function CategoryFilter({ categories, active, onSelect }) {
               <motion.span
                 layoutId="activePill"
                 className="absolute inset-0"
-                style={{ background: '#C9A84C' }}
+                style={{ background: 'var(--color-accent)' }}
                 transition={{ type: 'spring', stiffness: 400, damping: 30 }}
               />
             )}

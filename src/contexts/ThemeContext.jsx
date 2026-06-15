@@ -1,0 +1,29 @@
+import { createContext, useContext, useEffect, useState } from 'react'
+
+const ThemeContext = createContext({ theme: 'dark', toggleTheme: () => {} })
+
+export function ThemeProvider({ children }) {
+  const [theme, setTheme] = useState(
+    () => localStorage.getItem('tbc-theme') || 'dark'
+  )
+
+  useEffect(() => {
+    const root = document.documentElement
+    root.setAttribute('data-theme', theme)
+    // Native browser UI (scrollbars, form controls, date pickers) follow color-scheme
+    root.style.colorScheme = theme === 'light' ? 'light' : 'dark'
+    localStorage.setItem('tbc-theme', theme)
+  }, [theme])
+
+  const toggleTheme = () => setTheme(t => (t === 'dark' ? 'light' : 'dark'))
+
+  return (
+    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  )
+}
+
+export function useTheme() {
+  return useContext(ThemeContext)
+}
