@@ -4,6 +4,7 @@ import { SEO } from "../components/ui/SEO";
 import { CoffeeFlavoursSection } from "../components/sections/CoffeeFlavoursSection";
 import { OriginsEncyclopediaSection } from "../components/sections/OriginsEncyclopediaSection";
 import { ArticleCard, ArticleCardSkeleton } from "../components/ui/ArticleCard";
+import { RecentlyViewedStrip } from "../components/ui/RecentlyViewedStrip";
 import { useGuardianArticles } from "../hooks/useGuardianArticles";
 import { Loader } from "../components/ui/Loader";
 
@@ -66,6 +67,8 @@ export default function CultureArticles() {
       <div style={{ borderTop: "1px solid rgba(139,94,60,0.1)" }}>
         <OriginsEncyclopediaSection />
       </div>
+
+      <RecentlyViewedStrip type="article" />
 
       {/* Live articles from The Guardian */}
       <section className="w-full max-w-[1600px] mx-auto px-8 sm:px-14 xl:px-20 py-16 pb-28">

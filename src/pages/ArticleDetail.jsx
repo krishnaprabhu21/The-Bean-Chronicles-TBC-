@@ -6,6 +6,8 @@ import { useGuardianArticle } from '../hooks/useGuardianArticle'
 import { useBookmarks } from '../hooks/useBookmarks'
 import { SEO } from '../components/ui/SEO'
 import { useToast } from '../contexts/ToastContext'
+import { BlurImage } from '../components/ui/BlurImage'
+import { useRecentlyViewed } from '../hooks/useRecentlyViewed'
 
 function useReadAloud(text) {
   const [speaking, setSpeaking] = useState(false)
@@ -50,6 +52,11 @@ export default function ArticleDetail() {
   const { article, loading, error } = useGuardianArticle(guardianId)
   const { toggle, isBookmarked } = useBookmarks()
   const { addToast } = useToast()
+  const { addItem } = useRecentlyViewed()
+
+  useEffect(() => {
+    if (article) addItem({ id: `article-${article.id}`, title: article.title, to: `/article/${article.id}`, type: 'article', coverImage: article.coverImage || null })
+  }, [article?.id])
 
   const plainText = article?.content
     ? new DOMParser().parseFromString(article.content, 'text/html').body.innerText
@@ -108,14 +115,12 @@ export default function ArticleDetail() {
               }}
             />
             {/* Cover image */}
-            <div className="w-full overflow-hidden" style={{ maxHeight: '62vh' }}>
-              <img
-                src={article.coverImage}
-                alt={article.title}
-                className="w-full h-full object-cover"
-                style={{ minHeight: '40vh', filter: 'saturate(0.82) brightness(0.9)' }}
-              />
-            </div>
+            <BlurImage
+              src={article.coverImage}
+              alt={article.title}
+              style={{ maxHeight: '62vh', minHeight: '40vh' }}
+              imgStyle={{ filter: 'saturate(0.82) brightness(0.9)' }}
+            />
 
             {/* Header */}
             <div className="max-w-3xl mx-auto px-4 sm:px-6 pt-10 md:pt-14 pb-8">

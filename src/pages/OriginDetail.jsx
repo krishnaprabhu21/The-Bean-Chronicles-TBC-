@@ -2,6 +2,7 @@ import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { originsData } from '../data/originsData';
 import { SEO } from '../components/ui/SEO';
+import { BlurImage } from '../components/ui/BlurImage';
 
 // ── Process descriptions ──────────────────────────────────────────────────────
 const PROCESS_INFO = {
@@ -181,11 +182,10 @@ export default function OriginDetail() {
       <SEO title={`${origin.country} Coffee`} description={origin.description?.slice(0, 155)} image={origin.coverImage} />
       {/* ── 1. Hero ── */}
       <section className="relative w-full overflow-hidden" style={{ maxHeight: '55vh', height: '55vh' }}>
-        <img
+        <BlurImage
           src={origin.coverImage}
           alt={origin.country}
-          className="w-full h-full object-cover"
-          style={{ minHeight: '100%' }}
+          style={{ height: '100%', width: '100%' }}
         />
         {/* Gradient overlays */}
         <div

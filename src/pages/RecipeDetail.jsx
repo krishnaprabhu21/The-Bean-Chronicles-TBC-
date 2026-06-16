@@ -1,4 +1,5 @@
 import { useParams, Navigate, useNavigate } from 'react-router-dom'
+import { useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { recipes, categories } from '../data'
 import { RecipeCard } from '../components/ui/RecipeCard'
@@ -6,6 +7,7 @@ import { RecipeIcon } from '../components/ui/RecipeIcon'
 import { SEO } from '../components/ui/SEO'
 import { useTheme } from '../contexts/ThemeContext'
 import { useToast } from '../contexts/ToastContext'
+import { useRecentlyViewed } from '../hooks/useRecentlyViewed'
 
 function printRecipe(recipe) {
   const el = document.getElementById('recipe-print-root')
@@ -400,8 +402,15 @@ export default function RecipeDetail() {
   const { theme } = useTheme()
   const isLight = theme === 'light'
   const { addToast } = useToast()
+  const { addItem } = useRecentlyViewed()
   const recipe = recipes.find((r) => r.slug === slug)
   if (!recipe) return <Navigate to="/recipes" replace />
+
+  // Track this visit for Recently Viewed strip
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  useEffect(() => {
+    addItem({ id: `recipe-${recipe.id}`, title: recipe.title, to: `/recipe/${recipe.slug}`, type: 'recipe', coverImage: recipe.coverImage || null })
+  }, [recipe.id])
 
   const category = categories.find((c) => c.slug === recipe.category)
   const related = recipes.filter((r) => r.category === recipe.category && r.id !== recipe.id).slice(0, 4)

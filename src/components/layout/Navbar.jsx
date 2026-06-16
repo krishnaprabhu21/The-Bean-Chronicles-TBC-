@@ -82,14 +82,24 @@ export function Navbar() {
 
   useEffect(() => {
     const onKey = (e) => {
+      const isEditing = e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault()
         setSearchOpen(o => !o)
+        return
+      }
+      if (isEditing) return
+      if (e.key === '/' && !e.metaKey && !e.ctrlKey) {
+        e.preventDefault()
+        setSearchOpen(true)
+      }
+      if (e.key === 'd' && !e.metaKey && !e.ctrlKey) {
+        toggleTheme()
       }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [])
+  }, [toggleTheme])
 
   const headerBg = scrolled ? 'var(--color-nav-glass)' : 'transparent'
 

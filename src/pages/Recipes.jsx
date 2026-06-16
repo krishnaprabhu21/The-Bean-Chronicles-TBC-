@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { SEO } from "../components/ui/SEO";
 import { RecipeCard } from "../components/ui/RecipeCard";
 import { CategoryFilter } from "../components/ui/CategoryFilter";
+import { RecentlyViewedStrip } from "../components/ui/RecentlyViewedStrip";
 import { recipes, categories } from "../data";
 import { useFilter } from "../hooks/useFilter";
 
@@ -49,6 +50,8 @@ export default function Recipes() {
           </p>
         </motion.div>
       </section>
+
+      <RecentlyViewedStrip type="recipe" />
 
       {/* Filter + Search + Grid */}
       <div className="w-full max-w-[1600px] mx-auto px-8 sm:px-14 xl:px-20 pb-28">

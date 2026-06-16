@@ -19,10 +19,11 @@ export function getHasUpvoted() {
   return localStorage.getItem('tbc-loved') === '1'
 }
 
-export function LoveCounter() {
-  const [hasUpvoted, setHasUpvoted] = useState(() =>
-    localStorage.getItem('tbc-loved') === '1'
-  )
+// ── Optimistic love-count hook ────────────────────────────────────────────────
+// Pattern: UI updates instantly (optimistic); persistence runs async.
+// To swap localStorage for a real DB, replace the try-block with an API call.
+// On failure the optimistic state is rolled back automatically.
+function useLoveCount() {
   const [loveOffset] = useState(() => {
     const stored = localStorage.getItem('tbc-love-seed')
     if (stored !== null) return parseInt(stored, 10)
@@ -30,17 +31,42 @@ export function LoveCounter() {
     localStorage.setItem('tbc-love-seed', seed.toString())
     return seed
   })
+  const [hasUpvoted, setHasUpvoted] = useState(() => localStorage.getItem('tbc-loved') === '1')
+  const [optimisticDelta, setOptimisticDelta] = useState(0)
+  const [syncing, setSyncing] = useState(false)
+
+  const baseCount = LOVE_BASE + loveOffset
+  const count = baseCount + (hasUpvoted ? 1 : 0) + optimisticDelta
+
+  const toggle = async () => {
+    const newUpvoted = !hasUpvoted
+
+    // 1. Optimistic update — UI reflects change immediately
+    setHasUpvoted(newUpvoted)
+    setOptimisticDelta(0)
+    setSyncing(true)
+
+    try {
+      // 2. Persist — swap this block for `await apolloClient.mutate(...)` when DB is ready
+      localStorage.setItem('tbc-loved', newUpvoted ? '1' : '0')
+    } catch {
+      // 3. Rollback on failure
+      setHasUpvoted(!newUpvoted)
+    } finally {
+      setSyncing(false)
+    }
+  }
+
+  return { count, hasUpvoted, syncing, toggle }
+}
+
+export function LoveCounter() {
+  const { count, hasUpvoted, syncing, toggle } = useLoveCount()
   const [burst, setBurst] = useState(false)
 
-  const count = LOVE_BASE + loveOffset + (hasUpvoted ? 1 : 0)
-
-  const toggle = () => {
-    if (hasUpvoted) {
-      localStorage.setItem('tbc-loved', '0')
-      setHasUpvoted(false)
-    } else {
-      localStorage.setItem('tbc-loved', '1')
-      setHasUpvoted(true)
+  const handleToggle = () => {
+    toggle()
+    if (!hasUpvoted) {
       setBurst(true)
       setTimeout(() => setBurst(false), 1400)
     }
@@ -52,7 +78,7 @@ export function LoveCounter() {
       <div
         className="relative cursor-pointer select-none"
         style={{ width: 112, height: 112 }}
-        onClick={toggle}
+        onClick={handleToggle}
         title={hasUpvoted ? 'Remove love' : 'Show some love'}
       >
         <svg width="112" height="112" viewBox="0 0 80 90" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -143,16 +169,29 @@ export function LoveCounter() {
         </motion.p>
       </AnimatePresence>
 
-      <p
-        className="text-[10px] uppercase tracking-[0.24em] -mt-1"
-        style={{ color: 'var(--color-text-muted)', fontFamily: 'Space Mono, monospace' }}
-      >
-        coffee lovers
-      </p>
+      <div className="flex items-center gap-2 -mt-1">
+        <p
+          className="text-[10px] uppercase tracking-[0.24em]"
+          style={{ color: 'var(--color-text-muted)', fontFamily: 'Space Mono, monospace' }}
+        >
+          coffee lovers
+        </p>
+        <AnimatePresence>
+          {syncing && (
+            <motion.span
+              initial={{ opacity: 0, scale: 0.6 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.6 }}
+              className="block rounded-full"
+              style={{ width: 5, height: 5, background: 'var(--color-accent)', flexShrink: 0 }}
+            />
+          )}
+        </AnimatePresence>
+      </div>
 
       {/* Toggle button */}
       <motion.button
-        onClick={toggle}
+        onClick={handleToggle}
         whileTap={{ scale: 0.91 }}
         whileHover={{ scale: 1.04 }}
         className="flex items-center gap-2 px-6 py-3 rounded-full text-[11px] uppercase tracking-[0.16em] transition-colors duration-200 mt-1"

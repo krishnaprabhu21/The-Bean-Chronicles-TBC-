@@ -536,6 +536,20 @@ body::after {
   animation: shimmer 1.8s infinite linear;
 }
 
+/* ── Reduced motion ──────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .skeleton-shimmer {
+    animation: none;
+    background: var(--skeleton-base);
+  }
+}
+
 /* ── Leaflet overrides ───────────────────────────────────────────── */
 .leaflet-container {
   font-family: 'Inter', sans-serif;

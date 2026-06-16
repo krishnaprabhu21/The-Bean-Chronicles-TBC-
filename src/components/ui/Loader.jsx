@@ -54,7 +54,9 @@ export function Loader({ size = 72, label = 'Brewing…' }) {
         {/* ── Liquid fill (rises from bottom) ─────────── */}
         <motion.rect
           x="10"
+          y={71}
           width="44"
+          height={0}
           fill="rgba(201,168,76,0.22)"
           clipPath={`url(#cup-${uid})`}
           animate={{
@@ -71,12 +73,13 @@ export function Loader({ size = 72, label = 'Brewing…' }) {
         {/* ── Liquid surface shimmer ───────────────────── */}
         <motion.rect
           x="10"
-          height="3"
+          y={68}
+          height={3}
           rx="1.5"
           fill="rgba(201,168,76,0.45)"
           clipPath={`url(#cup-${uid})`}
           animate={{
-            y:      [68, 28, 68],
+            y: [68, 28, 68],
           }}
           transition={{
             duration: 2.2,
