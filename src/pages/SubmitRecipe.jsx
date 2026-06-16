@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useToast } from '../contexts/ToastContext'
+import { BackButton } from '../components/ui/BackButton'
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -663,6 +664,7 @@ export default function SubmitRecipe() {
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--color-bg)' }}>
+      <BackButton to="/community" label="Community" />
       <div style={{ paddingTop: '6rem' }}>
         {/* Hero */}
         <section style={{ maxWidth: '700px', margin: '0 auto', padding: '3rem 1.5rem 2rem', textAlign: 'center' }}>

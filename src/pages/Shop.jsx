@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { SEO } from '../components/ui/SEO'
 import { useTheme } from '../contexts/ThemeContext'
+import { BackButton } from '../components/ui/BackButton'
 
 // ── Shared helpers ─────────────────────────────────────────────────────────────
 
@@ -646,6 +647,7 @@ export default function Shop() {
 
   return (
     <div className="min-h-screen flex flex-col" style={{ background: 'var(--color-bg)' }}>
+      <BackButton to="/" label="Home" />
       <SEO title="The Bean Store — Coming Soon" description="The TBC shop is brewing. Coffee gear and original merchandise, coming soon." />
 
       <div

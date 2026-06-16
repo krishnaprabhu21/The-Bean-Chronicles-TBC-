@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useToast } from '../contexts/ToastContext'
+import { BackButton } from '../components/ui/BackButton'
 
 const STORAGE_KEY = 'tbc-journal'
 
@@ -657,6 +658,7 @@ export default function BrewJournal() {
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--color-bg)' }}>
+      <BackButton to="/tools" label="Tools" />
       {/* Hero */}
       <section
         className="pt-24 pb-14 px-6 relative overflow-hidden"

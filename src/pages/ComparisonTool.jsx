@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
+import { BackButton } from '../components/ui/BackButton'
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 
@@ -471,6 +472,7 @@ export default function ComparisonTool() {
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--color-bg)' }}>
+      <BackButton to="/tools" label="Tools" />
       <div style={{ paddingTop: '6rem' }}>
         {/* Hero */}
         <section style={{ maxWidth: '900px', margin: '0 auto', padding: '3rem 1.5rem 2rem', textAlign: 'center' }}>

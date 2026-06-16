@@ -10,6 +10,7 @@ import { useToast } from '../contexts/ToastContext'
 import { BlurImage } from '../components/ui/BlurImage'
 import { useRecentlyViewed } from '../hooks/useRecentlyViewed'
 import { ArticleCard, ArticleCardSkeleton } from '../components/ui/ArticleCard'
+import { BackButton } from '../components/ui/BackButton'
 
 function useReadAloud(text) {
   const [speaking, setSpeaking] = useState(false)
@@ -93,6 +94,7 @@ export default function ArticleDetail() {
     <>
       <ProgressBar />
       <div className="pt-16 min-h-screen">
+        <BackButton to="/culture" label="Culture" />
 
         {/* Loading skeleton */}
         {loading && (

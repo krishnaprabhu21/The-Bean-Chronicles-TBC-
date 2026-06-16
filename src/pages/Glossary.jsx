@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { glossaryTerms, CATEGORIES } from '../data/glossaryData';
 import { SEO } from '../components/ui/SEO';
+import { BackButton } from '../components/ui/BackButton';
 
 const categoryPillStyles = {
   Processing: {
@@ -183,6 +184,7 @@ export default function Glossary() {
       className="min-h-screen"
       style={{ background: 'var(--color-bg)', paddingTop: '6rem' }}
     >
+      <BackButton to="/tools" label="Tools" />
       <SEO title="Coffee Glossary" description="A complete A–Z dictionary of coffee terms — from extraction to varietals, processing methods, and tasting vocabulary." />
       {/* ── Hero ──────────────────────────────────────────────────────── */}
       <section

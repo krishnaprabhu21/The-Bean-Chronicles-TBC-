@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { originsData } from '../data/originsData';
 import { SEO } from '../components/ui/SEO';
 import { BlurImage } from '../components/ui/BlurImage';
+import { BackButton } from '../components/ui/BackButton';
 
 // ── Process descriptions ──────────────────────────────────────────────────────
 const PROCESS_INFO = {
@@ -179,6 +180,7 @@ export default function OriginDetail() {
 
   return (
     <div className="min-h-screen pt-24" style={{ background: 'var(--color-bg)' }}>
+      <BackButton to="/origins" label="Origins" />
       <SEO title={`${origin.country} Coffee`} description={origin.description?.slice(0, 155)} image={origin.coverImage} />
       {/* ── 1. Hero ── */}
       <section className="relative w-full overflow-hidden" style={{ maxHeight: '55vh', height: '55vh' }}>

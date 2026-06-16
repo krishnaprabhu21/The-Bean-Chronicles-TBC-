@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { SEO } from '../components/ui/SEO'
+import { BackButton } from '../components/ui/BackButton'
 
 const STORAGE_KEY = 'tbc-submissions'
 const CATEGORIES = ['All', 'Espresso', 'Cold Brew', 'Lattes', 'Pour Over', 'Culture', 'Guides']
@@ -156,6 +157,7 @@ export default function CommunityRecipes() {
 
   return (
     <div className="min-h-screen pt-24" style={{ background: 'var(--color-bg)' }}>
+      <BackButton to="/" label="Home" />
       <SEO
         title="Community Recipes"
         description="Recipes submitted by The Bean Chronicles community — original brews shared by coffee lovers around the world."

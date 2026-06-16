@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SEO } from '../components/ui/SEO';
 import { useTheme } from '../contexts/ThemeContext';
+import { BackButton } from '../components/ui/BackButton';
 
 // ── Device data ─────────────────────────────────────────────────────────────
 
@@ -1682,6 +1683,7 @@ export default function BrewingGuides() {
 
   return (
     <div className="min-h-screen pt-24">
+      <BackButton to="/" label="Home" />
       <SEO title="Brewing Guides" description="From AeroPress to siphon — every major coffee brewing device, brand, and technique in one place." />
       {/* ── Modal overlay ────────────────────────────────────────────── */}
       <AnimatePresence>

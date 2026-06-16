@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { BackButton } from '../components/ui/BackButton'
 
 // ── Data ─────────────────────────────────────────────────────────────────────
 
@@ -261,6 +262,7 @@ export default function TastingNotes() {
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--color-bg)' }}>
+      <BackButton to="/tools" label="Tools" />
       <style>{`input[type=range] { accent-color: #C9A84C; }`}</style>
 
       {/* ── Page hero ──────────────────────────────────────────────── */}

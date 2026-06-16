@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useBookmarks } from '../hooks/useBookmarks'
 import { useTheme } from '../contexts/ThemeContext'
 import { SEO } from '../components/ui/SEO'
+import { BackButton } from '../components/ui/BackButton'
 
 function BookmarkIcon({ size = 64 }) {
   return (
@@ -235,6 +236,7 @@ export default function Shelf() {
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--color-bg)' }}>
+      <BackButton to="/" label="Home" />
       <SEO title="My Shelf" description="Your saved articles and bookmarks — all in one place." />
       {/* Hero section */}
       <section
