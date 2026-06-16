@@ -196,7 +196,7 @@ function drawScene(ctx, g) {
 }
 
 // ── Component ──────────────────────────────────────────────────────────────────
-export default function BeanCatcher() {
+export function BeanCatcherGame() {
   const canvasRef = useRef(null)
 
   // All mutable game state lives here — no re-renders per frame
@@ -446,29 +446,7 @@ export default function BeanCatcher() {
   }
 
   return (
-    <div className="min-h-screen pt-24 pb-20">
-      {/* Header */}
-      <section
-        className="py-12 px-6 text-center"
-        style={{ background: 'linear-gradient(180deg, #2D1B14 0%, transparent 100%)' }}
-      >
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-          <span
-            className="text-[10px] uppercase tracking-[0.24em]"
-            style={{ color: '#C9A84C', fontFamily: 'Space Mono, monospace' }}
-          >
-            The Arcade
-          </span>
-          <h1 className="font-display text-4xl sm:text-5xl text-cream mt-2 mb-3">
-            Bean Catcher
-          </h1>
-          <p className="text-cream/50 text-sm max-w-xs mx-auto">
-            Catch the good beans. Dodge the burnt ones.
-          </p>
-        </motion.div>
-      </section>
-
-      <div className="w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div className="w-full max-w-4xl mx-auto px-4 sm:px-8 pb-8">
         {/* HUD */}
         <div className="flex items-center justify-between mb-3 px-1">
           {/* Lives */}
@@ -671,6 +649,32 @@ export default function BeanCatcher() {
           ))}
         </div>
       </div>
+  )
+}
+
+export default function BeanCatcher() {
+  return (
+    <div className="min-h-screen pt-24 pb-20">
+      <section
+        className="py-12 px-6 text-center"
+        style={{ background: 'linear-gradient(180deg, #2D1B14 0%, transparent 100%)' }}
+      >
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+          <span
+            className="text-[10px] uppercase tracking-[0.24em]"
+            style={{ color: '#C9A84C', fontFamily: 'Space Mono, monospace' }}
+          >
+            The Arcade
+          </span>
+          <h1 className="font-display text-4xl sm:text-5xl text-cream mt-2 mb-3">
+            Bean Catcher
+          </h1>
+          <p className="text-cream/50 text-sm max-w-xs mx-auto">
+            Catch the good beans. Dodge the burnt ones.
+          </p>
+        </motion.div>
+      </section>
+      <BeanCatcherGame />
     </div>
   )
 }

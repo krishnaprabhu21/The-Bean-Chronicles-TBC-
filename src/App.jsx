@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Routes, Route, useLocation } from 'react-router-dom'
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
 import { Layout } from './components/layout/Layout'
 import { PageTransition } from './components/layout/PageTransition'
@@ -46,7 +46,7 @@ export default function App() {
             <Route path="/article/*"      element={<PageTransition><ArticleDetail /></PageTransition>} />
             <Route path="/recipe/:slug"   element={<PageTransition><RecipeDetail /></PageTransition>} />
             <Route path="/about"          element={<PageTransition><About /></PageTransition>} />
-            <Route path="/play"           element={<PageTransition><BeanCatcher /></PageTransition>} />
+            <Route path="/play"           element={<Navigate to="/tools" replace />} />
             <Route path="/tasting"        element={<PageTransition><TastingNotes /></PageTransition>} />
             <Route path="/calculator"     element={<PageTransition><BrewCalculator /></PageTransition>} />
             <Route path="/shelf"          element={<PageTransition><Shelf /></PageTransition>} />

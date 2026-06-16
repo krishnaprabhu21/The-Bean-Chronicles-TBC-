@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { SEO } from '../components/ui/SEO'
+import { BeanCatcherGame } from './BeanCatcher'
 
 // ── SVG Icons ─────────────────────────────────────────────────────────────────
 
@@ -286,6 +287,13 @@ export default function Tools() {
   const [email, setEmail] = useState('')
   const [ctaSubmitted, setCtaSubmitted] = useState(false)
 
+  useEffect(() => {
+    if (window.location.hash === '#play') {
+      const el = document.getElementById('play')
+      if (el) setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 150)
+    }
+  }, [])
+
   function handleCta(e) {
     e.preventDefault()
     if (email.trim()) setCtaSubmitted(true)
@@ -366,6 +374,33 @@ export default function Tools() {
               <ToolCard key={tool.id} tool={tool} index={i} />
             ))}
           </div>
+        </section>
+
+        {/* ── Bean Catcher: The Arcade ── */}
+        <section
+          id="play"
+          style={{ scrollMarginTop: '5.5rem', maxWidth: '1100px', margin: '0 auto', padding: '0 1.5rem 2rem' }}
+        >
+          <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, rgba(80,120,60,0.4), transparent)', marginBottom: '3rem' }} />
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            style={{ textAlign: 'center', marginBottom: '2rem' }}
+          >
+            <p style={{ fontFamily: '"Space Mono", monospace', fontSize: '0.72rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--color-accent)', marginBottom: '0.75rem' }}>
+              ✦ The Arcade ✦
+            </p>
+            <h2 style={{ fontFamily: '"Playfair Display", serif', fontSize: 'clamp(2rem, 5vw, 3rem)', color: 'var(--color-text)', lineHeight: 1.1, marginBottom: '0.75rem' }}>
+              Bean{' '}
+              <span style={{ color: 'var(--color-accent)', fontStyle: 'italic' }}>Catcher</span>
+            </h2>
+            <p style={{ color: 'var(--color-text-muted)', fontSize: '0.95rem', maxWidth: '400px', margin: '0 auto', lineHeight: 1.6 }}>
+              A quick coffee break — catch the good beans, dodge the burnt ones.
+            </p>
+          </motion.div>
+          <BeanCatcherGame />
         </section>
 
         {/* More coming soon + CTA */}

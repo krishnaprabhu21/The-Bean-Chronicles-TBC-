@@ -40,7 +40,6 @@ const navLinks = [
     ],
   },
   { to: '/about', label: 'About' },
-  { to: '/play',  label: 'Play' },
 ]
 
 function SunIcon() {
