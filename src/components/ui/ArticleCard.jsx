@@ -74,15 +74,15 @@ export function ArticleCard({ article }) {
 
 export function ArticleCardSkeleton() {
   return (
-    <div className="overflow-hidden animate-pulse" style={{ border: '1px solid var(--color-border)', background: 'var(--color-card)', boxShadow: 'var(--shadow-card)' }}>
-      <div className="aspect-[16/9]" style={{ background: 'rgba(80,120,60,0.1)' }} />
+    <div className="overflow-hidden" style={{ border: '1px solid var(--color-border)', background: 'var(--color-card)', boxShadow: 'var(--shadow-card)' }}>
+      <div className="aspect-[16/9] skeleton-shimmer" />
       <div className="p-7 sm:p-8 flex flex-col gap-4">
-        <div className="h-2 w-16 rounded-full" style={{ background: 'rgba(80,120,60,0.15)' }} />
-        <div className="h-5 w-full rounded" style={{ background: 'rgba(80,120,60,0.12)' }} />
-        <div className="h-5 w-3/4 rounded" style={{ background: 'rgba(80,120,60,0.12)' }} />
-        <div className="h-3 w-full rounded" style={{ background: 'rgba(80,120,60,0.08)' }} />
-        <div className="h-3 w-5/6 rounded" style={{ background: 'rgba(80,120,60,0.08)' }} />
-        <div className="h-2 w-1/2 rounded-full mt-2" style={{ background: 'rgba(80,120,60,0.08)' }} />
+        <div className="h-2 w-16 rounded-full skeleton-shimmer" />
+        <div className="h-5 w-full rounded skeleton-shimmer" />
+        <div className="h-5 w-3/4 rounded skeleton-shimmer" />
+        <div className="h-3 w-full rounded skeleton-shimmer" />
+        <div className="h-3 w-5/6 rounded skeleton-shimmer" />
+        <div className="h-2 w-1/2 rounded-full mt-2 skeleton-shimmer" />
       </div>
     </div>
   )

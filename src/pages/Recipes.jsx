@@ -135,14 +135,42 @@ export default function Recipes() {
         </AnimatePresence>
 
         {filtered.length === 0 && (
-          <div className="text-center py-20">
-            <p className="font-display text-2xl mb-3" style={{ color: 'var(--color-text-muted)' }}>
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35 }}
+            className="flex flex-col items-center justify-center py-28 text-center"
+          >
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none"
+              stroke="var(--color-accent)" strokeWidth="1.2" strokeLinecap="round"
+              style={{ opacity: 0.35, marginBottom: '1.5rem' }}
+            >
+              <path d="M18 8h1a4 4 0 0 1 0 8h-1" />
+              <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" />
+              <line x1="6" y1="1" x2="6" y2="4" />
+              <line x1="10" y1="1" x2="10" y2="4" />
+              <line x1="14" y1="1" x2="14" y2="4" />
+            </svg>
+            <p className="font-display text-2xl mb-3" style={{ color: 'var(--color-text)' }}>
               No recipes found
             </p>
-            <p className="text-sm" style={{ color: 'var(--color-text-faint)' }}>
-              Try a different search term or category
+            <p className="text-sm mb-6" style={{ color: 'var(--color-text-faint)' }}>
+              {search ? `Nothing matched "${search}"` : 'No recipes in this category yet'}
             </p>
-          </div>
+            <button
+              onClick={() => { setSearch(''); setActive('all') }}
+              className="text-xs uppercase tracking-widest px-5 py-2.5 transition-all duration-200"
+              style={{
+                border: '1px solid var(--color-accent-border)',
+                color: 'var(--color-accent)',
+                fontFamily: 'Space Mono, monospace',
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-accent-dim)' }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}
+            >
+              Clear filters
+            </button>
+          </motion.div>
         )}
       </div>
     </div>

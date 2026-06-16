@@ -5,6 +5,7 @@ import { RecipeCard } from '../components/ui/RecipeCard'
 import { RecipeIcon } from '../components/ui/RecipeIcon'
 import { SEO } from '../components/ui/SEO'
 import { useTheme } from '../contexts/ThemeContext'
+import { useToast } from '../contexts/ToastContext'
 
 function printRecipe(recipe) {
   const el = document.getElementById('recipe-print-root')
@@ -369,7 +370,7 @@ function StatPill({ label, value, accent = false }) {
   )
 }
 
-function shareRecipe(recipe) {
+function shareRecipe(recipe, addToast) {
   const difficulty = recipe.difficulty <= 1 ? 'Easy' : recipe.difficulty <= 3 ? 'Intermediate' : 'Advanced'
   const ingredientsList = recipe.ingredients.map(i => `  • ${i.amount} ${i.item}`).join('\n')
   const text = [
@@ -386,7 +387,9 @@ function shareRecipe(recipe) {
   if (navigator.share) {
     navigator.share({ title: recipe.title, text, url: window.location.href }).catch(() => {})
   } else {
-    navigator.clipboard?.writeText(`${text}\n${window.location.href}`)
+    navigator.clipboard?.writeText(`${text}\n${window.location.href}`).then(() => {
+      addToast?.({ message: 'Recipe link copied to clipboard', type: 'success' })
+    })
   }
 }
 
@@ -396,6 +399,7 @@ export default function RecipeDetail() {
   const navigate = useNavigate()
   const { theme } = useTheme()
   const isLight = theme === 'light'
+  const { addToast } = useToast()
   const recipe = recipes.find((r) => r.slug === slug)
   if (!recipe) return <Navigate to="/recipes" replace />
 
@@ -547,7 +551,7 @@ export default function RecipeDetail() {
                 Print Recipe
               </button>
               <button
-                onClick={() => shareRecipe(recipe)}
+                onClick={() => shareRecipe(recipe, addToast)}
                 className="btn-outline"
                 style={{ fontSize: '0.75rem', padding: '0.85rem 2rem', letterSpacing: '0.18em' }}
               >

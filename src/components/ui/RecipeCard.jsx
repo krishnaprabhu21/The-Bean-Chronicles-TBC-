@@ -12,6 +12,25 @@ function BeanIcon({ filled }) {
   )
 }
 
+export function RecipeCardSkeleton() {
+  return (
+    <div className="overflow-hidden" style={{ border: '1px solid var(--color-border)', background: 'var(--color-card)', boxShadow: 'var(--shadow-card)' }}>
+      <div className="aspect-[16/9] skeleton-shimmer" />
+      <div className="p-5 sm:p-6 flex flex-col gap-4">
+        <div className="h-2 w-14 rounded-full skeleton-shimmer" />
+        <div className="h-5 w-full rounded skeleton-shimmer" />
+        <div className="h-5 w-2/3 rounded skeleton-shimmer" />
+        <div className="flex items-center gap-2 pt-3" style={{ borderTop: '1px solid var(--color-border)' }}>
+          <div className="h-2 w-20 rounded-full skeleton-shimmer" />
+          <div className="flex gap-1">
+            {[1,2,3,4,5].map(n => <div key={n} className="w-3 h-3 rounded-full skeleton-shimmer" />)}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export function RecipeCard({ recipe }) {
   const category = categories.find((c) => c.slug === recipe.category)
   const totalTime = recipe.prepTime + (recipe.brewTime > 60 ? Math.round(recipe.brewTime / 60) : recipe.brewTime)

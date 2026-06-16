@@ -512,6 +512,30 @@ body::after {
   #recipe-print-root .print-footer { margin-top: 24pt; font-size: 8pt; color: #aaa; text-align: center; }
 }
 
+/* ── Skeleton shimmer ────────────────────────────────────────────── */
+:root {
+  --skeleton-base:  rgba(80,120,60,0.10);
+  --skeleton-shine: rgba(80,120,60,0.22);
+}
+[data-theme="light"] {
+  --skeleton-base:  rgba(0,0,0,0.06);
+  --skeleton-shine: rgba(0,0,0,0.13);
+}
+@keyframes shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position:  600px 0; }
+}
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--skeleton-base)  25%,
+    var(--skeleton-shine) 50%,
+    var(--skeleton-base)  75%
+  );
+  background-size: 600px 100%;
+  animation: shimmer 1.8s infinite linear;
+}
+
 /* ── Leaflet overrides ───────────────────────────────────────────── */
 .leaflet-container {
   font-family: 'Inter', sans-serif;

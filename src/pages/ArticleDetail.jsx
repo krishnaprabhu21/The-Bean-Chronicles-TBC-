@@ -5,6 +5,7 @@ import { useScrollProgress } from '../hooks/useScrollProgress'
 import { useGuardianArticle } from '../hooks/useGuardianArticle'
 import { useBookmarks } from '../hooks/useBookmarks'
 import { SEO } from '../components/ui/SEO'
+import { useToast } from '../contexts/ToastContext'
 
 function useReadAloud(text) {
   const [speaking, setSpeaking] = useState(false)
@@ -48,6 +49,7 @@ export default function ArticleDetail() {
   const { '*': guardianId } = useParams()
   const { article, loading, error } = useGuardianArticle(guardianId)
   const { toggle, isBookmarked } = useBookmarks()
+  const { addToast } = useToast()
 
   const plainText = article?.content
     ? new DOMParser().parseFromString(article.content, 'text/html').body.innerText
@@ -169,6 +171,7 @@ export default function ArticleDetail() {
                           try { await navigator.share(data) } catch (_) {}
                         } else {
                           await navigator.clipboard.writeText(window.location.href)
+                          addToast({ message: 'Article link copied to clipboard', type: 'success' })
                         }
                       }}
                       title="Share article"
