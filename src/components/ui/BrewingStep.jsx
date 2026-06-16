@@ -10,7 +10,7 @@ export function BrewingStep({ step }) {
         </span>
       </div>
       <div className="pt-1 pb-8 border-b border-medium-roast/20 flex-1">
-        <p className="text-cream text-base leading-relaxed mb-3">{step.instruction}</p>
+        <p className="text-base leading-relaxed mb-3" style={{ color: 'var(--color-text)' }}>{step.instruction}</p>
         {step.tip && (
           <div
             className="flex gap-3 rounded-lg px-4 py-3"

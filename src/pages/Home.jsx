@@ -39,10 +39,10 @@ export default function Home() {
       <section className="w-full max-w-[1600px] mx-auto px-8 sm:px-14 xl:px-20 py-20 sm:py-24">
         <motion.div {...fadeUp} className="mb-12">
           <p className="label-ornate mb-5">Featured Stories</p>
-          <h2 className="font-display text-4xl md:text-5xl text-parchment leading-tight">Editor's Picks</h2>
+          <h2 className="font-display text-4xl md:text-5xl leading-tight" style={{ color: 'var(--color-text)' }}>Editor's Picks</h2>
         </motion.div>
         {error ? (
-          <p className="text-cream/40 text-sm py-12 text-center">Could not load articles. Check your connection.</p>
+          <p className="text-sm py-12 text-center" style={{ color: 'var(--color-text-faint)' }}>Could not load articles. Check your connection.</p>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {loading
@@ -58,7 +58,7 @@ export default function Home() {
       <section className="w-full max-w-[1600px] mx-auto px-8 sm:px-14 xl:px-20 py-16 sm:py-20">
         <motion.div {...fadeUp} className="mb-12">
           <p className="label-ornate mb-5">What's Brewing</p>
-          <h2 className="font-display text-4xl md:text-5xl text-parchment leading-tight">Trending Now</h2>
+          <h2 className="font-display text-4xl md:text-5xl leading-tight" style={{ color: 'var(--color-text)' }}>Trending Now</h2>
         </motion.div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {loading

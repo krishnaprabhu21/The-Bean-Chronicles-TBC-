@@ -169,7 +169,7 @@ export default function CommunityRecipes() {
           <p className="label-ornate mb-5">Community Brews</p>
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div>
-              <h1 className="font-display text-5xl sm:text-6xl md:text-7xl text-parchment leading-tight">
+              <h1 className="font-display text-5xl sm:text-6xl md:text-7xl leading-tight" style={{ color: 'var(--color-text)' }}>
                 Your <span className="font-display italic" style={{ color: 'var(--color-accent)' }}>Recipes</span>
               </h1>
               <p className="mt-4 text-base leading-loose" style={{ color: 'var(--color-text-muted)', maxWidth: '44ch' }}>

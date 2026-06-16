@@ -11,14 +11,21 @@ const ROAST_BASE = {
 }
 
 const ORIGIN_NOTES = {
-  Ethiopia:  ['Blueberry', 'Jasmine', 'Bergamot', 'Stone fruit'],
-  Colombia:  ['Red apple', 'Caramel', 'Hazelnut', 'Brown sugar'],
-  Brazil:    ['Chocolate', 'Peanut', 'Walnut', 'Milk chocolate'],
-  Guatemala: ['Honey', 'Dark cherry', 'Toffee', 'Citrus peel'],
-  Kenya:     ['Blackcurrant', 'Tomato', 'Grapefruit', 'Wine-like'],
-  Sumatra:   ['Earthy', 'Cedar', 'Leather', 'Tobacco'],
-  Yemen:     ['Raisin', 'Cardamom', 'Dried fig', 'Dark honey'],
-  Peru:      ['Milk chocolate', 'Green apple', 'Almond', 'Light floral'],
+  Ethiopia:   ['Blueberry', 'Jasmine', 'Bergamot', 'Stone fruit'],
+  Colombia:   ['Red apple', 'Caramel', 'Hazelnut', 'Brown sugar'],
+  Brazil:     ['Chocolate', 'Peanut', 'Walnut', 'Milk chocolate'],
+  Guatemala:  ['Honey', 'Dark cherry', 'Toffee', 'Citrus peel'],
+  Honduras:   ['Brown sugar', 'Stone fruit', 'Roasted almond', 'Orange zest'],
+  'Costa Rica': ['Honey', 'Bright citrus', 'Red apple', 'Brown sugar'],
+  Kenya:      ['Blackcurrant', 'Tomato', 'Grapefruit', 'Wine-like'],
+  Uganda:     ['Dark chocolate', 'Black pepper', 'Red berries', 'Earthy'],
+  Vietnam:    ['Dark chocolate', 'Earthy', 'Woody', 'Malt'],
+  Sumatra:    ['Earthy', 'Cedar', 'Leather', 'Tobacco'],
+  Yemen:      ['Raisin', 'Cardamom', 'Dried fig', 'Dark honey'],
+  Peru:       ['Milk chocolate', 'Green apple', 'Almond', 'Light floral'],
+  Panama:     ['Jasmine', 'Peach', 'Tropical fruit', 'Brown sugar'],
+  India:      ['Cardamom', 'Dark chocolate', 'Earthy malt', 'Spice'],
+  Jamaica:    ['Smooth almond', 'Light chocolate', 'Mild citrus', 'Clean finish'],
 }
 
 const METHOD_SUFFIX = {
@@ -30,7 +37,10 @@ const METHOD_SUFFIX = {
   'Moka Pot':      'bold and robust, close to espresso in character.',
 }
 
-const ORIGINS = ['Ethiopia', 'Colombia', 'Brazil', 'Guatemala', 'Kenya', 'Sumatra', 'Yemen', 'Peru']
+const ORIGINS = [
+  'Ethiopia', 'Colombia', 'Brazil', 'Guatemala', 'Honduras', 'Costa Rica',
+  'Kenya', 'Uganda', 'Vietnam', 'Sumatra', 'Yemen', 'Peru', 'Panama', 'India', 'Jamaica',
+]
 const METHODS = ['Espresso', 'Pour Over', 'French Press', 'AeroPress', 'Cold Brew', 'Moka Pot']
 
 const ROAST_CARDS = [
@@ -291,7 +301,7 @@ export default function TastingNotes() {
           <div className="label-ornate justify-center mb-5">
             Sensory Profiling
           </div>
-          <h1 className="font-display text-5xl sm:text-6xl text-cream leading-none mb-5">
+          <h1 className="font-display text-5xl sm:text-6xl leading-none mb-5" style={{ color: 'var(--color-text)' }}>
             Tasting<br />Notes
           </h1>
           <p className="text-sm leading-relaxed max-w-xl mx-auto" style={{ color: 'var(--color-text-muted)' }}>

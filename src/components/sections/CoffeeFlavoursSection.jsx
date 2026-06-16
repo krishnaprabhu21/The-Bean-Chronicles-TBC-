@@ -118,10 +118,10 @@ export function CoffeeFlavoursSection() {
         className="mb-14"
       >
         <p className="label-ornate mb-6">The Tasting Wheel</p>
-        <h2 className="font-display text-4xl md:text-5xl text-parchment leading-tight mb-4">
+        <h2 className="font-display text-4xl md:text-5xl leading-tight mb-4" style={{ color: 'var(--color-text)' }}>
           Coffee Flavours
         </h2>
-        <p className="text-parchment/45 text-base max-w-md leading-loose">
+        <p className="text-base max-w-md leading-loose" style={{ color: 'var(--color-text-muted)' }}>
           The full spectrum of tastes found across the world's coffee-growing regions.
         </p>
       </motion.div>

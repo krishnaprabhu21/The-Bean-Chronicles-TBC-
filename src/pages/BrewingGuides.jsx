@@ -1233,7 +1233,7 @@ function RepoCard({ repo, index }) {
           height="12"
           viewBox="0 0 24 24"
           fill="none"
-          stroke="rgba(232,223,208,0.2)"
+          stroke="var(--color-border-strong)"
           strokeWidth="2"
           strokeLinecap="round"
           className="flex-shrink-0 group-hover:stroke-ochre transition-colors duration-200"
@@ -1276,7 +1276,7 @@ function RepoCard({ repo, index }) {
           <span
             className="text-[10px]"
             style={{
-              color: "rgba(232,223,208,0.4)",
+              color: "var(--color-text-faint)",
               fontFamily: "Space Mono, monospace",
             }}
           >
@@ -1578,7 +1578,7 @@ function CoffeeTypesTab() {
                 style={{
                   fontFamily: "Space Mono, monospace",
                   background: isActive ? (cat === "All" ? "var(--color-accent)" : catColor) : "transparent",
-                  color: isActive ? "var(--color-bg)" : "rgba(232,223,208,0.5)",
+                  color: isActive ? "var(--color-bg)" : "var(--color-text-muted)",
                   border: `1px solid ${isActive ? (cat === "All" ? "var(--color-accent)" : catColor) : "rgba(80,120,60,0.25)"}`,
                 }}
               >
@@ -1602,7 +1602,7 @@ function CoffeeTypesTab() {
             <path d="M29 16 Q37 16 37 22 Q37 28 29 28"/>
             <line x1="5" y1="28" x2="29" y2="28"/>
           </svg>
-          <p className="font-display text-xl italic" style={{ color: "rgba(232,223,208,0.3)" }}>No drinks found</p>
+          <p className="font-display text-xl italic" style={{ color: "var(--color-text-faint)" }}>No drinks found</p>
           <button onClick={() => { setSearch(""); setActiveCategory("All"); }} className="text-xs" style={{ color: "rgba(201,168,76,0.5)", fontFamily: "Space Mono, monospace" }}>
             Clear filter →
           </button>
@@ -1749,7 +1749,7 @@ export default function BrewingGuides() {
                 onClick={() => setActiveTab(tab.id)}
                 className="relative flex-shrink-0 px-6 py-2.5 text-[11px] font-medium uppercase tracking-[0.18em] transition-colors duration-200 focus:outline-none rounded-full"
                 style={{
-                  color: isActive ? "var(--color-bg)" : "rgba(232,223,208,0.5)",
+                  color: isActive ? "var(--color-bg)" : "var(--color-text-muted)",
                   fontFamily: "Inter, sans-serif",
                   zIndex: 0,
                 }}
