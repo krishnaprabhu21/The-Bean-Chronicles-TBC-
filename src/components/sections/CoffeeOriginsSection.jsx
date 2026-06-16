@@ -1,82 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  APIProvider,
-  Map,
-  AdvancedMarker,
-  InfoWindow,
-  useMap,
-} from "@vis.gl/react-google-maps";
+import { MapContainer, TileLayer, CircleMarker, Popup } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
 import { coffeeOrigins } from "../../data/coffeeOrigins";
 import { useFocusTrap } from "../../hooks/useFocusTrap";
 
-const DARK_MAP_STYLES = [
-  { elementType: "geometry", stylers: [{ color: "#0D1810" }] },
-  { elementType: "labels.icon", stylers: [{ visibility: "off" }] },
-  { elementType: "labels.text.fill", stylers: [{ color: "#8B5E3C" }] },
-  { elementType: "labels.text.stroke", stylers: [{ color: "#0D1810" }] },
-  {
-    featureType: "administrative",
-    elementType: "geometry",
-    stylers: [{ color: "#1E3020" }],
-  },
-  {
-    featureType: "administrative.country",
-    elementType: "labels.text.fill",
-    stylers: [{ color: "#D4A853" }],
-  },
-  {
-    featureType: "administrative.locality",
-    elementType: "labels.text.fill",
-    stylers: [{ color: "#F5F0EB" }],
-  },
-  { featureType: "poi", stylers: [{ visibility: "off" }] },
-  {
-    featureType: "road",
-    elementType: "geometry",
-    stylers: [{ color: "#1C2B14" }],
-  },
-  {
-    featureType: "road",
-    elementType: "geometry.stroke",
-    stylers: [{ color: "#0D1810" }],
-  },
-  {
-    featureType: "road",
-    elementType: "labels.text.fill",
-    stylers: [{ color: "#3A5A30" }],
-  },
-  {
-    featureType: "road.highway",
-    elementType: "geometry",
-    stylers: [{ color: "#1E3020" }],
-  },
-  {
-    featureType: "road.highway",
-    elementType: "geometry.stroke",
-    stylers: [{ color: "#1C2B14" }],
-  },
-  { featureType: "transit", stylers: [{ visibility: "off" }] },
-  {
-    featureType: "water",
-    elementType: "geometry",
-    stylers: [{ color: "#0A0605" }],
-  },
-  {
-    featureType: "water",
-    elementType: "labels.text.fill",
-    stylers: [{ color: "#1A3018" }],
-  },
-];
-
-function MapStyler() {
-  const map = useMap();
-  useEffect(() => {
-    if (!map) return;
-    map.setOptions({ styles: DARK_MAP_STYLES });
-  }, [map]);
-  return null;
-}
 
 function FlagImage({ countryCode, name, size = "md", accentColor, selected }) {
   const sizes = {
@@ -147,153 +75,52 @@ function CountryCard({ country, selected, onClick }) {
   );
 }
 
-// User-facing fallback shown when no Google Maps API key is configured.
-function MapNoKey({ country }) {
-  return (
-    <div
-      className="w-full h-full flex flex-col items-center justify-center gap-5 p-6 relative overflow-hidden"
-      style={{ background: "var(--color-card)", borderRadius: "14px" }}
-    >
-      {/* Dot grid decoration */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          backgroundImage:
-            "radial-gradient(circle at 1.5px 1.5px, rgba(80,120,60,0.35) 1.5px, transparent 0)",
-          backgroundSize: "22px 22px",
-        }}
-      />
-      <div className="relative z-10 flex flex-col items-center gap-5 text-center">
-        <svg
-          width="36"
-          height="36"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke={country?.accentColor || "#C9A84C"}
-          strokeWidth="1.4"
-          style={{ opacity: 0.8 }}
-        >
-          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-          <circle cx="12" cy="10" r="3" />
-        </svg>
-        <p
-          style={{
-            color: "var(--color-text)",
-            fontFamily: "Playfair Display, serif",
-            fontSize: "1rem",
-            fontWeight: 600,
-            margin: 0,
-          }}
-        >
-          {country?.name} · Growing Regions
-        </p>
-        <div className="flex flex-wrap gap-2 justify-center">
-          {country?.regions.map((r) => (
-            <span
-              key={r.name}
-              className="flex items-center gap-1.5"
-              style={{
-                border: `1px solid ${country?.accentColor || "#C9A84C"}45`,
-                color: country?.accentColor || "#C9A84C",
-                background: `${country?.accentColor || "#C9A84C"}0D`,
-                padding: "0.3rem 0.7rem",
-                fontSize: "0.72rem",
-                fontFamily: "Space Mono, monospace",
-              }}
-            >
-              <span
-                style={{
-                  width: "5px",
-                  height: "5px",
-                  borderRadius: "50%",
-                  background: country?.accentColor || "#C9A84C",
-                  display: "inline-block",
-                  flexShrink: 0,
-                }}
-              />
-              {r.name}
-            </span>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function CoffeeMap({ country }) {
-  const [activeRegion, setActiveRegion] = useState(null);
-  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
-
-  if (!apiKey || apiKey === "your_google_maps_api_key_here")
-    return <MapNoKey country={country} />;
-
   return (
-    <Map
-      style={{ height: "100%", width: "100%", borderRadius: "14px" }}
-      defaultCenter={{ lat: country.mapCenter[0], lng: country.mapCenter[1] }}
-      defaultZoom={country.mapZoom}
-      gestureHandling="none"
-      disableDefaultUI
-      backgroundColor="#0D1810"
-    >
-      <MapStyler />
-
-      {country.regions.map((region) => (
-        <AdvancedMarker
-          key={region.name}
-          position={{ lat: region.lat, lng: region.lng }}
-          onClick={() =>
-            setActiveRegion((prev) =>
-              prev?.name === region.name ? null : region,
-            )
-          }
-        >
-          <div
-            style={{
-              width: 20,
-              height: 20,
-              borderRadius: "50%",
-              background: country.accentColor || "#D4A853",
-              border: "2.5px solid #fff",
-              boxShadow: `0 2px 10px ${country.accentColor}80`,
-              cursor: "pointer",
+    <div style={{ height: "100%", width: "100%", borderRadius: "14px", overflow: "hidden" }}>
+      <MapContainer
+        key={country.id}
+        center={[country.mapCenter[0], country.mapCenter[1]]}
+        zoom={country.mapZoom}
+        style={{ height: "100%", width: "100%" }}
+        zoomControl={false}
+        dragging={false}
+        scrollWheelZoom={false}
+        doubleClickZoom={false}
+        touchZoom={false}
+        keyboard={false}
+        attributionControl={true}
+      >
+        <TileLayer
+          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+        />
+        {country.regions.map((region) => (
+          <CircleMarker
+            key={region.name}
+            center={[region.lat, region.lng]}
+            radius={9}
+            pathOptions={{
+              fillColor: country.accentColor || "#D4A853",
+              fillOpacity: 1,
+              color: "#fff",
+              weight: 2.5,
             }}
-          />
-        </AdvancedMarker>
-      ))}
-
-      {activeRegion && (
-        <InfoWindow
-          position={{ lat: activeRegion.lat, lng: activeRegion.lng }}
-          onCloseClick={() => setActiveRegion(null)}
-          headerDisabled
-        >
-          <div style={{ fontFamily: "Inter, sans-serif", padding: "6px 4px" }}>
-            <p
-              style={{
-                fontWeight: "700",
-                color: "#1A0F0A",
-                fontSize: "14px",
-                margin: "0 0 3px",
-              }}
-            >
-              {activeRegion.name}
-            </p>
-            <p
-              style={{
-                color: "#8B5E3C",
-                fontSize: "11px",
-                margin: 0,
-                textTransform: "uppercase",
-                letterSpacing: "0.08em",
-              }}
-            >
-              {country.name}
-            </p>
-          </div>
-        </InfoWindow>
-      )}
-    </Map>
+          >
+            <Popup>
+              <div style={{ fontFamily: "Inter, sans-serif", padding: "4px 2px" }}>
+                <p style={{ fontWeight: 700, color: "#1A0F0A", fontSize: "14px", margin: "0 0 3px" }}>
+                  {region.name}
+                </p>
+                <p style={{ color: "#8B5E3C", fontSize: "11px", margin: 0, textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                  {country.name}
+                </p>
+              </div>
+            </Popup>
+          </CircleMarker>
+        ))}
+      </MapContainer>
+    </div>
   );
 }
 
@@ -618,7 +445,6 @@ function CountryModal({ country, onClose }) {
 export function CoffeeOriginsSection() {
   const [selectedId, setSelectedId] = useState(null);
   const selectedCountry = coffeeOrigins.find((c) => c.id === selectedId);
-  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "";
   const triggerRef = useRef(null);
 
   const handleOpen = (id) => {
@@ -632,8 +458,7 @@ export function CoffeeOriginsSection() {
   };
 
   return (
-    <APIProvider apiKey={apiKey}>
-      <section className="w-full max-w-[1600px] mx-auto px-4 sm:px-8 xl:px-16 py-20">
+    <section className="w-full max-w-[1600px] mx-auto px-4 sm:px-8 xl:px-16 py-20">
         {/* Modal overlay */}
         <AnimatePresence>
           {selectedCountry && (
@@ -698,6 +523,5 @@ export function CoffeeOriginsSection() {
           ))}
         </div>
       </section>
-    </APIProvider>
   );
 }
