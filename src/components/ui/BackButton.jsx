@@ -22,7 +22,7 @@ export function BackButton({ to = '/', label = 'Back' }) {
       whileTap={{ scale: 0.96 }}
       className="fixed flex items-center gap-2"
       style={{
-        top: '4.5rem',
+        top: '5.5rem',
         left: '1.25rem',
         zIndex: 39,
         border: '1px solid var(--color-accent-border)',

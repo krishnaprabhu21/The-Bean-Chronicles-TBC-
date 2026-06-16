@@ -518,13 +518,13 @@ export function BeanCatcherGame() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0, transition: { duration: 0.15 } }}
-                className="absolute inset-0 flex flex-col items-center justify-center gap-6 text-center px-8"
-                style={{ background: 'rgba(13,24,16,0.9)', backdropFilter: 'blur(4px)' }}
+                className="absolute inset-0 flex flex-col items-center justify-center gap-3 sm:gap-6 text-center px-4 sm:px-8"
+                style={{ background: 'rgba(13,24,16,0.9)', backdropFilter: 'blur(4px)', zIndex: 10 }}
               >
-                <div className="text-5xl select-none">☕</div>
+                <div className="text-3xl sm:text-5xl select-none">☕</div>
                 <div>
-                  <h2 className="font-display text-3xl text-cream mb-4">Ready to brew?</h2>
-                  <div className="flex flex-col gap-2 text-sm mb-2" style={{ color: 'rgba(232,223,208,0.52)' }}>
+                  <h2 className="font-display text-xl sm:text-3xl text-cream mb-2 sm:mb-4">Ready to brew?</h2>
+                  <div className="flex flex-col gap-1 sm:gap-2 text-xs sm:text-sm mb-1 sm:mb-2" style={{ color: 'rgba(232,223,208,0.52)' }}>
                     <p>
                       <span style={{ color: '#D4A853' }}>●</span>{' '}
                       <span style={{ color: '#8B5E3C' }}>●</span>{' '}
@@ -534,14 +534,14 @@ export function BeanCatcherGame() {
                     <p>
                       <span style={{ color: '#E74C3C' }}>●</span> Burnt beans — dodge! Costs a life if caught
                     </p>
-                    <p style={{ color: 'rgba(232,223,208,0.35)', fontSize: 12 }}>
+                    <p className="hidden sm:block" style={{ color: 'rgba(232,223,208,0.35)', fontSize: 12 }}>
                       Missing a good bean also costs a life
                     </p>
                   </div>
                 </div>
                 {hiScore > 0 && (
                   <p
-                    className="text-[10px] uppercase tracking-[0.2em] -mt-2"
+                    className="text-[10px] uppercase tracking-[0.2em] -mt-1 sm:-mt-2"
                     style={{ color: 'rgba(201,168,76,0.45)', fontFamily: 'Space Mono, monospace' }}
                   >
                     Best: {hiScore}
@@ -551,7 +551,7 @@ export function BeanCatcherGame() {
                   whileHover={{ scale: 1.04 }}
                   whileTap={{ scale: 0.96 }}
                   onClick={startGame}
-                  className="px-10 py-4 rounded-full text-sm font-medium uppercase tracking-[0.2em]"
+                  className="px-7 sm:px-10 py-3 sm:py-4 rounded-full text-sm font-medium uppercase tracking-[0.2em]"
                   style={{
                     background: '#C9A84C',
                     color: '#0D1810',
@@ -563,7 +563,7 @@ export function BeanCatcherGame() {
                   Start Brewing
                 </motion.button>
                 <p
-                  className="text-[10px] uppercase tracking-[0.18em] -mt-3"
+                  className="hidden sm:block text-[10px] uppercase tracking-[0.18em] -mt-3"
                   style={{ color: 'rgba(232,223,208,0.22)', fontFamily: 'Space Mono, monospace' }}
                 >
                   ← → keys · mouse · or drag/tap to move
@@ -581,8 +581,8 @@ export function BeanCatcherGame() {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                className="absolute inset-0 flex flex-col items-center justify-center gap-5 text-center px-8"
-                style={{ background: 'rgba(13,24,16,0.93)', backdropFilter: 'blur(6px)' }}
+                className="absolute inset-0 flex flex-col items-center justify-center gap-4 sm:gap-5 text-center px-4 sm:px-8"
+                style={{ background: 'rgba(13,24,16,0.93)', backdropFilter: 'blur(6px)', zIndex: 10 }}
               >
                 <div className="text-5xl select-none">☕</div>
                 <div>
@@ -671,7 +671,7 @@ export function BeanCatcherGame() {
               />
               <span
                 className="text-[10px] uppercase tracking-[0.13em]"
-                style={{ color: 'rgba(232,223,208,0.38)', fontFamily: 'Space Mono, monospace' }}
+                style={{ color: 'var(--color-text-faint)', fontFamily: 'Space Mono, monospace' }}
               >
                 {bt.bad ? `${bt.label} — dodge` : `${bt.label} +${bt.points}`}
               </span>
@@ -696,10 +696,10 @@ export default function BeanCatcher() {
           >
             The Arcade
           </span>
-          <h1 className="font-display text-4xl sm:text-5xl text-cream mt-2 mb-3">
+          <h1 className="font-display text-4xl sm:text-5xl mt-2 mb-3" style={{ color: 'var(--color-text-on-dark)' }}>
             Bean Catcher
           </h1>
-          <p className="text-cream/50 text-sm max-w-xs mx-auto">
+          <p className="text-sm max-w-xs mx-auto" style={{ color: 'rgba(232,223,208,0.55)' }}>
             Catch the good beans. Dodge the burnt ones.
           </p>
         </motion.div>
