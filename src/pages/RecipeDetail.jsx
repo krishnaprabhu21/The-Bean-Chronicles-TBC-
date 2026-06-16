@@ -1,8 +1,10 @@
-import { useParams, Navigate } from 'react-router-dom'
+import { useParams, Navigate, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { recipes, categories } from '../data'
 import { RecipeCard } from '../components/ui/RecipeCard'
 import { RecipeIcon } from '../components/ui/RecipeIcon'
+import { SEO } from '../components/ui/SEO'
+import { useTheme } from '../contexts/ThemeContext'
 
 function printRecipe(recipe) {
   const el = document.getElementById('recipe-print-root')
@@ -275,13 +277,14 @@ function getIngredientIcon(item) {
 }
 
 // ── Method step (timeline style) ─────────────────────────────────
-function MethodStep({ step, totalSteps, isLast }) {
+function MethodStep({ step, stepIndex, totalSteps, isLast }) {
+  const num = String(stepIndex + 1).padStart(2, '0')
   return (
     <motion.div
       initial={{ opacity: 0, x: -14 }}
       whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.45, delay: step.order * 0.07 }}
+      transition={{ duration: 0.45, delay: stepIndex * 0.07 }}
       className="flex gap-5 sm:gap-7"
     >
       {/* Left: badge + connector */}
@@ -289,13 +292,13 @@ function MethodStep({ step, totalSteps, isLast }) {
         <div
           className="w-12 h-12 rounded-full flex items-center justify-center font-display font-bold text-base flex-shrink-0"
           style={{
-            background: 'linear-gradient(135deg, #1C2B14, #0f1e0a)',
+            background: 'var(--color-surface)',
             border: '1.5px solid rgba(201,168,76,0.55)',
             color: 'var(--color-accent)',
             boxShadow: '0 0 0 4px rgba(201,168,76,0.06)',
           }}
         >
-          {String(step.order).padStart(2, '0')}
+          {num}
         </div>
         {!isLast && (
           <div
@@ -312,9 +315,9 @@ function MethodStep({ step, totalSteps, isLast }) {
       <div className="flex-1 pb-10">
         <p
           className="mb-2 uppercase tracking-[0.18em]"
-          style={{ color: 'rgba(201,168,76,0.5)', fontSize: '10px' }}
+          style={{ color: 'var(--color-accent)', fontSize: '10px', opacity: 0.55 }}
         >
-          Step {step.order} of {totalSteps}
+          Step {stepIndex + 1} of {totalSteps}
         </p>
         <p
           className="leading-relaxed mb-4"
@@ -330,11 +333,10 @@ function MethodStep({ step, totalSteps, isLast }) {
               border: '1px solid rgba(201,168,76,0.18)',
             }}
           >
-            {/* Lightbulb icon */}
             <svg
               className="flex-shrink-0 mt-0.5"
               width="16" height="16" viewBox="0 0 24 24"
-              fill="none" stroke="#C9A84C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+              fill="none" stroke="var(--color-accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
             >
               <path d="M9 18h6M10 22h4M12 2a7 7 0 0 1 7 7c0 2.5-1.5 4.5-3 6H8c-1.5-1.5-3-3.5-3-6a7 7 0 0 1 7-7z"/>
             </svg>
@@ -342,7 +344,7 @@ function MethodStep({ step, totalSteps, isLast }) {
               <p className="font-semibold uppercase tracking-[0.16em] mb-1" style={{ color: 'var(--color-accent)', fontSize: '10px' }}>
                 Pro Tip
               </p>
-              <p className="text-sm italic leading-relaxed" style={{ color: 'rgba(232,223,208,0.68)' }}>
+              <p className="text-sm italic leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
                 {step.tip}
               </p>
             </div>
@@ -357,7 +359,7 @@ function MethodStep({ step, totalSteps, isLast }) {
 function StatPill({ label, value, accent = false }) {
   return (
     <div className="flex flex-col gap-1">
-      <span style={{ color: 'rgba(232,223,208,0.38)', fontSize: '10px', letterSpacing: '0.18em', textTransform: 'uppercase' }}>
+      <span style={{ color: 'var(--color-text-faint)', fontSize: '10px', letterSpacing: '0.18em', textTransform: 'uppercase' }}>
         {label}
       </span>
       {typeof value === 'string' || typeof value === 'number' ? (
@@ -367,9 +369,33 @@ function StatPill({ label, value, accent = false }) {
   )
 }
 
+function shareRecipe(recipe) {
+  const difficulty = recipe.difficulty <= 1 ? 'Easy' : recipe.difficulty <= 3 ? 'Intermediate' : 'Advanced'
+  const ingredientsList = recipe.ingredients.map(i => `  • ${i.amount} ${i.item}`).join('\n')
+  const text = [
+    `☕ ${recipe.title}`,
+    `━━━━━━━━━━━━━━━━━━━━`,
+    `Prep: ${recipe.prepTime} min  |  Brew: ${recipe.brewTime} min  |  ${difficulty}`,
+    ``,
+    `Ingredients:`,
+    ingredientsList,
+    ``,
+    `Full recipe with step-by-step instructions 👇`,
+  ].join('\n')
+
+  if (navigator.share) {
+    navigator.share({ title: recipe.title, text, url: window.location.href }).catch(() => {})
+  } else {
+    navigator.clipboard?.writeText(`${text}\n${window.location.href}`)
+  }
+}
+
 // ────────────────────────────────────────────────────────────────
 export default function RecipeDetail() {
   const { slug } = useParams()
+  const navigate = useNavigate()
+  const { theme } = useTheme()
+  const isLight = theme === 'light'
   const recipe = recipes.find((r) => r.slug === slug)
   if (!recipe) return <Navigate to="/recipes" replace />
 
@@ -379,16 +405,88 @@ export default function RecipeDetail() {
     ? `${Math.round(recipe.brewTime / 60)}h`
     : `${recipe.brewTime} min`
 
+  const heroBg = isLight
+    ? 'radial-gradient(ellipse at 50% 55%, rgba(210,185,130,0.7) 0%, var(--color-surface) 100%)'
+    : 'radial-gradient(ellipse at 50% 55%, #1C2B14 0%, #0D1810 100%)'
+  const infoSectionBg = isLight
+    ? 'linear-gradient(140deg, var(--color-surface) 0%, var(--color-bg) 100%)'
+    : 'linear-gradient(140deg, #162210 0%, #0D1810 100%)'
+  const methodSectionBg = isLight
+    ? 'var(--color-surface)'
+    : 'linear-gradient(to bottom, #0D1810 0%, #111e0c 40%, #0D1810 100%)'
+
+  const recipeSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Recipe',
+    name: recipe.title,
+    description: `How to make ${recipe.title} — a ${recipe.steps.length}-step recipe from The Bean Chronicles.`,
+    image: recipe.coverImage,
+    prepTime: `PT${recipe.prepTime}M`,
+    cookTime: `PT${recipe.brewTime}M`,
+    totalTime: `PT${recipe.prepTime + recipe.brewTime}M`,
+    recipeYield: '1 serving',
+    recipeCategory: recipe.category,
+    recipeIngredient: recipe.ingredients.map(i => `${i.amount} ${i.item}`),
+    recipeInstructions: recipe.steps.map((s, i) => ({
+      '@type': 'HowToStep',
+      position: i + 1,
+      text: s.instruction,
+    })),
+    author: { '@type': 'Organization', name: 'The Bean Chronicles' },
+  }
+
   return (
     <div className="min-h-screen" style={{ background: 'var(--color-bg)' }}>
+      <SEO title={recipe.title} description={`How to make ${recipe.title} — a ${recipe.steps.length}-step recipe from The Bean Chronicles.`} schema={recipeSchema} />
 
       {/* ── HERO ──────────────────────────────────────────────── */}
-      <div className="flex flex-col md:flex-row" style={{ minHeight: '55vh', paddingTop: '4rem' }}>
+      <div className="relative flex flex-col md:flex-row" style={{ minHeight: '55vh', paddingTop: '4rem' }}>
 
-        {/* Left: Illustrated icon */}
+        {/* Back button — floating pill */}
+        <motion.button
+          onClick={() => navigate(-1)}
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+          whileHover={{ scale: 1.04, x: -2 }}
+          whileTap={{ scale: 0.96 }}
+          className="absolute z-10 flex items-center gap-2.5"
+          style={{
+            top: '5rem',
+            left: '1.75rem',
+            border: '1px solid var(--color-accent-border)',
+            background: 'var(--color-accent-dim)',
+            color: 'var(--color-accent)',
+            borderRadius: '9999px',
+            padding: '0.55rem 1.25rem',
+            fontFamily: 'Space Mono, monospace',
+            fontSize: '0.68rem',
+            textTransform: 'uppercase',
+            letterSpacing: '0.16em',
+            cursor: 'pointer',
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)',
+            boxShadow: '0 2px 16px rgba(0,0,0,0.18)',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = 'var(--color-accent)'
+            e.currentTarget.style.color = 'var(--color-bg)'
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'var(--color-accent-dim)'
+            e.currentTarget.style.color = 'var(--color-accent)'
+          }}
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" />
+          </svg>
+          Recipes
+        </motion.button>
+
+        {/* Left: Illustrated icon — hidden on small screens to save space */}
         <div
-          className="w-full md:w-[44%] flex items-center justify-center relative overflow-hidden py-14 md:py-0"
-          style={{ background: 'radial-gradient(ellipse at 50% 55%, #1C2B14 0%, #0D1810 100%)' }}
+          className="hidden sm:flex w-full md:w-[44%] items-center justify-center relative overflow-hidden py-10 md:py-0"
+          style={{ background: heroBg }}
         >
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <div style={{ width: 320, height: 320, borderRadius: '50%', background: 'radial-gradient(circle, rgba(201,168,76,0.07) 0%, transparent 70%)' }}/>
@@ -406,7 +504,7 @@ export default function RecipeDetail() {
         {/* Right: Recipe info */}
         <div
           className="w-full md:w-[56%] flex items-center px-8 md:px-12 lg:px-16 py-12"
-          style={{ background: 'linear-gradient(140deg, #162210 0%, #0D1810 100%)' }}
+          style={{ background: infoSectionBg }}
         >
           <motion.div
             initial={{ opacity: 0, x: 24 }}
@@ -435,18 +533,31 @@ export default function RecipeDetail() {
             {/* Gold rule */}
             <div style={{ width: 52, height: 2, background: 'linear-gradient(90deg, #C9A84C, transparent)', marginBottom: '1.75rem' }}/>
 
-            {/* Print button */}
-            <button
-              onClick={() => printRecipe(recipe)}
-              className="btn-outline flex items-center gap-2 mb-6 text-[10px]"
-              style={{ padding: '0.55rem 1.2rem' }}
-            >
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
-                <rect x="6" y="14" width="12" height="8"/>
-              </svg>
-              Print Recipe
-            </button>
+            {/* Action buttons */}
+            <div className="flex flex-wrap gap-3 mb-8">
+              <button
+                onClick={() => printRecipe(recipe)}
+                className="btn-solid"
+                style={{ fontSize: '0.75rem', padding: '0.85rem 2rem', letterSpacing: '0.18em' }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+                  <rect x="6" y="14" width="12" height="8"/>
+                </svg>
+                Print Recipe
+              </button>
+              <button
+                onClick={() => shareRecipe(recipe)}
+                className="btn-outline"
+                style={{ fontSize: '0.75rem', padding: '0.85rem 2rem', letterSpacing: '0.18em' }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+                  <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                </svg>
+                Share
+              </button>
+            </div>
 
             {/* Stats grid */}
             <div className="grid grid-cols-2 gap-x-8 gap-y-5">
@@ -473,11 +584,11 @@ export default function RecipeDetail() {
           {/* Section heading */}
           <div className="flex items-baseline gap-3 mb-2">
             <h2 className="font-display text-3xl" style={{ color: 'var(--color-accent)' }}>What You'll Need</h2>
-            <span style={{ color: 'rgba(232,223,208,0.38)', fontSize: '13px' }}>
+            <span style={{ color: 'var(--color-text-faint)', fontSize: '13px' }}>
               {recipe.ingredients.length} ingredient{recipe.ingredients.length !== 1 ? 's' : ''}
             </span>
           </div>
-          <p className="mb-9 text-sm" style={{ color: 'rgba(232,223,208,0.45)' }}>
+          <p className="mb-9 text-sm" style={{ color: 'var(--color-text-muted)' }}>
             Gather everything before you begin — it makes the process smoother.
           </p>
 
@@ -504,7 +615,7 @@ export default function RecipeDetail() {
                   <p className="text-xs font-bold mb-0.5" style={{ color: 'var(--color-accent)' }}>
                     {ing.amount}
                   </p>
-                  <p className="text-xs leading-snug" style={{ color: 'rgba(232,223,208,0.65)' }}>
+                  <p className="text-xs leading-snug" style={{ color: 'var(--color-text-muted)' }}>
                     {ing.item}
                   </p>
                 </div>
@@ -520,7 +631,7 @@ export default function RecipeDetail() {
       </div>
 
       {/* ── METHOD ────────────────────────────────────────────── */}
-      <section style={{ background: 'linear-gradient(to bottom, #0D1810 0%, #111e0c 40%, #0D1810 100%)' }}>
+      <section style={{ background: methodSectionBg }}>
         <div className="max-w-3xl mx-auto px-4 sm:px-6 py-16 pb-24">
 
           {/* Section header */}
@@ -540,7 +651,7 @@ export default function RecipeDetail() {
             <h2 className="font-display text-4xl mb-4" style={{ color: 'var(--color-text)' }}>
               How to Make It
             </h2>
-            <p style={{ color: 'rgba(232,223,208,0.48)', fontSize: '0.9rem', lineHeight: 1.8, maxWidth: '46ch' }}>
+            <p style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem', lineHeight: 1.8, maxWidth: '46ch' }}>
               Read through once before you start — each step builds on the last and the process moves quickly once you're set up.
             </p>
           </motion.div>
@@ -549,8 +660,9 @@ export default function RecipeDetail() {
           <div>
             {recipe.steps.map((step, i) => (
               <MethodStep
-                key={step.order}
+                key={i}
                 step={step}
+                stepIndex={i}
                 totalSteps={recipe.steps.length}
                 isLast={i === recipe.steps.length - 1}
               />
@@ -584,6 +696,40 @@ export default function RecipeDetail() {
                 } · {recipe.steps.length} steps · Serves 1
               </p>
             </div>
+          </motion.div>
+
+          {/* Bottom print CTA */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+            className="mt-8 flex flex-col items-center gap-3 text-center"
+          >
+            <p style={{ color: 'rgba(232,223,208,0.4)', fontSize: '11px', letterSpacing: '0.16em', textTransform: 'uppercase' }}>
+              Keep it offline
+            </p>
+            <button
+              onClick={() => printRecipe(recipe)}
+              className="btn-outline"
+              style={{ fontSize: '0.75rem', padding: '0.85rem 2.5rem', letterSpacing: '0.18em' }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'var(--color-accent)'
+                e.currentTarget.style.color = 'var(--color-bg)'
+                e.currentTarget.style.borderColor = 'var(--color-accent)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'transparent'
+                e.currentTarget.style.color = 'var(--color-text)'
+                e.currentTarget.style.borderColor = 'var(--color-accent-border)'
+              }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+                <rect x="6" y="14" width="12" height="8"/>
+              </svg>
+              Save &amp; Print This Recipe
+            </button>
           </motion.div>
 
         </div>

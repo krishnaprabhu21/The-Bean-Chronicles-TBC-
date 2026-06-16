@@ -17,7 +17,7 @@ export function NewsletterCTA() {
       viewport={{ once: true }}
       transition={{ duration: 0.6, ease: 'easeOut' }}
       className="relative overflow-hidden my-16"
-      style={{ background: 'linear-gradient(135deg, #1C2B14 0%, #0D1810 50%, #1E3020 100%)', border: '1px solid rgba(80,120,60,0.25)' }}
+      style={{ background: 'linear-gradient(135deg, #253E18 0%, #0D1810 50%, #253E18 100%)', border: '1px solid var(--color-border-strong)' }}
     >
       {/* Dot grid */}
       <div

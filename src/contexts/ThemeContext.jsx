@@ -3,9 +3,11 @@ import { createContext, useContext, useEffect, useState } from 'react'
 const ThemeContext = createContext({ theme: 'dark', toggleTheme: () => {} })
 
 export function ThemeProvider({ children }) {
-  const [theme, setTheme] = useState(
-    () => localStorage.getItem('tbc-theme') || 'dark'
-  )
+  const [theme, setTheme] = useState(() => {
+    const stored = localStorage.getItem('tbc-theme')
+    if (stored) return stored
+    return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
+  })
 
   useEffect(() => {
     const root = document.documentElement

@@ -340,7 +340,7 @@ export default function Tools() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.15 }}
             style={{
-              color: 'rgba(232,223,208,0.65)',
+              color: 'var(--color-text-muted)',
               fontSize: '1.05rem',
               maxWidth: '540px',
               margin: '0 auto',

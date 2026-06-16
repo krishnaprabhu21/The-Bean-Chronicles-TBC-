@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SEO } from '../components/ui/SEO';
+import { useTheme } from '../contexts/ThemeContext';
 
 // ── Device data ─────────────────────────────────────────────────────────────
 
@@ -664,6 +665,8 @@ function DifficultyDots({ level }) {
 }
 
 function DeviceCard({ device, selected, onClick }) {
+  const { theme } = useTheme()
+  const isLight = theme === 'light'
   return (
     <motion.button
       onClick={() => onClick(selected ? null : device.id)}
@@ -672,7 +675,7 @@ function DeviceCard({ device, selected, onClick }) {
       transition={{ type: "spring", stiffness: 280, damping: 22 }}
       className="relative flex flex-col items-center gap-5 px-3 py-7 sm:py-8 text-center w-full transition-all duration-200"
       style={{
-        border: `1px solid ${selected ? device.accentColor + "80" : "rgba(80,120,60,0.2)"}`,
+        border: `1px solid ${selected ? device.accentColor + "80" : "var(--color-border-strong)"}`,
         background: selected ? `${device.accentColor}0D` : "var(--color-card)",
         boxShadow: selected ? `0 0 28px ${device.accentColor}18` : "none",
         cursor: "pointer",
@@ -693,7 +696,7 @@ function DeviceCard({ device, selected, onClick }) {
       >
         <DeviceIcon
           id={device.id}
-          color={selected ? device.accentColor : "rgba(232,223,208,0.7)"}
+          color={selected ? device.accentColor : isLight ? "rgba(60,40,20,0.55)" : "rgba(232,223,208,0.7)"}
         />
       </div>
 
@@ -701,15 +704,15 @@ function DeviceCard({ device, selected, onClick }) {
         <span
           className="block text-[8px] uppercase tracking-[0.22em] leading-none"
           style={{
-            color: selected ? device.accentColor : "rgba(201,168,76,0.4)",
+            color: selected ? device.accentColor : "var(--color-accent)",
             fontFamily: "Space Mono, monospace",
           }}
         >
           {device.category}
         </span>
         <span
-          className="block font-display text-sm sm:text-base leading-snug"
-          style={{ color: selected ? "var(--color-text)" : "rgba(232,223,208,0.72)" }}
+          className="block font-display text-base sm:text-lg leading-snug"
+          style={{ color: "var(--color-text)", fontWeight: 600 }}
         >
           {device.name}
         </span>
@@ -757,7 +760,7 @@ function DeviceModal({ device, onClose }) {
         className="relative z-10 w-full overflow-hidden flex flex-col sm:flex-row"
         style={{
           background: "var(--color-surface)",
-          border: "1px solid rgba(80,120,60,0.3)",
+          border: "1px solid var(--color-border-strong)",
           maxWidth: "60rem",
           maxHeight: "92vh",
           boxShadow: "0 32px 80px rgba(0,0,0,0.7)",
@@ -781,7 +784,7 @@ function DeviceModal({ device, onClose }) {
               <p
                 className="text-[9px] uppercase tracking-[0.24em] mb-2"
                 style={{
-                  color: "rgba(232,223,208,0.32)",
+                  color: "var(--color-text-faint)",
                   fontFamily: "Space Mono, monospace",
                 }}
               >
@@ -795,7 +798,7 @@ function DeviceModal({ device, onClose }) {
               <p
                 className="text-[9px] uppercase tracking-[0.24em] mb-2"
                 style={{
-                  color: "rgba(232,223,208,0.32)",
+                  color: "var(--color-text-faint)",
                   fontFamily: "Space Mono, monospace",
                 }}
               >
@@ -844,14 +847,14 @@ function DeviceModal({ device, onClose }) {
         {/* ── Right: Content panel (scrollable) ────────────────── */}
         <div
           className="flex-1 overflow-y-auto flex flex-col"
-          style={{ borderLeft: "1px solid rgba(80,120,60,0.18)" }}
+          style={{ borderLeft: "1px solid var(--color-border)" }}
         >
           {/* Sticky top bar: counter + close */}
           <div
             className="sticky top-0 z-10 flex items-center justify-between px-9 py-5 flex-shrink-0"
             style={{
-              background: "rgba(22,34,16,0.96)",
-              borderBottom: "1px solid rgba(80,120,60,0.13)",
+              background: "var(--color-surface)",
+              borderBottom: "1px solid var(--color-border)",
               backdropFilter: "blur(6px)",
             }}
           >
@@ -887,12 +890,12 @@ function DeviceModal({ device, onClose }) {
 
           <div className="px-9 py-9 sm:px-10 sm:py-10 flex flex-col">
             {/* Name + tagline */}
-            <h2 className="font-display text-3xl sm:text-4xl text-parchment leading-tight mb-3">
+            <h2 className="font-display text-3xl sm:text-4xl leading-tight mb-3" style={{ color: "var(--color-text)" }}>
               {device.name}
             </h2>
             <p
               className="font-elegant italic text-lg sm:text-xl mb-9"
-              style={{ color: "rgba(232,223,208,0.48)" }}
+              style={{ color: "var(--color-text-muted)" }}
             >
               {device.tagline}
             </p>
@@ -901,8 +904,8 @@ function DeviceModal({ device, onClose }) {
             <div
               className="grid grid-cols-3 gap-6 py-6 mb-9"
               style={{
-                borderTop: "1px solid var(--color-border)",
-                borderBottom: "1px solid var(--color-border)",
+                borderTop: "1px solid var(--color-border-strong)",
+                borderBottom: "1px solid var(--color-border-strong)",
               }}
             >
               {specRow.map((spec, i) => (
@@ -910,7 +913,7 @@ function DeviceModal({ device, onClose }) {
                   <p
                     className="text-[9px] uppercase tracking-[0.2em] mb-2"
                     style={{
-                      color: "rgba(232,223,208,0.32)",
+                      color: "var(--color-text-faint)",
                       fontFamily: "Space Mono, monospace",
                     }}
                   >
@@ -927,7 +930,7 @@ function DeviceModal({ device, onClose }) {
             </div>
 
             {/* Description */}
-            <p className="text-parchment/72 text-sm sm:text-base leading-[2.05] mb-10">
+            <p className="text-sm sm:text-base leading-[2.05] mb-10" style={{ color: 'var(--color-text-muted)' }}>
               {device.description}
             </p>
 
@@ -959,7 +962,7 @@ function DeviceModal({ device, onClose }) {
                 <path d="M0 18 C0 10 4 4 12 0 L14 3 C9 6 7 10 8 14 L0 18 Z" />
                 <path d="M12 18 C12 10 16 4 24 0 L24 3 C19 6 19 10 20 14 L12 18 Z" />
               </svg>
-              <p className="text-parchment/72 text-sm sm:text-base leading-relaxed italic">
+              <p className="text-sm sm:text-base leading-relaxed italic" style={{ color: 'var(--color-text-muted)' }}>
                 {device.tip}
               </p>
             </div>
@@ -1326,7 +1329,7 @@ function CoffeeNerdsTab() {
         </h2>
         <p
           className="text-sm leading-loose"
-          style={{ color: "rgba(232,223,208,0.5)" }}
+          style={{ color: "var(--color-text-muted)" }}
         >
           The internet's finest open-source coffee shop websites and apps —
           built by the nerd community and shared freely on GitHub. Explore the
@@ -1515,7 +1518,7 @@ function CoffeeTypeCard({ item, index }) {
         {item.name}
       </h3>
       {/* Description */}
-      <p className="text-xs leading-relaxed flex-1" style={{ color: "rgba(232,223,208,0.52)", lineHeight: 1.8 }}>
+      <p className="text-xs leading-relaxed flex-1" style={{ color: "var(--color-text-muted)", lineHeight: 1.8 }}>
         {item.description}
       </p>
     </motion.div>
@@ -1542,7 +1545,7 @@ function CoffeeTypesTab() {
         <h2 className="font-display text-3xl sm:text-4xl mb-4" style={{ color: "var(--color-text)" }}>
           Every Coffee You Need to Know
         </h2>
-        <p className="text-sm leading-loose" style={{ color: "rgba(232,223,208,0.5)" }}>
+        <p className="text-sm leading-loose" style={{ color: "var(--color-text-muted)" }}>
           From the humble black coffee to the theatrical Irish whiskey pour — a complete visual directory of 35+ coffee drinks across every style and tradition.
         </p>
       </div>
@@ -1665,6 +1668,17 @@ export default function BrewingGuides() {
   const [activeTab, setActiveTab] = useState("brewing-devices");
   const [selectedId, setSelectedId] = useState(null);
   const selectedDevice = devices.find((d) => d.id === selectedId);
+  const triggerRef = useRef(null);
+
+  const handleOpen = (id) => {
+    if (id) triggerRef.current = document.activeElement;
+    setSelectedId(id);
+  };
+
+  const handleClose = () => {
+    setSelectedId(null);
+    requestAnimationFrame(() => triggerRef.current?.focus());
+  };
 
   return (
     <div className="min-h-screen pt-24">
@@ -1675,7 +1689,7 @@ export default function BrewingGuides() {
           <DeviceModal
             key={selectedDevice.id}
             device={selectedDevice}
-            onClose={() => setSelectedId(null)}
+            onClose={handleClose}
           />
         )}
       </AnimatePresence>
@@ -1794,7 +1808,7 @@ export default function BrewingGuides() {
                   <DeviceCard
                     device={device}
                     selected={selectedId === device.id}
-                    onClick={setSelectedId}
+                    onClick={handleOpen}
                   />
                 </motion.div>
               ))}

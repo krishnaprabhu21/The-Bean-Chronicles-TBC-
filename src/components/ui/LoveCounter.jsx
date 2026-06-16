@@ -61,7 +61,7 @@ export function LoveCounter() {
           {/* Cup body */}
           <rect x="12" y="42" width="48" height="40" rx="7" fill="var(--color-card)" stroke="var(--color-accent-border)" strokeWidth="1.5" />
           {/* Coffee fill */}
-          <rect x="16" y="55" width="40" height="23" rx="4" fill={hasUpvoted ? 'var(--color-accent-dim)' : 'rgba(70,38,12,0.4)'} />
+          <rect x="16" y="55" width="40" height="23" rx="4" fill={hasUpvoted ? 'var(--color-accent-dim)' : '#A07040'} />
           {/* Rim */}
           <rect x="10" y="36" width="52" height="10" rx="5" fill="var(--color-surface)" stroke="var(--color-accent-border)" strokeWidth="1.5" />
           {/* Handle */}

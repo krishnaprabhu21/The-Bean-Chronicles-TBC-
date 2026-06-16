@@ -325,7 +325,7 @@ function DeviceColumn({ device }) {
           >
             <span
               style={{
-                color: 'rgba(232,223,208,0.5)',
+                color: 'var(--color-text-muted)',
                 fontSize: '0.72rem',
                 fontFamily: '"Space Mono", monospace',
                 textTransform: 'uppercase',
@@ -346,7 +346,7 @@ function DeviceColumn({ device }) {
       <div style={{ marginBottom: '1.25rem' }}>
         <p
           style={{
-            color: 'rgba(232,223,208,0.5)',
+            color: 'var(--color-text-muted)',
             fontSize: '0.7rem',
             fontFamily: '"Space Mono", monospace',
             textTransform: 'uppercase',
@@ -379,7 +379,7 @@ function DeviceColumn({ device }) {
       <div style={{ marginBottom: '1.25rem' }}>
         <p
           style={{
-            color: 'rgba(232,223,208,0.5)',
+            color: 'var(--color-text-muted)',
             fontSize: '0.7rem',
             fontFamily: '"Space Mono", monospace',
             textTransform: 'uppercase',
@@ -396,7 +396,7 @@ function DeviceColumn({ device }) {
       <div style={{ marginBottom: '1rem' }}>
         <p
           style={{
-            color: 'rgba(232,223,208,0.5)',
+            color: 'var(--color-text-muted)',
             fontSize: '0.7rem',
             fontFamily: '"Space Mono", monospace',
             textTransform: 'uppercase',
@@ -420,7 +420,7 @@ function DeviceColumn({ device }) {
       <div>
         <p
           style={{
-            color: 'rgba(232,223,208,0.5)',
+            color: 'var(--color-text-muted)',
             fontSize: '0.7rem',
             fontFamily: '"Space Mono", monospace',
             textTransform: 'uppercase',
@@ -509,7 +509,7 @@ export default function ComparisonTool() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.15 }}
             style={{
-              color: 'rgba(232,223,208,0.65)',
+              color: 'var(--color-text-muted)',
               fontSize: '1.05rem',
               maxWidth: '520px',
               margin: '0 auto',
@@ -538,7 +538,7 @@ export default function ComparisonTool() {
               <label
                 style={{
                   display: 'block',
-                  color: 'rgba(232,223,208,0.45)',
+                  color: 'var(--color-text-muted)',
                   fontSize: '0.68rem',
                   fontFamily: '"Space Mono", monospace',
                   letterSpacing: '0.1em',
@@ -590,7 +590,7 @@ export default function ComparisonTool() {
               <label
                 style={{
                   display: 'block',
-                  color: 'rgba(232,223,208,0.45)',
+                  color: 'var(--color-text-muted)',
                   fontSize: '0.68rem',
                   fontFamily: '"Space Mono", monospace',
                   letterSpacing: '0.1em',
@@ -701,7 +701,7 @@ export default function ComparisonTool() {
                   >
                     {label}
                   </span>
-                  <p style={{ color: 'rgba(232,223,208,0.85)', fontSize: '0.95rem', lineHeight: 1.6, margin: 0 }}>
+                  <p style={{ color: 'var(--color-text-muted)', fontSize: '0.95rem', lineHeight: 1.6, margin: 0 }}>
                     If you value this —{' '}
                     <VerdictText text={text} />
                   </p>

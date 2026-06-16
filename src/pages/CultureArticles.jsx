@@ -1,5 +1,6 @@
 import { lazy, Suspense } from "react";
 import { motion } from "framer-motion";
+import { SEO } from "../components/ui/SEO";
 import { CoffeeFlavoursSection } from "../components/sections/CoffeeFlavoursSection";
 import { OriginsEncyclopediaSection } from "../components/sections/OriginsEncyclopediaSection";
 import { ArticleCard, ArticleCardSkeleton } from "../components/ui/ArticleCard";
@@ -25,6 +26,7 @@ export default function CultureArticles() {
 
   return (
     <div className="min-h-screen pt-24">
+      <SEO title="Culture & Articles" description="Coffee culture, origin stories, and brewing science — articles for the curious coffee mind." />
       {/* Header */}
       <section
         className="py-20 md:py-28 px-6 text-center"
@@ -40,10 +42,10 @@ export default function CultureArticles() {
           <span className="text-gold text-xs uppercase tracking-widest font-semibold">
             Around the World
           </span>
-          <h1 className="font-display text-5xl sm:text-6xl md:text-7xl text-cream mt-4 mb-6 leading-tight">
+          <h1 className="font-display text-5xl sm:text-6xl md:text-7xl mt-4 mb-6 leading-tight" style={{ color: 'var(--color-text)' }}>
             Coffee Culture
           </h1>
-          <p className="text-cream/60 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
+          <p className="text-lg md:text-xl max-w-2xl mx-auto leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
             Explore coffee origins by country — their history, growing regions,
             and flavour identity.
           </p>
@@ -76,7 +78,7 @@ export default function CultureArticles() {
         >
           <p className="label-ornate mb-5">Real-Time Coffee Journalism</p>
           <div className="flex items-end justify-between gap-4 flex-wrap">
-            <h2 className="font-display text-4xl md:text-5xl text-parchment leading-tight">
+            <h2 className="font-display text-4xl md:text-5xl leading-tight" style={{ color: 'var(--color-text)' }}>
               Latest Articles
             </h2>
             <span
@@ -93,7 +95,7 @@ export default function CultureArticles() {
         </motion.div>
 
         {error ? (
-          <p className="text-cream/40 text-sm py-12 text-center">Could not load articles. Check your connection.</p>
+          <p className="text-sm py-12 text-center" style={{ color: 'var(--color-text-faint)' }}>Could not load articles. Check your connection.</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {loading

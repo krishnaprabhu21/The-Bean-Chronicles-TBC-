@@ -13,9 +13,9 @@
 :root {
   /* Backgrounds */
   --color-bg:             #0D1810;
-  --color-surface:        #162210;
-  --color-card:           #1C2B14;
-  --color-card-hover:     #223318;
+  --color-surface:        #1C3014;
+  --color-card:           #253E18;
+  --color-card-hover:     #2E4B1F;
   --color-overlay:        rgba(6,12,7,0.82);
 
   /* Accent / Gold */
@@ -26,19 +26,19 @@
 
   /* Text */
   --color-text:           #E8DFD0;
-  --color-text-muted:     rgba(232,223,208,0.55);
-  --color-text-faint:     rgba(232,223,208,0.3);
+  --color-text-muted:     rgba(232,223,208,0.72);
+  --color-text-faint:     rgba(232,223,208,0.5);
   --color-text-inverse:   #0D1810;
 
   /* Borders & misc */
   --color-border:         rgba(80,120,60,0.22);
   --color-border-strong:  rgba(80,120,60,0.4);
   --color-muted:          #6B8A5E;
-  --shadow-card:          0 4px 24px rgba(0,0,0,0.35);
-  --shadow-card-hover:    0 8px 40px rgba(0,0,0,0.5);
+  --shadow-card:          0 4px 24px rgba(0,0,0,0.5);
+  --shadow-card-hover:    0 10px 40px rgba(0,0,0,0.68);
 
   /* Semantic gradients */
-  --gradient-hero:        linear-gradient(180deg, #1C2B14 0%, transparent 100%);
+  --gradient-hero:        linear-gradient(180deg, #1C3014 0%, transparent 100%);
   --gradient-section:     linear-gradient(180deg, #2D1B14 0%, transparent 100%);
 
   /* Always-light text — for text on dark photo overlays / hero images */
@@ -73,8 +73,8 @@
 
   /* Text — rich warm brown */
   --color-text:           #1A0900;
-  --color-text-muted:     rgba(26,9,0,0.58);
-  --color-text-faint:     rgba(26,9,0,0.35);
+  --color-text-muted:     rgba(26,9,0,0.7);
+  --color-text-faint:     rgba(26,9,0,0.52);
   --color-text-inverse:   #FAF3E4;
 
   /* Borders */
@@ -118,6 +118,12 @@ body {
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Playfair Display', serif;
   line-height: 1.15;
+}
+
+/* ── Placeholder text ────────────────────────────────────────────── */
+::placeholder {
+  color: var(--color-text-faint);
+  opacity: 1; /* prevent browsers from adding extra opacity reduction */
 }
 
 /* ── Theme transition — smooth switching ─────────────────────────── */
@@ -384,7 +390,7 @@ body::after {
    with !important. This covers the many rgba(232,223,208,X) variants that
    the substitution agent didn't have in its table.
    Applies ONLY on the light theme — dark theme sees original styles. */
-/* Mid-opacity cream used for muted/secondary text */
+/* Mid-to-high-opacity cream used for muted/secondary text */
 [data-theme="light"] [style*="rgba(232,223,208,0.5)"],
 [data-theme="light"] [style*="rgba(232,223,208,0.45)"],
 [data-theme="light"] [style*="rgba(232,223,208,0.52)"],
@@ -393,6 +399,7 @@ body::after {
 [data-theme="light"] [style*="rgba(232,223,208,0.62)"],
 [data-theme="light"] [style*="rgba(232,223,208,0.65)"],
 [data-theme="light"] [style*="rgba(232,223,208,0.7)"],
+[data-theme="light"] [style*="rgba(232,223,208,0.72)"],
 [data-theme="light"] [style*="rgba(232,223,208,0.75)"] {
   color: var(--color-text-muted) !important;
 }

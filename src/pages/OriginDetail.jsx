@@ -47,6 +47,18 @@ const PROCESS_INFO = {
     description:
       'The skin is removed but the sticky mucilage remains on the parchment, which is then dried without water fermentation. Popular in Brazil, this method preserves a natural sweetness and produces a full-bodied, chocolatey cup with minimal fruit fermentation character.',
   },
+  'Monsooned (Malabar)': {
+    icon: '🌧️',
+    title: 'Monsooned Malabar Process',
+    description:
+      'Unique to India\'s Malabar Coast, green parchment coffee is stored in open-sided warehouses and exposed to the moisture-laden south-west monsoon winds for 12–16 weeks. The beans absorb humidity, swell to nearly double their original size, and turn from grey-green to pale gold. The result is one of the world\'s most distinctive cups — extremely low acidity, a heavy musty body, and pronounced woody, earthy notes unlike any other process.',
+  },
+  'Semi-Washed': {
+    icon: '🌊',
+    title: 'Semi-Washed Process',
+    description:
+      'The outer skin is removed mechanically but the mucilage layer is left on the bean, which is then dried without extended water fermentation. Common in Uganda and parts of Indonesia, this method bridges washed clarity and natural sweetness — producing moderate body, controlled fruit notes, and a cleaner finish than a full natural process.',
+  },
 };
 
 // ── Rating bar component ──────────────────────────────────────────────────────
@@ -102,7 +114,7 @@ function StatItem({ label, value }) {
         style={{
           fontFamily: 'Space Mono, monospace',
           fontSize: '0.55rem',
-          color: 'rgba(232,223,208,0.4)',
+          color: 'var(--color-text-faint)',
           letterSpacing: '0.18em',
         }}
       >
@@ -141,7 +153,7 @@ export default function OriginDetail() {
         >
           Origin Not Found
         </p>
-        <p className="mb-8" style={{ color: 'rgba(232,223,208,0.5)' }}>
+        <p className="mb-8" style={{ color: 'var(--color-text-muted)' }}>
           We couldn't locate an origin with the id "{id}".
         </p>
         <Link
@@ -229,17 +241,17 @@ export default function OriginDetail() {
         }}
       >
         <div className="max-w-6xl mx-auto">
-          <div className="flex overflow-x-auto divide-x" style={{ divideColor: 'rgba(232,223,208,0.08)' }}>
-            <div style={{ borderRight: '1px solid rgba(232,223,208,0.08)' }}>
+          <div className="flex overflow-x-auto divide-x" style={{ divideColor: 'var(--color-border)' }}>
+            <div style={{ borderRight: '1px solid var(--color-border)' }}>
               <StatItem label="Altitude" value={origin.altitude} />
             </div>
-            <div style={{ borderRight: '1px solid rgba(232,223,208,0.08)' }}>
+            <div style={{ borderRight: '1px solid var(--color-border)' }}>
               <StatItem label="Harvest Season" value={origin.harvest} />
             </div>
-            <div style={{ borderRight: '1px solid rgba(232,223,208,0.08)' }}>
+            <div style={{ borderRight: '1px solid var(--color-border)' }}>
               <StatItem label="Process Methods" value={origin.process.join(' · ')} />
             </div>
-            <div style={{ borderRight: '1px solid rgba(232,223,208,0.08)' }}>
+            <div style={{ borderRight: '1px solid var(--color-border)' }}>
               <StatItem label="Varieties" value={`${origin.varieties.length} known`} />
             </div>
             <div>
@@ -262,7 +274,7 @@ export default function OriginDetail() {
             style={{
               fontFamily: 'Space Mono, monospace',
               fontSize: '0.62rem',
-              color: 'rgba(232,223,208,0.4)',
+              color: 'var(--color-text-faint)',
               letterSpacing: '0.18em',
             }}
           >
@@ -331,7 +343,7 @@ export default function OriginDetail() {
               style={{
                 fontFamily: 'Space Mono, monospace',
                 fontSize: '0.62rem',
-                color: 'rgba(232,223,208,0.4)',
+                color: 'var(--color-text-faint)',
                 letterSpacing: '0.18em',
               }}
             >
@@ -370,7 +382,7 @@ export default function OriginDetail() {
               </p>
               <p
                 style={{
-                  color: 'rgba(232,223,208,0.75)',
+                  color: 'var(--color-text-muted)',
                   fontSize: '0.92rem',
                   lineHeight: 1.75,
                 }}
@@ -392,7 +404,7 @@ export default function OriginDetail() {
               style={{
                 fontFamily: 'Space Mono, monospace',
                 fontSize: '0.62rem',
-                color: 'rgba(232,223,208,0.4)',
+                color: 'var(--color-text-faint)',
                 letterSpacing: '0.18em',
               }}
             >
@@ -421,7 +433,7 @@ export default function OriginDetail() {
                   </span>
                   <div
                     className="flex-1 pb-3 border-b"
-                    style={{ borderColor: 'rgba(232,223,208,0.08)' }}
+                    style={{ borderColor: 'var(--color-border)' }}
                   >
                     <p
                       className="font-display"
@@ -446,7 +458,7 @@ export default function OriginDetail() {
                 style={{
                   fontFamily: 'Space Mono, monospace',
                   fontSize: '0.62rem',
-                  color: 'rgba(232,223,208,0.4)',
+                  color: 'var(--color-text-faint)',
                   letterSpacing: '0.18em',
                 }}
               >
@@ -458,9 +470,9 @@ export default function OriginDetail() {
                     key={v}
                     className="px-3 py-1 rounded-full text-xs"
                     style={{
-                      background: 'rgba(232,223,208,0.06)',
-                      border: '1px solid rgba(232,223,208,0.15)',
-                      color: 'rgba(232,223,208,0.7)',
+                      background: 'var(--color-accent-dim)',
+                      border: '1px solid var(--color-border-strong)',
+                      color: 'var(--color-text-muted)',
                       fontFamily: 'Inter, sans-serif',
                       fontSize: '0.72rem',
                     }}
@@ -487,7 +499,7 @@ export default function OriginDetail() {
             style={{
               fontFamily: 'Space Mono, monospace',
               fontSize: '0.62rem',
-              color: 'rgba(232,223,208,0.4)',
+              color: 'var(--color-text-faint)',
               letterSpacing: '0.18em',
             }}
           >
@@ -545,7 +557,7 @@ export default function OriginDetail() {
                   </div>
                   <p
                     style={{
-                      color: 'rgba(232,223,208,0.65)',
+                      color: 'var(--color-text-muted)',
                       fontSize: '0.875rem',
                       lineHeight: 1.75,
                     }}
@@ -586,7 +598,7 @@ export default function OriginDetail() {
             </motion.span>
             <span
               style={{
-                borderBottom: '1px solid rgba(232,223,208,0.2)',
+                borderBottom: '1px solid var(--color-border-strong)',
                 paddingBottom: '1px',
                 transition: 'color 0.2s, border-color 0.2s',
               }}
@@ -596,7 +608,7 @@ export default function OriginDetail() {
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.color = 'var(--color-text-muted)';
-                e.currentTarget.style.borderColor = 'rgba(232,223,208,0.2)';
+                e.currentTarget.style.borderColor = 'var(--color-border-strong)';
               }}
             >
               Back to Origins

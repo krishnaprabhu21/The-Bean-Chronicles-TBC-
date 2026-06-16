@@ -240,6 +240,22 @@ export function Navbar() {
               )}
             </Link>
 
+            {/* Shop icon */}
+            <Link
+              to="/shop"
+              title="The Bean Store"
+              className="w-9 h-9 hidden md:flex items-center justify-center rounded-full transition-all duration-200"
+              style={{ border: '1px solid rgba(201,168,76,0.3)', color: 'rgba(201,168,76,0.6)' }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(201,168,76,0.08)'; e.currentTarget.style.color = '#C9A84C'; e.currentTarget.style.borderColor = 'rgba(201,168,76,0.55)' }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'rgba(201,168,76,0.6)'; e.currentTarget.style.borderColor = 'rgba(201,168,76,0.3)' }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <path d="M16 10a4 4 0 0 1-8 0"/>
+              </svg>
+            </Link>
+
             {/* Mobile hamburger */}
             <button
               onClick={() => setOpen((o) => !o)}
@@ -429,6 +445,17 @@ export function Navbar() {
                     </span>
                     <span className="font-display italic" style={{ fontSize: '1.6rem', lineHeight: 1, color: 'var(--color-text-muted)' }}>
                       Shelf {count > 0 && <span className="text-base" style={{ color: 'var(--color-accent)' }}>({count})</span>}
+                    </span>
+                  </Link>
+                </motion.div>
+                {/* Shop link */}
+                <motion.div initial={{ opacity: 0, x: 22 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.05 + (navLinks.length + 1) * 0.07, duration: 0.32 }}>
+                  <Link to="/shop" onClick={() => setOpen(false)} className="flex items-center gap-5 py-5" style={{ borderBottom: '1px solid var(--color-border)' }}>
+                    <span style={{ fontFamily: 'Space Mono, monospace', fontSize: '10px', letterSpacing: '0.12em', color: 'var(--color-accent-border)', minWidth: '20px' }}>
+                      {String(navLinks.length + 2).padStart(2, '0')}
+                    </span>
+                    <span className="font-display italic" style={{ fontSize: '1.6rem', lineHeight: 1, color: 'var(--color-text-muted)' }}>
+                      Shop
                     </span>
                   </Link>
                 </motion.div>

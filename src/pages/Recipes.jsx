@@ -1,4 +1,5 @@
-import { motion } from "framer-motion";
+import { useState, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { SEO } from "../components/ui/SEO";
 import { RecipeCard } from "../components/ui/RecipeCard";
 import { CategoryFilter } from "../components/ui/CategoryFilter";
@@ -10,7 +11,18 @@ const recipeCategories = categories.filter((c) =>
 );
 
 export default function Recipes() {
-  const { filtered, active, setActive } = useFilter(recipes);
+  const { filtered: categoryFiltered, active, setActive } = useFilter(recipes);
+  const [search, setSearch] = useState("");
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return categoryFiltered;
+    return categoryFiltered.filter(
+      (r) =>
+        r.title.toLowerCase().includes(q) ||
+        r.category.toLowerCase().includes(q)
+    );
+  }, [search, categoryFiltered]);
 
   return (
     <div className="min-h-screen pt-24">
@@ -18,40 +30,33 @@ export default function Recipes() {
       {/* Header */}
       <section
         className="py-24 px-8 text-center relative"
-        style={{
-          background: "linear-gradient(180deg, #2D1B14 0%, transparent 100%)",
-        }}
+        style={{ background: "var(--gradient-section)" }}
       >
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <span className="text-gold text-xs uppercase tracking-widest font-semibold">
+          <span className="text-gold text-xs uppercase tracking-widest font-semibold" style={{ color: 'var(--color-accent)' }}>
             Brew your own Coffee
           </span>
-          <h1 className="font-display text-4xl sm:text-5xl md:text-6xl text-cream mt-2 mb-4">
+          <h1 className="font-display text-4xl sm:text-5xl md:text-6xl mt-2 mb-4" style={{ color: 'var(--color-text)' }}>
             Recipes
           </h1>
-          <p className="text-cream/60 text-lg max-w-xl mx-auto">
+          <p className="text-lg max-w-xl mx-auto" style={{ color: 'var(--color-text-muted)' }}>
             Travel the globe one cup at a time. Discover authentic coffee
-            recipes from different cultures, regions, and traditions—from
-            Italy's rich espresso classics and Turkey's centuries-old brewing
-            methods to Vietnam's sweet iced coffee and Ethiopia's ceremonial
-            brews. Each recipe includes ingredients, preparation steps, brewing
-            tips, and the story behind the drink, helping you recreate iconic
-            coffee experiences from around the world in your own kitchen.
+            recipes from different cultures, regions, and traditions.
           </p>
         </motion.div>
       </section>
 
-      {/* Filter + Grid */}
+      {/* Filter + Search + Grid */}
       <div className="w-full max-w-[1600px] mx-auto px-8 sm:px-14 xl:px-20 pb-28">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
-          className="mb-12"
+          className="mb-8"
         >
           <CategoryFilter
             categories={recipeCategories}
@@ -60,22 +65,83 @@ export default function Recipes() {
           />
         </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filtered.map((recipe, i) => (
-            <motion.div
-              key={recipe.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.07, duration: 0.45 }}
+        {/* Search input */}
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="mb-10 max-w-sm"
+        >
+          <div className="relative">
+            <svg
+              className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"
+              width="14" height="14" viewBox="0 0 24 24"
+              fill="none" stroke="var(--color-accent)" strokeWidth="2" strokeLinecap="round"
+              style={{ opacity: 0.55 }}
             >
-              <RecipeCard recipe={recipe} />
-            </motion.div>
-          ))}
-        </div>
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input
+              type="text"
+              placeholder="Search recipes…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full pl-11 pr-10 py-3 text-sm outline-none rounded-xl"
+              style={{
+                background: 'var(--color-surface)',
+                border: '1px solid var(--color-border-strong)',
+                color: 'var(--color-text)',
+                fontFamily: 'Inter, sans-serif',
+              }}
+              onFocus={(e) => (e.target.style.borderColor = 'var(--color-accent)')}
+              onBlur={(e) => (e.target.style.borderColor = 'var(--color-border-strong)')}
+            />
+            {search && (
+              <button
+                onClick={() => setSearch("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2"
+                style={{ color: 'var(--color-text-faint)' }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--color-text)')}
+                onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--color-text-faint)')}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+            )}
+          </div>
+        </motion.div>
+
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={search + active}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6"
+          >
+            {filtered.map((recipe, i) => (
+              <motion.div
+                key={recipe.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.05, duration: 0.4 }}
+              >
+                <RecipeCard recipe={recipe} />
+              </motion.div>
+            ))}
+          </motion.div>
+        </AnimatePresence>
 
         {filtered.length === 0 && (
-          <div className="text-center py-20 text-cream/30">
-            <p className="font-display text-2xl">No recipes found</p>
+          <div className="text-center py-20">
+            <p className="font-display text-2xl mb-3" style={{ color: 'var(--color-text-muted)' }}>
+              No recipes found
+            </p>
+            <p className="text-sm" style={{ color: 'var(--color-text-faint)' }}>
+              Try a different search term or category
+            </p>
           </div>
         )}
       </div>

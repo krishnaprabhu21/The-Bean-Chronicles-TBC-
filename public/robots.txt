@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /shop
+Disallow: /play
+
+# The Bean Chronicles

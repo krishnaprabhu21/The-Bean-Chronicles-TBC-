@@ -22,9 +22,19 @@ export function RecipeCard({ recipe }) {
       whileHover={{ y: -5 }}
       transition={{ type: 'spring', stiffness: 300, damping: 22 }}
       className="group overflow-hidden"
-      style={{ border: '1px solid rgba(80,120,60,0.2)', background: 'var(--color-card)' }}
-      onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'rgba(201,168,76,0.35)' }}
-      onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(80,120,60,0.2)' }}
+      style={{
+        border: '1px solid var(--color-border-strong)',
+        background: 'var(--color-card)',
+        boxShadow: 'var(--shadow-card)',
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.borderColor = 'rgba(201,168,76,0.5)'
+        e.currentTarget.style.boxShadow = 'var(--shadow-card-hover)'
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.borderColor = 'var(--color-border-strong)'
+        e.currentTarget.style.boxShadow = 'var(--shadow-card)'
+      }}
     >
       <Link to={`/recipe/${recipe.slug}`} className="block">
         <div

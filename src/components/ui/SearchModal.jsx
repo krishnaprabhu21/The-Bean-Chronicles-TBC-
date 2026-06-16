@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
+import { useFocusTrap } from '../../hooks/useFocusTrap'
 import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -104,7 +105,10 @@ export function SearchModal({ isOpen, onClose }) {
   const [cursor, setCursor] = useState(0)
   const inputRef = useRef(null)
   const listRef = useRef(null)
+  const panelRef = useRef(null)
   const navigate = useNavigate()
+
+  useFocusTrap(panelRef, isOpen)
 
   const communityIndex = useMemo(loadCommunity, [isOpen])
 
@@ -174,13 +178,17 @@ export function SearchModal({ isOpen, onClose }) {
 
           {/* Panel */}
           <motion.div
+            ref={panelRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Search"
             className="relative w-full overflow-hidden flex flex-col"
             style={{
               maxWidth: '620px',
-              background: 'rgba(22,34,16,0.98)',
-              border: '1px solid rgba(201,168,76,0.2)',
+              background: 'rgba(32,56,24,0.99)',
+              border: '1px solid rgba(201,168,76,0.38)',
               borderRadius: '1.25rem',
-              boxShadow: '0 32px 80px rgba(0,0,0,0.7)',
+              boxShadow: '0 32px 80px rgba(0,0,0,0.75), inset 0 1px 0 rgba(201,168,76,0.12)',
               maxHeight: '72vh',
             }}
             initial={{ opacity: 0, y: -20, scale: 0.97 }}
@@ -189,8 +197,8 @@ export function SearchModal({ isOpen, onClose }) {
             transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
           >
             {/* Search input */}
-            <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: '1px solid rgba(80,120,60,0.2)' }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(201,168,76,0.5)" strokeWidth="2" strokeLinecap="round">
+            <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: '1px solid rgba(80,120,60,0.35)' }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(201,168,76,0.7)" strokeWidth="2" strokeLinecap="round">
                 <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
               </svg>
               <input
@@ -203,7 +211,7 @@ export function SearchModal({ isOpen, onClose }) {
                 style={{ color: 'var(--color-text-on-dark)', fontFamily: 'Inter, sans-serif', fontSize: '0.95rem' }}
               />
               {query && (
-                <button onClick={() => setQuery('')} style={{ color: 'var(--color-muted-on-dark)', lineHeight: 1 }}>
+                <button aria-label="Clear search" onClick={() => setQuery('')} style={{ color: 'rgba(232,223,208,0.7)', lineHeight: 1 }}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
                     <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
                   </svg>
@@ -211,7 +219,7 @@ export function SearchModal({ isOpen, onClose }) {
               )}
               <kbd
                 className="hidden sm:flex items-center gap-0.5 px-2 py-0.5 rounded text-[9px]"
-                style={{ background: 'rgba(80,120,60,0.2)', color: 'var(--color-muted-on-dark)', fontFamily: 'Space Mono, monospace', border: '1px solid rgba(80,120,60,0.3)' }}
+                style={{ background: 'rgba(80,120,60,0.3)', color: 'rgba(232,223,208,0.72)', fontFamily: 'Space Mono, monospace', border: '1px solid rgba(80,120,60,0.45)' }}
               >
                 Esc
               </kbd>
@@ -221,10 +229,10 @@ export function SearchModal({ isOpen, onClose }) {
             <div className="overflow-y-auto flex-1" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(80,120,60,0.3) transparent' }}>
               {!query && (
                 <div className="flex flex-col items-center justify-center py-14 gap-3">
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(201,168,76,0.2)" strokeWidth="1.5" strokeLinecap="round">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(201,168,76,0.4)" strokeWidth="1.5" strokeLinecap="round">
                     <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
                   </svg>
-                  <p style={{ color: 'var(--color-muted-on-dark)', fontFamily: 'Space Mono, monospace', fontSize: '11px', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+                  <p style={{ color: 'rgba(232,223,208,0.72)', fontFamily: 'Space Mono, monospace', fontSize: '11px', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
                     Start typing to search
                   </p>
                 </div>
@@ -232,7 +240,7 @@ export function SearchModal({ isOpen, onClose }) {
 
               {query && results.length === 0 && (
                 <div className="flex flex-col items-center justify-center py-14 gap-3">
-                  <p style={{ color: 'var(--color-muted-on-dark)', fontFamily: 'Space Mono, monospace', fontSize: '11px', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+                  <p style={{ color: 'rgba(232,223,208,0.72)', fontFamily: 'Space Mono, monospace', fontSize: '11px', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
                     No results for "{query}"
                   </p>
                 </div>
@@ -245,10 +253,10 @@ export function SearchModal({ isOpen, onClose }) {
                       {/* Type header */}
                       <div
                         className="px-5 py-2 flex items-center gap-2"
-                        style={{ borderBottom: '1px solid rgba(80,120,60,0.1)' }}
+                        style={{ borderBottom: '1px solid rgba(80,120,60,0.28)' }}
                       >
-                        <span style={{ color: TYPE_COLORS[type], opacity: 0.6 }}>{TYPE_ICONS[type]}</span>
-                        <span style={{ color: 'var(--color-muted-on-dark)', fontFamily: 'Space Mono, monospace', fontSize: '9px', letterSpacing: '0.18em', textTransform: 'uppercase' }}>
+                        <span style={{ color: TYPE_COLORS[type], opacity: 0.85 }}>{TYPE_ICONS[type]}</span>
+                        <span style={{ color: 'rgba(232,223,208,0.65)', fontFamily: 'Space Mono, monospace', fontSize: '9px', letterSpacing: '0.18em', textTransform: 'uppercase' }}>
                           {type}s
                         </span>
                       </div>
@@ -262,20 +270,20 @@ export function SearchModal({ isOpen, onClose }) {
                             onClick={() => go(item)}
                             onMouseEnter={() => setCursor(globalIdx)}
                             className="w-full flex items-center gap-4 px-5 py-3 text-left transition-colors duration-100"
-                            style={{ background: isActive ? 'rgba(201,168,76,0.08)' : 'transparent', borderLeft: isActive ? `2px solid ${TYPE_COLORS[item.type]}` : '2px solid transparent' }}
+                            style={{ background: isActive ? 'rgba(201,168,76,0.12)' : 'transparent', borderLeft: isActive ? `2px solid ${TYPE_COLORS[item.type]}` : '2px solid transparent' }}
                           >
-                            <span style={{ color: TYPE_COLORS[item.type], opacity: isActive ? 1 : 0.45, flexShrink: 0 }}>
+                            <span style={{ color: TYPE_COLORS[item.type], opacity: isActive ? 1 : 0.7, flexShrink: 0 }}>
                               {TYPE_ICONS[item.type]}
                             </span>
                             <div className="flex-1 min-w-0">
-                              <p className="text-sm truncate" style={{ color: isActive ? 'var(--color-text-on-dark)' : 'rgba(232,223,208,0.7)', fontFamily: 'Inter, sans-serif' }}>
+                              <p className="text-sm truncate" style={{ color: isActive ? '#F0E8D8' : 'rgba(232,223,208,0.9)', fontFamily: 'Inter, sans-serif' }}>
                                 {highlight(item.label, query)}
                               </p>
-                              <p className="text-xs truncate mt-0.5" style={{ color: 'var(--color-muted-on-dark)', fontFamily: 'Space Mono, monospace', fontSize: '10px' }}>
+                              <p className="text-xs truncate mt-0.5" style={{ color: 'rgba(232,223,208,0.6)', fontFamily: 'Space Mono, monospace', fontSize: '10px' }}>
                                 {item.sub}
                               </p>
                             </div>
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={isActive ? TYPE_COLORS[item.type] : 'rgba(232,223,208,0.15)'} strokeWidth="2.5" strokeLinecap="round">
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={isActive ? TYPE_COLORS[item.type] : 'rgba(232,223,208,0.3)'} strokeWidth="2.5" strokeLinecap="round">
                               <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
                             </svg>
                           </button>
@@ -290,7 +298,7 @@ export function SearchModal({ isOpen, onClose }) {
             {/* Footer hints */}
             <div
               className="flex items-center gap-5 px-5 py-3"
-              style={{ borderTop: '1px solid rgba(80,120,60,0.15)', background: 'rgba(13,24,16,0.6)' }}
+              style={{ borderTop: '1px solid rgba(80,120,60,0.3)', background: 'rgba(16,30,12,0.9)' }}
             >
               {[
                 ['↑↓', 'Navigate'],
@@ -298,15 +306,15 @@ export function SearchModal({ isOpen, onClose }) {
                 ['Esc', 'Close'],
               ].map(([key, hint]) => (
                 <span key={key} className="flex items-center gap-1.5">
-                  <kbd style={{ background: 'rgba(80,120,60,0.25)', color: 'rgba(232,223,208,0.4)', fontFamily: 'Space Mono, monospace', fontSize: '9px', padding: '1px 5px', borderRadius: '4px', border: '1px solid rgba(80,120,60,0.3)' }}>
+                  <kbd style={{ background: 'rgba(80,120,60,0.35)', color: 'rgba(232,223,208,0.72)', fontFamily: 'Space Mono, monospace', fontSize: '9px', padding: '1px 5px', borderRadius: '4px', border: '1px solid rgba(80,120,60,0.5)' }}>
                     {key}
                   </kbd>
-                  <span style={{ color: 'var(--color-muted-on-dark)', fontFamily: 'Space Mono, monospace', fontSize: '9px', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                  <span style={{ color: 'rgba(232,223,208,0.58)', fontFamily: 'Space Mono, monospace', fontSize: '9px', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
                     {hint}
                   </span>
                 </span>
               ))}
-              <span className="ml-auto" style={{ color: 'rgba(201,168,76,0.45)', fontFamily: 'Space Mono, monospace', fontSize: '9px' }}>
+              <span className="ml-auto" style={{ color: 'rgba(201,168,76,0.65)', fontFamily: 'Space Mono, monospace', fontSize: '9px' }}>
                 {results.length > 0 ? `${results.length} result${results.length !== 1 ? 's' : ''}` : ''}
               </span>
             </div>

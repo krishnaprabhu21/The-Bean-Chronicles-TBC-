@@ -124,7 +124,7 @@ function EmptyJournal() {
       </h3>
       <p
         className="text-sm leading-relaxed max-w-[36ch]"
-        style={{ color: 'rgba(232,223,208,0.45)', fontFamily: 'Inter, sans-serif' }}
+        style={{ color: 'var(--color-text-muted)', fontFamily: 'Inter, sans-serif' }}
       >
         Start logging your first brew — track your beans, techniques, and tasting notes over time.
       </p>
@@ -277,7 +277,7 @@ function JournalCard({ entry, onDelete }) {
       {/* Meta row */}
       <div
         className="flex flex-wrap gap-x-3 gap-y-1 text-xs mb-4"
-        style={{ color: 'rgba(232,223,208,0.45)', fontFamily: 'Inter, sans-serif' }}
+        style={{ color: 'var(--color-text-muted)', fontFamily: 'Inter, sans-serif' }}
       >
         {entry.origin && <span>{entry.origin}</span>}
         {entry.dose && (
@@ -319,14 +319,14 @@ function JournalCard({ entry, onDelete }) {
       {entry.notes ? (
         <p
           className="text-sm leading-relaxed italic"
-          style={{ color: 'rgba(232,223,208,0.45)', fontFamily: 'Inter, sans-serif' }}
+          style={{ color: 'var(--color-text-muted)', fontFamily: 'Inter, sans-serif' }}
         >
           {entry.notes}
         </p>
       ) : (
         <p
           className="text-xs italic"
-          style={{ color: 'rgba(232,223,208,0.2)', fontFamily: 'Inter, sans-serif' }}
+          style={{ color: 'var(--color-border-strong)', fontFamily: 'Inter, sans-serif' }}
         >
           No tasting notes recorded.
         </p>

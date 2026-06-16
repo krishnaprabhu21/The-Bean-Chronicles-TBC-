@@ -15,7 +15,32 @@ function setMeta(nameOrProp, content) {
   el.setAttribute('content', content)
 }
 
-export function SEO({ title, description, image, type = 'website' }) {
+function setCanonical(href) {
+  let el = document.querySelector('link[rel="canonical"]')
+  if (!el) {
+    el = document.createElement('link')
+    el.setAttribute('rel', 'canonical')
+    document.head.appendChild(el)
+  }
+  el.setAttribute('href', href)
+}
+
+function setJsonLd(schema) {
+  let el = document.getElementById('tbc-ld-json')
+  if (schema) {
+    if (!el) {
+      el = document.createElement('script')
+      el.id = 'tbc-ld-json'
+      el.type = 'application/ld+json'
+      document.head.appendChild(el)
+    }
+    el.textContent = JSON.stringify(schema)
+  } else {
+    el?.remove()
+  }
+}
+
+export function SEO({ title, description, image, type = 'website', schema }) {
   useEffect(() => {
     const fullTitle = title ? `${title} | The Bean Chronicles` : 'The Bean Chronicles'
     const desc = description || DEFAULT_DESC
@@ -34,10 +59,14 @@ export function SEO({ title, description, image, type = 'website' }) {
     setMeta('twitter:description', desc)
     setMeta('twitter:image', img)
 
+    setCanonical(window.location.href)
+    setJsonLd(schema || null)
+
     return () => {
       document.title = 'The Bean Chronicles'
+      setJsonLd(null)
     }
-  }, [title, description, image, type])
+  }, [title, description, image, type, schema])
 
   return null
 }

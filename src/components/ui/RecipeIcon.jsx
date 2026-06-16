@@ -12,7 +12,7 @@ function KahluaCoffeeSoda() {
       <ellipse cx="60" cy="58" rx="24" ry="5" fill="#EDD9A3" stroke="#C9A84C" strokeWidth="1.2"/>
       <circle cx="50" cy="72" r="1.5" fill="#3D1000" opacity="0.6"/>
       <circle cx="64" cy="80" r="2" fill="#3D1000" opacity="0.5"/>
-      <rect x="71" y="16" width="6" height="62" rx="3" fill="#E8DFD0" stroke="#9B7A2A" strokeWidth="1"/>
+      <rect x="71" y="16" width="6" height="62" rx="3" fill="#C8A870" stroke="#9B7A2A" strokeWidth="1"/>
       <rect x="71" y="20" width="6" height="7" fill="#C9A84C"/>
       <rect x="71" y="34" width="6" height="7" fill="#C9A84C"/>
       <rect x="71" y="48" width="6" height="7" fill="#C9A84C"/>
@@ -34,7 +34,7 @@ function GreekFrappe() {
       <circle cx="73" cy="45" r="3" fill="#EDD9B8"/>
       <circle cx="49" cy="51" r="2.5" fill="#EDD9B8"/>
       <circle cx="68" cy="50" r="3" fill="#EDD9B8"/>
-      <rect x="77" y="18" width="5" height="68" rx="2.5" fill="#E8DFD0" stroke="#9B7A2A" strokeWidth="1"/>
+      <rect x="77" y="18" width="5" height="68" rx="2.5" fill="#C8A870" stroke="#9B7A2A" strokeWidth="1"/>
     </svg>
   )
 }
@@ -137,7 +137,7 @@ function CoffeeMilkshake() {
       <ellipse cx="60" cy="22" rx="10" ry="6" fill="#F8F5F0"/>
       <path d="M48 35 Q51 29 55 34" stroke="#3D1000" strokeWidth="2" strokeLinecap="round" fill="none"/>
       <path d="M67 30 Q71 25 73 31" stroke="#3D1000" strokeWidth="2" strokeLinecap="round" fill="none"/>
-      <rect x="55" y="8" width="7" height="68" rx="3.5" fill="#E8DFD0" stroke="#C9A84C" strokeWidth="1.2"/>
+      <rect x="55" y="8" width="7" height="68" rx="3.5" fill="#C8A870" stroke="#C9A84C" strokeWidth="1.2"/>
       <rect x="55" y="12" width="7" height="9" fill="#C9A84C"/>
       <rect x="55" y="28" width="7" height="9" fill="#C9A84C"/>
     </svg>
@@ -190,7 +190,7 @@ function LavenderIcedCoffee() {
       <ellipse cx="78" cy="22" rx="2.5" ry="4" fill="#9478C4"/>
       <ellipse cx="72" cy="29" rx="2" ry="3.5" fill="#A088D0"/>
       <ellipse cx="76" cy="29" rx="2" ry="3.5" fill="#A088D0"/>
-      <rect x="56" y="22" width="6" height="64" rx="3" fill="#E8DFD0" stroke="#9B7A2A" strokeWidth="1"/>
+      <rect x="56" y="22" width="6" height="64" rx="3" fill="#C8A870" stroke="#9B7A2A" strokeWidth="1"/>
     </svg>
   )
 }
@@ -219,9 +219,9 @@ function BavarianCoffee() {
       <path d="M32 44 L88 44 L84 92 L36 92 Z" fill="#D8C8A8" stroke="#0D1810" strokeWidth="2.5" strokeLinejoin="round"/>
       <path d="M35 46 L85 46 L82 90 L38 90 Z" fill="#EDE0C0"/>
       <path d="M37 62 L83 62 L82 90 L38 90 Z" fill="#2D0E00"/>
-      <path d="M52 42 Q50 33 52 24" stroke="#E8DFD0" strokeWidth="2" strokeLinecap="round" opacity="0.65"/>
-      <path d="M60 42 Q62 32 60 22" stroke="#E8DFD0" strokeWidth="2" strokeLinecap="round" opacity="0.85"/>
-      <path d="M68 42 Q70 33 68 24" stroke="#E8DFD0" strokeWidth="2" strokeLinecap="round" opacity="0.65"/>
+      <path d="M52 42 Q50 33 52 24" stroke="#C8A870" strokeWidth="2" strokeLinecap="round" opacity="0.65"/>
+      <path d="M60 42 Q62 32 60 22" stroke="#C8A870" strokeWidth="2" strokeLinecap="round" opacity="0.85"/>
+      <path d="M68 42 Q70 33 68 24" stroke="#C8A870" strokeWidth="2" strokeLinecap="round" opacity="0.65"/>
       <path d="M35 62 Q60 52 85 62 Q79 58 60 56 Q41 58 35 62 Z" fill="#F5EDD8" stroke="#E0D0A0" strokeWidth="1"/>
       <path d="M38 58 Q60 49 82 58 Q76 54 60 52 Q44 54 38 58 Z" fill="#F8F4EE"/>
       <path d="M42 53 Q60 46 78 53 Q72 49 60 47 Q48 49 42 53 Z" fill="#F8F5F0"/>
@@ -245,7 +245,7 @@ function IndianColdCoffee() {
       <circle cx="56" cy="29" r="1.5" fill="#3D1000"/>
       <circle cx="64" cy="27" r="1" fill="#3D1000"/>
       <circle cx="71" cy="31" r="1.5" fill="#3D1000"/>
-      <rect x="76" y="22" width="6" height="62" rx="3" fill="#E8DFD0" stroke="#9B7A2A" strokeWidth="1"/>
+      <rect x="76" y="22" width="6" height="62" rx="3" fill="#C8A870" stroke="#9B7A2A" strokeWidth="1"/>
     </svg>
   )
 }
@@ -462,7 +462,7 @@ function BrazilianMochaCola() {
       <path d="M60 22 Q66 32 62 40" stroke="#5A2000" strokeWidth="2" strokeLinecap="round" fill="none" opacity="0.8"/>
       <path d="M74 25 Q70 35 76 40" stroke="#5A2000" strokeWidth="2" strokeLinecap="round" fill="none" opacity="0.8"/>
       {/* straw */}
-      <rect x="79" y="14" width="5" height="62" rx="2.5" fill="#E8DFD0" stroke="#9B7A2A" strokeWidth="1"/>
+      <rect x="79" y="14" width="5" height="62" rx="2.5" fill="#C8A870" stroke="#9B7A2A" strokeWidth="1"/>
       <rect x="79" y="18" width="5" height="8" fill="#C9A84C"/>
       <rect x="79" y="34" width="5" height="8" fill="#C9A84C"/>
     </svg>
@@ -525,7 +525,7 @@ function JapaneseStyleIcedCoffee() {
       {/* handle */}
       <path d="M92 50 Q108 50 108 68 Q108 86 92 86" stroke="#0D1810" strokeWidth="3" fill="none" strokeLinecap="round"/>
       {/* straw */}
-      <rect x="75" y="18" width="5" height="55" rx="2.5" fill="#E8DFD0" stroke="#9B7A2A" strokeWidth="1"/>
+      <rect x="75" y="18" width="5" height="55" rx="2.5" fill="#C8A870" stroke="#9B7A2A" strokeWidth="1"/>
       <rect x="75" y="22" width="5" height="8" fill="#C9A84C"/>
       <rect x="75" y="38" width="5" height="8" fill="#C9A84C"/>
     </svg>

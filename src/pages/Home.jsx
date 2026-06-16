@@ -19,7 +19,7 @@ function FeaturedSkeleton() {
   return (
     <div
       className="animate-pulse overflow-hidden"
-      style={{ border: '1px solid rgba(80,120,60,0.12)', background: '#1C2B14', minHeight: 360 }}
+      style={{ border: '1px solid var(--color-border)', background: 'var(--color-card)', minHeight: 360 }}
     />
   )
 }
@@ -32,7 +32,7 @@ export default function Home() {
 
   return (
     <div>
-      <SEO description="Coffee stories, brewing guides, recipes, and rituals for the discerning coffee mind. Explore origins, tasting notes, and more." />
+      <SEO title="Home" description="Coffee stories, brewing guides, recipes, and rituals for the discerning coffee mind. Explore origins, tasting notes, and more." />
       <HeroSection />
 
       {/* Featured Articles — Editor's Picks */}
@@ -82,7 +82,7 @@ export default function Home() {
         <motion.div
           {...fadeUp}
           className="rounded-3xl overflow-hidden relative"
-          style={{ background: 'linear-gradient(135deg, #1C2B14, #0D1810)' }}
+          style={{ background: 'linear-gradient(135deg, #253E18, #0D1810)' }}
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
             <div className="p-6 sm:p-10 md:p-14 flex flex-col justify-center">

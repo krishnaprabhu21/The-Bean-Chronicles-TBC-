@@ -174,7 +174,7 @@ function TastingCard({ roast, origin, method, onRegenerate }) {
           >
             Tasting Profile
           </p>
-          <p className="font-display text-base text-cream">
+          <p className="font-display text-base" style={{ color: 'var(--color-text)' }}>
             {roast.charAt(0).toUpperCase() + roast.slice(1)} · {origin} · {method}
           </p>
         </div>
@@ -183,7 +183,7 @@ function TastingCard({ roast, origin, method, onRegenerate }) {
       {/* Generated note */}
       <blockquote
         className="font-display italic text-xl leading-relaxed mb-7 relative z-10"
-        style={{ color: 'rgba(232,223,208,0.9)' }}
+        style={{ color: 'var(--color-text)' }}
       >
         &ldquo;{noteText}&rdquo;
       </blockquote>
@@ -357,7 +357,7 @@ export default function TastingNotes() {
                         </p>
                         <p
                           className="text-xs"
-                          style={{ color: selected ? 'rgba(201,168,76,0.7)' : 'rgba(232,223,208,0.4)', fontFamily: 'Inter, sans-serif' }}
+                          style={{ color: selected ? 'rgba(201,168,76,0.7)' : 'var(--color-text-faint)', fontFamily: 'Inter, sans-serif' }}
                         >
                           {card.sub}
                         </p>
@@ -408,7 +408,7 @@ export default function TastingNotes() {
                       style={{
                         background: selected ? 'rgba(201,168,76,0.12)' : 'rgba(22,34,16,0.8)',
                         border: `1px solid ${selected ? 'rgba(201,168,76,0.55)' : 'rgba(80,120,60,0.28)'}`,
-                        color: selected ? 'var(--color-accent)' : 'rgba(232,223,208,0.65)',
+                        color: selected ? 'var(--color-accent)' : 'var(--color-text-muted)',
                         fontFamily: 'Inter, sans-serif',
                         fontWeight: selected ? 600 : 400,
                         cursor: 'pointer',
@@ -454,7 +454,7 @@ export default function TastingNotes() {
                       style={{
                         background: selected ? 'rgba(201,168,76,0.12)' : 'rgba(22,34,16,0.8)',
                         border: `1px solid ${selected ? 'rgba(201,168,76,0.55)' : 'rgba(80,120,60,0.28)'}`,
-                        color: selected ? 'var(--color-accent)' : 'rgba(232,223,208,0.65)',
+                        color: selected ? 'var(--color-accent)' : 'var(--color-text-muted)',
                         fontFamily: 'Inter, sans-serif',
                         fontWeight: selected ? 600 : 400,
                         cursor: 'pointer',

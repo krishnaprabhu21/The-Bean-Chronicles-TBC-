@@ -66,7 +66,7 @@ function PillButton({ label, selected, onClick }) {
       style={{
         background: selected ? 'rgba(201,168,76,0.12)' : 'rgba(22,34,16,0.8)',
         border: `1px solid ${selected ? 'rgba(201,168,76,0.55)' : 'rgba(80,120,60,0.28)'}`,
-        color: selected ? 'var(--color-accent)' : 'rgba(232,223,208,0.65)',
+        color: selected ? 'var(--color-accent)' : 'var(--color-text-muted)',
         fontFamily: 'Inter, sans-serif',
         fontWeight: selected ? 600 : 400,
         cursor: 'pointer',
@@ -99,13 +99,13 @@ function RatioBar({ coffeeG, waterG }) {
       <div className="flex items-center gap-5 mt-2">
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full" style={{ background: 'var(--color-accent)' }} />
-          <span className="text-[11px]" style={{ color: 'rgba(232,223,208,0.5)', fontFamily: 'Space Mono, monospace' }}>
+          <span className="text-[11px]" style={{ color: 'var(--color-text-muted)', fontFamily: 'Space Mono, monospace' }}>
             Coffee {coffeeW.toFixed(0)}%
           </span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full" style={{ background: '#2D4A1E' }} />
-          <span className="text-[11px]" style={{ color: 'rgba(232,223,208,0.5)', fontFamily: 'Space Mono, monospace' }}>
+          <span className="text-[11px]" style={{ color: 'var(--color-text-muted)', fontFamily: 'Space Mono, monospace' }}>
             Water {waterW.toFixed(0)}%
           </span>
         </div>
@@ -181,7 +181,7 @@ export default function BrewCalculator() {
           <div className="label-ornate justify-center mb-5">
             Precision Dialling
           </div>
-          <h1 className="font-display text-5xl sm:text-6xl text-cream leading-none mb-5">
+          <h1 className="font-display text-5xl sm:text-6xl leading-none mb-5" style={{ color: 'var(--color-text)' }}>
             Brew<br />Calculator
           </h1>
           <p className="text-sm leading-relaxed max-w-xl mx-auto" style={{ color: 'var(--color-text-muted)' }}>
@@ -259,7 +259,7 @@ export default function BrewCalculator() {
                     className="text-xs rounded-full px-3 py-1"
                     style={{
                       background: 'rgba(80,120,60,0.15)',
-                      color: 'rgba(232,223,208,0.4)',
+                      color: 'var(--color-text-faint)',
                       fontFamily: 'Space Mono, monospace',
                       border: '1px solid rgba(80,120,60,0.25)',
                     }}
@@ -358,7 +358,7 @@ export default function BrewCalculator() {
                 <span className="font-display text-2xl" style={{ color: 'rgba(201,168,76,0.5)' }}>g</span>
               </div>
 
-              <p className="text-sm" style={{ color: 'rgba(232,223,208,0.4)', fontFamily: 'Inter, sans-serif' }}>
+              <p className="text-sm" style={{ color: 'var(--color-text-faint)', fontFamily: 'Inter, sans-serif' }}>
                 for <span style={{ color: 'var(--color-text)' }}>{coffeeG}g</span> of coffee at{' '}
                 {isRoomTemp
                   ? <span style={{ color: 'var(--color-text)' }}>room temperature</span>
@@ -425,7 +425,7 @@ export default function BrewCalculator() {
                     >
                       Brew Time
                     </p>
-                    <p className="font-display text-xl text-cream mt-0.5">{info.time}</p>
+                    <p className="font-display text-xl mt-0.5" style={{ color: 'var(--color-text)' }}>{info.time}</p>
                   </div>
                 </div>
 
@@ -450,7 +450,7 @@ export default function BrewCalculator() {
                       </span>
                       <span
                         className="text-sm leading-relaxed"
-                        style={{ color: 'rgba(232,223,208,0.65)', fontFamily: 'Inter, sans-serif' }}
+                        style={{ color: 'var(--color-text-muted)', fontFamily: 'Inter, sans-serif' }}
                       >
                         {tip}
                       </span>

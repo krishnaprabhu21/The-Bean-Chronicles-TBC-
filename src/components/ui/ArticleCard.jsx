@@ -11,7 +11,11 @@ export function ArticleCard({ article }) {
       whileHover={{ y: -5 }}
       transition={{ type: 'spring', stiffness: 300, damping: 22 }}
       className="group overflow-hidden relative"
-      style={{ border: '1px solid rgba(80,120,60,0.2)', background: 'var(--color-card)' }}
+      style={{
+        border: '1px solid var(--color-border-strong)',
+        background: 'var(--color-card)',
+        boxShadow: 'var(--shadow-card)',
+      }}
     >
       {/* Bookmark button */}
       <button
@@ -37,6 +41,8 @@ export function ArticleCard({ article }) {
           <img
             src={article.coverImage}
             alt={article.title}
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
             style={{ filter: 'saturate(0.85) brightness(0.92)' }}
           />
@@ -68,7 +74,7 @@ export function ArticleCard({ article }) {
 
 export function ArticleCardSkeleton() {
   return (
-    <div className="overflow-hidden animate-pulse" style={{ border: '1px solid rgba(80,120,60,0.12)', background: 'var(--color-card)' }}>
+    <div className="overflow-hidden animate-pulse" style={{ border: '1px solid var(--color-border)', background: 'var(--color-card)', boxShadow: 'var(--shadow-card)' }}>
       <div className="aspect-[16/9]" style={{ background: 'rgba(80,120,60,0.1)' }} />
       <div className="p-7 sm:p-8 flex flex-col gap-4">
         <div className="h-2 w-16 rounded-full" style={{ background: 'rgba(80,120,60,0.15)' }} />

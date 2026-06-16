@@ -88,7 +88,23 @@ export default function ArticleDetail() {
         {/* Article */}
         {article && !loading && (
           <>
-            <SEO title={article.title} description={article.excerpt} image={article.coverImage} type="article" />
+            <SEO
+              title={article.title}
+              description={article.excerpt}
+              image={article.coverImage}
+              type="article"
+              schema={{
+                '@context': 'https://schema.org',
+                '@type': 'NewsArticle',
+                headline: article.title,
+                description: article.excerpt,
+                image: article.coverImage,
+                author: { '@type': 'Person', name: article.author },
+                publisher: { '@type': 'Organization', name: 'The Bean Chronicles' },
+                datePublished: article.publishDate,
+                url: window.location.href,
+              }}
+            />
             {/* Cover image */}
             <div className="w-full overflow-hidden" style={{ maxHeight: '62vh' }}>
               <img
@@ -142,6 +158,28 @@ export default function ArticleDetail() {
                     >
                       <svg width="13" height="13" viewBox="0 0 24 24" fill={saved ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+                      </svg>
+                    </button>
+
+                    {/* Share button */}
+                    <button
+                      onClick={async () => {
+                        const data = { title: article.title, text: article.excerpt, url: window.location.href }
+                        if (navigator.share) {
+                          try { await navigator.share(data) } catch (_) {}
+                        } else {
+                          await navigator.clipboard.writeText(window.location.href)
+                        }
+                      }}
+                      title="Share article"
+                      className="w-9 h-9 flex items-center justify-center rounded-full transition-all duration-200"
+                      style={{ background: 'transparent', border: '1px solid var(--color-accent-border)', color: 'var(--color-accent)' }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-accent-dim)' }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}
+                    >
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
                       </svg>
                     </button>
 

@@ -136,7 +136,7 @@ function TermCard({ term, index }) {
       <p
         style={{
           fontSize: '0.875rem',
-          color: 'rgba(232,223,208,0.65)',
+          color: 'var(--color-text-muted)',
           lineHeight: 1.7,
           margin: 0,
           fontFamily: 'Inter, sans-serif',
@@ -371,7 +371,7 @@ export default function Glossary() {
                       ? '1px solid rgba(201,168,76,0.6)'
                       : '1px solid rgba(80,120,60,0.25)',
                     background: isActive ? 'var(--color-accent)' : 'var(--color-surface)',
-                    color: isActive ? 'var(--color-bg)' : 'rgba(232,223,208,0.7)',
+                    color: isActive ? 'var(--color-bg)' : 'var(--color-text-muted)',
                     transition: 'all 0.15s ease',
                   }}
                 >
@@ -428,7 +428,7 @@ export default function Glossary() {
                   cursor: hasTerms ? 'pointer' : 'default',
                   border: 'none',
                   background: 'transparent',
-                  color: hasTerms ? 'var(--color-accent)' : 'rgba(232,223,208,0.18)',
+                  color: hasTerms ? 'var(--color-accent)' : 'var(--color-border)',
                   opacity: hasTerms ? 1 : 0.5,
                   transition: 'background 0.15s, color 0.15s',
                 }}
@@ -534,7 +534,7 @@ export default function Glossary() {
                   style={{
                     fontFamily: 'Playfair Display, Georgia, serif',
                     fontSize: '1.375rem',
-                    color: 'rgba(232,223,208,0.5)',
+                    color: 'var(--color-text-muted)',
                     margin: '0 0 0.5rem',
                   }}
                 >
@@ -544,7 +544,7 @@ export default function Glossary() {
                   style={{
                     fontFamily: 'Inter, sans-serif',
                     fontSize: '0.875rem',
-                    color: 'rgba(232,223,208,0.3)',
+                    color: 'var(--color-text-faint)',
                     margin: 0,
                   }}
                 >

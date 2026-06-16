@@ -20,7 +20,9 @@ export function FeaturedArticle({ article }) {
             <img
               src={article.coverImage}
               alt={article.title}
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              loading="lazy"
+            decoding="async"
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               style={{ filter: 'saturate(0.8) brightness(0.88)' }}
             />
           </div>
@@ -59,7 +61,9 @@ export function FeaturedArticle({ article }) {
             <img
               src={article.coverImage}
               alt={article.title}
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              loading="lazy"
+            decoding="async"
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               style={{ filter: 'saturate(0.75) brightness(0.85)' }}
             />
             <div

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   APIProvider,
@@ -8,6 +8,7 @@ import {
   useMap,
 } from "@vis.gl/react-google-maps";
 import { coffeeOrigins } from "../../data/coffeeOrigins";
+import { useFocusTrap } from "../../hooks/useFocusTrap";
 
 const DARK_MAP_STYLES = [
   { elementType: "geometry", stylers: [{ color: "#0D1810" }] },
@@ -68,7 +69,6 @@ const DARK_MAP_STYLES = [
   },
 ];
 
-// Applies dark styles to the underlying map instance
 function MapStyler() {
   const map = useMap();
   useEffect(() => {
@@ -107,10 +107,12 @@ function CountryCard({ country, selected, onClick }) {
       whileHover={{ y: -5, scale: 1.03 }}
       whileTap={{ scale: 0.97 }}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
+      aria-pressed={selected}
+      aria-label={`Explore ${country.name} coffee origins`}
       className="relative flex flex-col items-center gap-3 px-5 py-5 rounded-2xl border text-center transition-all duration-200 w-full"
       style={{
-        background: selected ? "rgba(212,168,83,0.12)" : "#1C2B14",
-        borderColor: selected ? "#D4A853" : "rgba(80,120,60,0.25)",
+        background: selected ? "rgba(212,168,83,0.12)" : "var(--color-card)",
+        borderColor: selected ? "#D4A853" : "var(--color-border-strong)",
         boxShadow: selected ? "0 0 24px rgba(212,168,83,0.22)" : "none",
         cursor: "pointer",
       }}
@@ -131,13 +133,13 @@ function CountryCard({ country, selected, onClick }) {
       />
       <span
         className="text-xs sm:text-sm font-semibold leading-snug"
-        style={{ color: selected ? "#D4A853" : "#F5F0EB" }}
+        style={{ color: selected ? "var(--color-accent)" : "var(--color-text)" }}
       >
         {country.name}
       </span>
       <span
         className="text-[10px] uppercase tracking-widest"
-        style={{ color: "#8B5E3C" }}
+        style={{ color: "var(--color-accent)" }}
       >
         {country.continent}
       </span>
@@ -145,34 +147,74 @@ function CountryCard({ country, selected, onClick }) {
   );
 }
 
-function MapNoKey() {
+// User-facing fallback shown when no Google Maps API key is configured.
+function MapNoKey({ country }) {
   return (
     <div
-      className="w-full h-full flex flex-col items-center justify-center gap-4 rounded-2xl"
-      style={{
-        background: "#1C2B14",
-        border: "1px solid rgba(80,120,60,0.25)",
-      }}
+      className="w-full h-full flex flex-col items-center justify-center gap-5 p-6 relative overflow-hidden"
+      style={{ background: "var(--color-card)", borderRadius: "14px" }}
     >
-      <svg
-        width="40"
-        height="40"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="#D4A853"
-        strokeWidth="1.5"
-      >
-        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-        <circle cx="12" cy="10" r="3" />
-      </svg>
-      <div className="text-center px-6">
-        <p className="text-cream font-semibold mb-1">
-          Google Maps API key required
+      {/* Dot grid decoration */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage:
+            "radial-gradient(circle at 1.5px 1.5px, rgba(80,120,60,0.35) 1.5px, transparent 0)",
+          backgroundSize: "22px 22px",
+        }}
+      />
+      <div className="relative z-10 flex flex-col items-center gap-5 text-center">
+        <svg
+          width="36"
+          height="36"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke={country?.accentColor || "#C9A84C"}
+          strokeWidth="1.4"
+          style={{ opacity: 0.8 }}
+        >
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+          <circle cx="12" cy="10" r="3" />
+        </svg>
+        <p
+          style={{
+            color: "var(--color-text)",
+            fontFamily: "Playfair Display, serif",
+            fontSize: "1rem",
+            fontWeight: 600,
+            margin: 0,
+          }}
+        >
+          {country?.name} · Growing Regions
         </p>
-        <p className="text-cream/50 text-sm leading-relaxed">
-          Add your key to <code className="text-gold">.env.local</code> as{" "}
-          <code className="text-gold">VITE_GOOGLE_MAPS_API_KEY</code>
-        </p>
+        <div className="flex flex-wrap gap-2 justify-center">
+          {country?.regions.map((r) => (
+            <span
+              key={r.name}
+              className="flex items-center gap-1.5"
+              style={{
+                border: `1px solid ${country?.accentColor || "#C9A84C"}45`,
+                color: country?.accentColor || "#C9A84C",
+                background: `${country?.accentColor || "#C9A84C"}0D`,
+                padding: "0.3rem 0.7rem",
+                fontSize: "0.72rem",
+                fontFamily: "Space Mono, monospace",
+              }}
+            >
+              <span
+                style={{
+                  width: "5px",
+                  height: "5px",
+                  borderRadius: "50%",
+                  background: country?.accentColor || "#C9A84C",
+                  display: "inline-block",
+                  flexShrink: 0,
+                }}
+              />
+              {r.name}
+            </span>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -183,7 +225,7 @@ function CoffeeMap({ country }) {
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
   if (!apiKey || apiKey === "your_google_maps_api_key_here")
-    return <MapNoKey />;
+    return <MapNoKey country={country} />;
 
   return (
     <Map
@@ -256,6 +298,9 @@ function CoffeeMap({ country }) {
 }
 
 function CountryModal({ country, onClose }) {
+  const modalRef = useRef(null);
+  useFocusTrap(modalRef, true);
+
   useEffect(() => {
     document.body.style.overflow = "hidden";
     return () => {
@@ -280,14 +325,19 @@ function CountryModal({ country, onClose }) {
           WebkitBackdropFilter: "blur(8px)",
         }}
         onClick={onClose}
+        aria-hidden="true"
       />
 
       {/* Card */}
       <motion.div
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label={`${country.name} coffee origins`}
         className="relative z-10 w-full overflow-hidden flex flex-col sm:flex-row"
         style={{
-          background: "#162210",
-          border: "1px solid rgba(80,120,60,0.3)",
+          background: "var(--color-surface)",
+          border: "1px solid var(--color-border-strong)",
           maxWidth: "64rem",
           maxHeight: "92vh",
           boxShadow: "0 32px 80px rgba(0,0,0,0.7)",
@@ -300,14 +350,14 @@ function CountryModal({ country, onClose }) {
         {/* ── Left: Map panel ──────────────────────────────────── */}
         <div
           className="flex-shrink-0 flex flex-col sm:w-[52%] relative"
-          style={{ borderBottom: "1px solid rgba(80,120,60,0.18)" }}
+          style={{ borderBottom: "1px solid var(--color-border)" }}
         >
           {/* Map label */}
           <div
             className="px-6 py-4 flex items-center gap-2.5 flex-shrink-0"
             style={{
-              borderBottom: "1px solid rgba(80,120,60,0.14)",
-              background: "rgba(13,24,16,0.85)",
+              borderBottom: "1px solid var(--color-border)",
+              background: "var(--color-bg)",
             }}
           >
             <svg
@@ -315,7 +365,7 @@ function CountryModal({ country, onClose }) {
               height="12"
               viewBox="0 0 24 24"
               fill="none"
-              stroke="#C9A84C"
+              stroke="var(--color-accent)"
               strokeWidth="2"
             >
               <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
@@ -324,7 +374,8 @@ function CountryModal({ country, onClose }) {
             <span
               className="text-[9px] uppercase tracking-[0.22em]"
               style={{
-                color: "rgba(201,168,76,0.55)",
+                color: "var(--color-accent)",
+                opacity: 0.6,
                 fontFamily: "Space Mono, monospace",
               }}
             >
@@ -344,8 +395,8 @@ function CountryModal({ country, onClose }) {
           <div
             className="px-5 py-4 flex flex-wrap gap-2 flex-shrink-0"
             style={{
-              borderTop: "1px solid rgba(80,120,60,0.14)",
-              background: "rgba(13,24,16,0.85)",
+              borderTop: "1px solid var(--color-border)",
+              background: "var(--color-bg)",
             }}
           >
             {country.regions.map((r) => (
@@ -353,9 +404,9 @@ function CountryModal({ country, onClose }) {
                 key={r.name}
                 className="flex items-center gap-2 px-3 py-1.5 text-[9px]"
                 style={{
-                  border: "1px solid rgba(80,120,60,0.3)",
-                  color: "var(--color-muted-on-dark)",
-                  background: "rgba(22,34,16,0.8)",
+                  border: "1px solid var(--color-border-strong)",
+                  color: "var(--color-text-muted)",
+                  background: "var(--color-card)",
                 }}
               >
                 <span
@@ -371,21 +422,22 @@ function CountryModal({ country, onClose }) {
         {/* ── Right: Scrollable content ─────────────────────────── */}
         <div
           className="flex-1 overflow-y-auto flex flex-col"
-          style={{ borderLeft: "1px solid rgba(80,120,60,0.18)" }}
+          style={{ borderLeft: "1px solid var(--color-border)" }}
         >
           {/* Sticky top bar */}
           <div
             className="sticky top-0 z-10 flex items-center justify-between px-8 py-5 flex-shrink-0"
             style={{
-              background: "rgba(22,34,16,0.96)",
-              borderBottom: "1px solid rgba(80,120,60,0.13)",
+              background: "var(--color-surface)",
+              borderBottom: "1px solid var(--color-border)",
               backdropFilter: "blur(6px)",
             }}
           >
             <span
               className="text-[9px] uppercase tracking-[0.22em]"
               style={{
-                color: "rgba(201,168,76,0.5)",
+                color: "var(--color-accent)",
+                opacity: 0.55,
                 fontFamily: "Space Mono, monospace",
               }}
             >
@@ -393,13 +445,17 @@ function CountryModal({ country, onClose }) {
             </span>
             <button
               onClick={onClose}
+              aria-label="Close"
               className="flex items-center gap-2 transition-opacity duration-150 opacity-45 hover:opacity-100"
               style={{
-                color: "#E8DFD0",
+                color: "var(--color-text)",
                 fontFamily: "Space Mono, monospace",
                 fontSize: "10px",
                 textTransform: "uppercase",
                 letterSpacing: "0.2em",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
               }}
             >
               Close
@@ -427,13 +483,16 @@ function CountryModal({ country, onClose }) {
                 accentColor={country.accentColor}
                 selected
               />
-              <h2 className="font-display text-3xl sm:text-4xl text-parchment leading-tight">
+              <h2
+                className="font-display text-3xl sm:text-4xl leading-tight"
+                style={{ color: "var(--color-text)" }}
+              >
                 {country.name}
               </h2>
             </div>
             <p
               className="font-elegant italic text-base sm:text-lg mb-9 ml-[3.5rem]"
-              style={{ color: "rgba(232,223,208,0.48)" }}
+              style={{ color: "var(--color-text-muted)" }}
             >
               {country.name} Coffee Origins
             </p>
@@ -442,15 +501,15 @@ function CountryModal({ country, onClose }) {
             <div
               className="grid grid-cols-2 gap-6 py-6 mb-9"
               style={{
-                borderTop: "1px solid rgba(80,120,60,0.15)",
-                borderBottom: "1px solid rgba(80,120,60,0.15)",
+                borderTop: "1px solid var(--color-border)",
+                borderBottom: "1px solid var(--color-border)",
               }}
             >
               <div>
                 <p
                   className="text-[9px] uppercase tracking-[0.2em] mb-2"
                   style={{
-                    color: "rgba(232,223,208,0.32)",
+                    color: "var(--color-text-faint)",
                     fontFamily: "Space Mono, monospace",
                   }}
                 >
@@ -467,7 +526,7 @@ function CountryModal({ country, onClose }) {
                 <p
                   className="text-[9px] uppercase tracking-[0.2em] mb-2"
                   style={{
-                    color: "rgba(232,223,208,0.32)",
+                    color: "var(--color-text-faint)",
                     fontFamily: "Space Mono, monospace",
                   }}
                 >
@@ -487,13 +546,16 @@ function CountryModal({ country, onClose }) {
               <p
                 className="text-[9px] uppercase tracking-[0.24em] mb-5"
                 style={{
-                  color: "rgba(201,168,76,0.42)",
+                  color: "rgba(201,168,76,0.5)",
                   fontFamily: "Space Mono, monospace",
                 }}
               >
                 — History
               </p>
-              <p className="text-parchment/72 text-sm sm:text-base leading-[2.05]">
+              <p
+                className="text-sm sm:text-base leading-[2.05]"
+                style={{ color: "var(--color-text-muted)" }}
+              >
                 {country.history}
               </p>
             </div>
@@ -504,13 +566,16 @@ function CountryModal({ country, onClose }) {
                 <p
                   className="text-[9px] uppercase tracking-[0.24em] mb-5"
                   style={{
-                    color: "rgba(201,168,76,0.42)",
+                    color: "rgba(201,168,76,0.5)",
                     fontFamily: "Space Mono, monospace",
                   }}
                 >
                   — Global Standing
                 </p>
-                <p className="text-parchment/72 text-sm sm:text-base leading-[2.05]">
+                <p
+                  className="text-sm sm:text-base leading-[2.05]"
+                  style={{ color: "var(--color-text-muted)" }}
+                >
                   {country.globalStanding}
                 </p>
               </div>
@@ -521,7 +586,7 @@ function CountryModal({ country, onClose }) {
               <p
                 className="text-[9px] uppercase tracking-[0.24em] mb-5"
                 style={{
-                  color: "rgba(201,168,76,0.42)",
+                  color: "rgba(201,168,76,0.5)",
                   fontFamily: "Space Mono, monospace",
                 }}
               >
@@ -554,6 +619,17 @@ export function CoffeeOriginsSection() {
   const [selectedId, setSelectedId] = useState(null);
   const selectedCountry = coffeeOrigins.find((c) => c.id === selectedId);
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "";
+  const triggerRef = useRef(null);
+
+  const handleOpen = (id) => {
+    if (id) triggerRef.current = document.activeElement;
+    setSelectedId(id);
+  };
+
+  const handleClose = () => {
+    setSelectedId(null);
+    requestAnimationFrame(() => triggerRef.current?.focus());
+  };
 
   return (
     <APIProvider apiKey={apiKey}>
@@ -564,7 +640,7 @@ export function CoffeeOriginsSection() {
             <CountryModal
               key={selectedCountry.id}
               country={selectedCountry}
-              onClose={() => setSelectedId(null)}
+              onClose={handleClose}
             />
           )}
         </AnimatePresence>
@@ -597,14 +673,14 @@ export function CoffeeOriginsSection() {
           style={{
             color: "rgba(201,168,76,0.28)",
             fontFamily: "Space Mono, monospace",
-            marginBottom: "50px"
+            marginBottom: "50px",
           }}
         >
           ✦ Click any country to explore ✦
         </motion.p>
 
         {/* Country card grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-8 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-7 gap-3 sm:gap-4">
           {coffeeOrigins.map((country, i) => (
             <motion.div
               key={country.id}
@@ -616,7 +692,7 @@ export function CoffeeOriginsSection() {
               <CountryCard
                 country={country}
                 selected={selectedId === country.id}
-                onClick={setSelectedId}
+                onClick={handleOpen}
               />
             </motion.div>
           ))}

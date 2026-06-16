@@ -11,9 +11,9 @@ export function AuthorBio({ author }) {
       </div>
       <div>
         <p className="text-xs text-gold uppercase tracking-widest mb-1">Written by</p>
-        <h4 className="font-display text-lg text-cream mb-0.5">{author.name}</h4>
+        <h4 className="font-display text-lg mb-0.5" style={{ color: 'var(--color-text)' }}>{author.name}</h4>
         <p className="text-sm text-medium-roast mb-2">{author.role}</p>
-        <p className="text-sm text-cream/60 leading-relaxed">{author.bio}</p>
+        <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>{author.bio}</p>
       </div>
     </div>
   )

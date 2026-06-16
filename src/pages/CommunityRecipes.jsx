@@ -63,7 +63,7 @@ function SubmissionCard({ recipe, index }) {
           >
             {recipe.category}
           </span>
-          <span style={{ color: 'rgba(232,223,208,0.28)', fontFamily: 'Space Mono, monospace', fontSize: '9px' }}>{date}</span>
+          <span style={{ color: 'var(--color-text-faint)', fontFamily: 'Space Mono, monospace', fontSize: '9px' }}>{date}</span>
         </div>
 
         {/* Title */}
@@ -74,13 +74,13 @@ function SubmissionCard({ recipe, index }) {
         {/* Stats */}
         <div className="flex items-center gap-5 mt-auto">
           <div className="flex flex-col gap-1">
-            <span style={{ color: 'rgba(232,223,208,0.32)', fontFamily: 'Space Mono, monospace', fontSize: '8px', textTransform: 'uppercase', letterSpacing: '0.12em' }}>
+            <span style={{ color: 'var(--color-text-faint)', fontFamily: 'Space Mono, monospace', fontSize: '8px', textTransform: 'uppercase', letterSpacing: '0.12em' }}>
               Difficulty
             </span>
             <BeanIcons value={recipe.difficulty} />
           </div>
           <div className="flex flex-col gap-1">
-            <span style={{ color: 'rgba(232,223,208,0.32)', fontFamily: 'Space Mono, monospace', fontSize: '8px', textTransform: 'uppercase', letterSpacing: '0.12em' }}>
+            <span style={{ color: 'var(--color-text-faint)', fontFamily: 'Space Mono, monospace', fontSize: '8px', textTransform: 'uppercase', letterSpacing: '0.12em' }}>
               Total Time
             </span>
             <span style={{ color: 'var(--color-accent)', fontFamily: 'Space Mono, monospace', fontSize: '11px' }}>
@@ -88,7 +88,7 @@ function SubmissionCard({ recipe, index }) {
             </span>
           </div>
           <div className="flex flex-col gap-1">
-            <span style={{ color: 'rgba(232,223,208,0.32)', fontFamily: 'Space Mono, monospace', fontSize: '8px', textTransform: 'uppercase', letterSpacing: '0.12em' }}>
+            <span style={{ color: 'var(--color-text-faint)', fontFamily: 'Space Mono, monospace', fontSize: '8px', textTransform: 'uppercase', letterSpacing: '0.12em' }}>
               Ingredients
             </span>
             <span style={{ color: 'var(--color-accent)', fontFamily: 'Space Mono, monospace', fontSize: '11px' }}>
@@ -100,7 +100,7 @@ function SubmissionCard({ recipe, index }) {
         {/* Steps preview */}
         {recipe.steps?.length > 0 && (
           <div className="pt-4 border-t" style={{ borderColor: 'rgba(80,120,60,0.15)' }}>
-            <p style={{ color: 'rgba(232,223,208,0.38)', fontSize: '11px', lineHeight: 1.7 }}>
+            <p style={{ color: 'var(--color-text-faint)', fontSize: '11px', lineHeight: 1.7 }}>
               {recipe.steps[0].instruction.slice(0, 90)}{recipe.steps[0].instruction.length > 90 ? '…' : ''}
             </p>
           </div>
@@ -124,8 +124,8 @@ function EmptyState() {
         </svg>
       </div>
       <div>
-        <h3 className="font-display text-2xl mb-2" style={{ color: 'rgba(232,223,208,0.5)' }}>No recipes yet</h3>
-        <p style={{ color: 'rgba(232,223,208,0.3)', fontFamily: 'Space Mono, monospace', fontSize: '11px', letterSpacing: '0.12em' }}>
+        <h3 className="font-display text-2xl mb-2" style={{ color: 'var(--color-text-muted)' }}>No recipes yet</h3>
+        <p style={{ color: 'var(--color-text-faint)', fontFamily: 'Space Mono, monospace', fontSize: '11px', letterSpacing: '0.12em' }}>
           Be the first to share your signature brew
         </p>
       </div>
@@ -170,7 +170,7 @@ export default function CommunityRecipes() {
               <h1 className="font-display text-5xl sm:text-6xl md:text-7xl text-parchment leading-tight">
                 Your <span className="font-display italic" style={{ color: 'var(--color-accent)' }}>Recipes</span>
               </h1>
-              <p className="mt-4 text-base leading-loose" style={{ color: 'rgba(232,223,208,0.5)', maxWidth: '44ch' }}>
+              <p className="mt-4 text-base leading-loose" style={{ color: 'var(--color-text-muted)', maxWidth: '44ch' }}>
                 Original brews submitted by the community. Every recipe here started with someone's curiosity and a great cup of coffee.
               </p>
             </div>
@@ -217,7 +217,7 @@ export default function CommunityRecipes() {
                   style={{
                     fontFamily: 'Space Mono, monospace', fontSize: '0.6rem', letterSpacing: '0.1em', textTransform: 'uppercase',
                     background: active ? (cat === 'All' ? 'var(--color-accent)' : c) : 'transparent',
-                    color: active ? 'var(--color-bg)' : 'rgba(232,223,208,0.5)',
+                    color: active ? 'var(--color-bg)' : 'var(--color-text-muted)',
                     border: `1px solid ${active ? (cat === 'All' ? 'var(--color-accent)' : c) : 'rgba(80,120,60,0.25)'}`,
                   }}
                 >
@@ -231,7 +231,7 @@ export default function CommunityRecipes() {
             value={sortBy}
             onChange={e => setSortBy(e.target.value)}
             className="rounded-xl px-3 py-2 text-xs outline-none"
-            style={{ background: 'var(--color-surface)', border: '1px solid rgba(80,120,60,0.3)', color: 'rgba(232,223,208,0.6)', fontFamily: 'Space Mono, monospace', fontSize: '10px', letterSpacing: '0.08em' }}
+            style={{ background: 'var(--color-surface)', border: '1px solid rgba(80,120,60,0.3)', color: 'var(--color-text-muted)', fontFamily: 'Space Mono, monospace', fontSize: '10px', letterSpacing: '0.08em' }}
           >
             <option value="newest">Newest first</option>
             <option value="oldest">Oldest first</option>

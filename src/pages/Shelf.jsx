@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useBookmarks } from '../hooks/useBookmarks'
+import { useTheme } from '../contexts/ThemeContext'
+import { SEO } from '../components/ui/SEO'
 
 function BookmarkIcon({ size = 64 }) {
   return (
@@ -10,7 +12,7 @@ function BookmarkIcon({ size = 64 }) {
       height={size}
       viewBox="0 0 24 24"
       fill="none"
-      stroke="#C9A84C"
+      stroke="currentColor"
       strokeWidth="1.2"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -51,7 +53,8 @@ function EmptyShelf() {
       <motion.div
         animate={{ y: [0, -8, 0] }}
         transition={{ repeat: Infinity, duration: 3.5, ease: 'easeInOut' }}
-        className="mb-8 opacity-70"
+        className="mb-8"
+        style={{ opacity: 0.75, color: 'var(--color-accent)' }}
       >
         <BookmarkIcon size={72} />
       </motion.div>
@@ -62,39 +65,51 @@ function EmptyShelf() {
         Your shelf is empty
       </h2>
       <p
-        className="text-sm leading-relaxed mb-8 max-w-[34ch]"
-        style={{ color: 'rgba(232,223,208,0.45)', fontFamily: 'Inter, sans-serif' }}
+        className="text-sm leading-relaxed mb-10 max-w-[34ch]"
+        style={{ color: 'var(--color-text-muted)', fontFamily: 'Inter, sans-serif' }}
       >
         Bookmark articles as you read — they'll live here for whenever you're ready.
       </p>
-      <Link
-        to="/"
-        className="btn-outline rounded-full"
-        style={{ borderRadius: '9999px' }}
-      >
-        Browse Articles
-      </Link>
+      <div className="flex flex-col sm:flex-row items-center gap-4">
+        <Link to="/culture" className="btn-solid">
+          Browse Articles
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+            <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+          </svg>
+        </Link>
+        <Link to="/recipes" className="btn-outline">
+          Explore Recipes
+        </Link>
+      </div>
     </motion.div>
   )
 }
 
 function BookmarkCard({ bookmark, onRemove, index }) {
+  const { theme } = useTheme()
+  const isLight = theme === 'light'
   const fallbackImage = `https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&h=350&fit=crop&q=80`
+
+  const cardBg = isLight ? '#FFFFFF' : 'var(--color-card)'
+  const cardShadow = isLight
+    ? '0 2px 16px rgba(80,40,0,0.09), 0 1px 4px rgba(80,40,0,0.05)'
+    : '0 4px 24px rgba(0,0,0,0.45)'
+  const cardBorder = isLight ? 'rgba(140,90,20,0.18)' : 'var(--color-border)'
+  const coverGradient = isLight
+    ? 'linear-gradient(to top, rgba(30,15,0,0.6) 0%, transparent 55%)'
+    : 'linear-gradient(to top, rgba(28,43,20,0.85) 0%, transparent 55%)'
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.95 }}
-      transition={{
-        duration: 0.45,
-        delay: index * 0.06,
-        ease: [0.22, 1, 0.36, 1],
-      }}
+      transition={{ duration: 0.45, delay: index * 0.06, ease: [0.22, 1, 0.36, 1] }}
       className="flex flex-col rounded-2xl overflow-hidden"
       style={{
-        background: 'var(--color-card)',
-        border: '1px solid var(--color-border)',
+        background: cardBg,
+        border: `1px solid ${cardBorder}`,
+        boxShadow: cardShadow,
       }}
     >
       {/* Cover image */}
@@ -102,19 +117,15 @@ function BookmarkCard({ bookmark, onRemove, index }) {
         <img
           src={bookmark.coverImage || fallbackImage}
           alt={bookmark.title}
+          loading="lazy"
+          decoding="async"
           onError={(e) => { e.currentTarget.src = fallbackImage }}
           className="w-full h-full object-cover"
           style={{ transition: 'transform 0.4s ease' }}
           onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.04)' }}
           onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)' }}
         />
-        {/* Gradient overlay */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background: 'linear-gradient(to top, rgba(28,43,20,0.85) 0%, transparent 55%)',
-          }}
-        />
+        <div className="absolute inset-0" style={{ background: coverGradient }} />
       </div>
 
       {/* Card body */}
@@ -125,8 +136,8 @@ function BookmarkCard({ bookmark, onRemove, index }) {
             className="self-start text-[9px] uppercase tracking-[0.2em] px-2.5 py-1 rounded-full"
             style={{
               color: 'var(--color-accent)',
-              background: 'rgba(201,168,76,0.1)',
-              border: '1px solid rgba(201,168,76,0.2)',
+              background: 'var(--color-accent-dim)',
+              border: '1px solid var(--color-accent-border)',
               fontFamily: 'Space Mono, monospace',
             }}
           >
@@ -150,28 +161,26 @@ function BookmarkCard({ bookmark, onRemove, index }) {
         {/* Meta */}
         <div
           className="flex items-center gap-2 text-[11px]"
-          style={{ color: 'rgba(232,223,208,0.45)', fontFamily: 'Inter, sans-serif' }}
+          style={{ color: 'var(--color-text-muted)', fontFamily: 'Inter, sans-serif' }}
         >
           {bookmark.author && <span>{bookmark.author}</span>}
           {bookmark.author && bookmark.readTime && (
-            <span style={{ color: 'rgba(201,168,76,0.3)' }}>·</span>
+            <span style={{ color: 'var(--color-border-strong)' }}>·</span>
           )}
           {bookmark.readTime && <span>{bookmark.readTime} min read</span>}
         </div>
 
-        {/* Spacer */}
         <div className="flex-1" />
 
         {/* Actions row */}
-        <div className="flex items-center gap-3 pt-2" style={{ borderTop: '1px solid rgba(80,120,60,0.15)' }}>
+        <div
+          className="flex items-center gap-3 pt-2"
+          style={{ borderTop: '1px solid var(--color-border)' }}
+        >
           <Link
             to={`/article/${bookmark.id}`}
             className="btn-outline flex-1 justify-center text-center"
-            style={{
-              borderRadius: '0.6rem',
-              padding: '0.55rem 1rem',
-              fontSize: '0.65rem',
-            }}
+            style={{ borderRadius: '0.6rem', padding: '0.55rem 1rem', fontSize: '0.65rem' }}
           >
             Read Article
           </Link>
@@ -184,9 +193,9 @@ function BookmarkCard({ bookmark, onRemove, index }) {
             style={{
               width: '36px',
               height: '36px',
-              background: 'rgba(201,168,76,0.07)',
-              border: '1px solid rgba(201,168,76,0.18)',
-              color: 'rgba(232,223,208,0.5)',
+              background: 'var(--color-accent-dim)',
+              border: '1px solid var(--color-accent-border)',
+              color: 'var(--color-text-muted)',
               cursor: 'pointer',
               flexShrink: 0,
             }}
@@ -196,9 +205,9 @@ function BookmarkCard({ bookmark, onRemove, index }) {
               e.currentTarget.style.color = '#e05555'
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'rgba(201,168,76,0.07)'
-              e.currentTarget.style.borderColor = 'rgba(201,168,76,0.18)'
-              e.currentTarget.style.color = 'rgba(232,223,208,0.5)'
+              e.currentTarget.style.background = 'var(--color-accent-dim)'
+              e.currentTarget.style.borderColor = 'var(--color-accent-border)'
+              e.currentTarget.style.color = 'var(--color-text-muted)'
             }}
           >
             <TrashIcon />
@@ -211,6 +220,8 @@ function BookmarkCard({ bookmark, onRemove, index }) {
 
 export default function Shelf() {
   const { bookmarks, toggle, count } = useBookmarks()
+  const { theme } = useTheme()
+  const isLight = theme === 'light'
 
   const clearAll = () => {
     if (window.confirm('Remove all saved articles?')) {
@@ -218,20 +229,23 @@ export default function Shelf() {
     }
   }
 
+  const heroGradient = isLight
+    ? 'linear-gradient(180deg, rgba(220,196,148,0.75) 0%, transparent 100%)'
+    : 'linear-gradient(180deg, rgba(22,34,16,0.9) 0%, transparent 100%)'
+
   return (
     <div className="min-h-screen" style={{ background: 'var(--color-bg)' }}>
+      <SEO title="My Shelf" description="Your saved articles and bookmarks — all in one place." />
       {/* Hero section */}
       <section
         className="pt-24 pb-14 px-6 relative overflow-hidden"
-        style={{
-          background: 'linear-gradient(180deg, rgba(22,34,16,0.9) 0%, transparent 100%)',
-        }}
+        style={{ background: heroGradient }}
       >
         {/* Dot grid */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            backgroundImage: `radial-gradient(circle at 2px 2px, rgba(201,168,76,0.07) 1px, transparent 0)`,
+            backgroundImage: `radial-gradient(circle at 2px 2px, var(--color-accent-border) 1px, transparent 0)`,
             backgroundSize: '28px 28px',
           }}
         />
@@ -273,17 +287,17 @@ export default function Shelf() {
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.8 }}
-                  className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs"
+                  className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full"
                   style={{
-                    background: 'rgba(201,168,76,0.1)',
-                    border: '1px solid rgba(201,168,76,0.25)',
+                    background: 'var(--color-accent-dim)',
+                    border: '1px solid var(--color-accent-border)',
                     color: 'var(--color-accent)',
                     fontFamily: 'Space Mono, monospace',
                     fontSize: '0.7rem',
                     letterSpacing: '0.12em',
                   }}
                 >
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="#C9A84C" stroke="none">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="none">
                     <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
                   </svg>
                   {count} saved
@@ -310,7 +324,7 @@ export default function Shelf() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
             >
-              {/* Grid header with clear all */}
+              {/* Grid header */}
               <div className="flex items-center justify-between mb-8">
                 <span
                   className="text-xs uppercase tracking-widest"
@@ -333,7 +347,7 @@ export default function Shelf() {
                     letterSpacing: '0.18em',
                     padding: '0.4rem 0.6rem',
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.color = 'rgba(220,80,80,0.7)' }}
+                  onMouseEnter={(e) => { e.currentTarget.style.color = 'rgba(220,80,80,0.8)' }}
                   onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--color-text-faint)' }}
                 >
                   <TrashIcon />

@@ -20,8 +20,16 @@ function GamepadIcon() {
 export function Layout({ children }) {
   return (
     <>
+      {/* Skip-to-content for keyboard / screen-reader users */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:px-4 focus:py-2 focus:rounded-lg focus:text-sm focus:font-medium focus:no-underline"
+        style={{ background: 'var(--color-accent)', color: 'var(--color-bg)', fontFamily: 'Inter, sans-serif' }}
+      >
+        Skip to main content
+      </a>
       <Navbar />
-      <main className="w-full">{children}</main>
+      <main id="main-content" className="w-full">{children}</main>
       <Footer />
       <ScrollToTop />
       <Toaster />
