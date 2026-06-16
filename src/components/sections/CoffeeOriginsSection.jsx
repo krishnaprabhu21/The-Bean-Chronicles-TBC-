@@ -77,12 +77,12 @@ function CountryCard({ country, selected, onClick }) {
 
 function CoffeeMap({ country }) {
   return (
-    <div style={{ height: "100%", width: "100%", borderRadius: "14px", overflow: "hidden" }}>
+    <div style={{ height: "100%", minHeight: "320px", width: "100%", borderRadius: "14px", overflow: "hidden" }}>
       <MapContainer
         key={country.id}
         center={[country.mapCenter[0], country.mapCenter[1]]}
         zoom={country.mapZoom}
-        style={{ height: "100%", width: "100%" }}
+        style={{ height: "100%", minHeight: "320px", width: "100%" }}
         zoomControl={false}
         dragging={false}
         scrollWheelZoom={false}
@@ -211,10 +211,7 @@ function CountryModal({ country, onClose }) {
           </div>
 
           {/* Map */}
-          <div
-            className="flex-1 min-h-[280px] sm:min-h-0"
-            style={{ height: "100%" }}
-          >
+          <div className="flex-1" style={{ minHeight: "320px" }}>
             <CoffeeMap country={country} />
           </div>
 

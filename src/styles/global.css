@@ -511,3 +511,24 @@ body::after {
   #recipe-print-root .print-tip { background: #FFF8E7; border-left: 2pt solid #C9A84C; padding: 6pt 10pt; margin: 8pt 0; font-style: italic; font-size: 9.5pt; }
   #recipe-print-root .print-footer { margin-top: 24pt; font-size: 8pt; color: #aaa; text-align: center; }
 }
+
+/* ── Leaflet overrides ───────────────────────────────────────────── */
+.leaflet-container {
+  font-family: 'Inter', sans-serif;
+  background: #0D1810;
+}
+.leaflet-control-attribution {
+  background: rgba(13,24,16,0.75) !important;
+  color: rgba(232,223,208,0.4) !important;
+  font-size: 9px !important;
+}
+.leaflet-control-attribution a {
+  color: rgba(201,168,76,0.6) !important;
+}
+.leaflet-popup-content-wrapper {
+  border-radius: 8px !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5) !important;
+}
+.leaflet-popup-tip {
+  background: #fff !important;
+}
