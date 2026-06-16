@@ -3,11 +3,13 @@ import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { useScrollProgress } from '../hooks/useScrollProgress'
 import { useGuardianArticle } from '../hooks/useGuardianArticle'
+import { useGuardianArticles } from '../hooks/useGuardianArticles'
 import { useBookmarks } from '../hooks/useBookmarks'
 import { SEO } from '../components/ui/SEO'
 import { useToast } from '../contexts/ToastContext'
 import { BlurImage } from '../components/ui/BlurImage'
 import { useRecentlyViewed } from '../hooks/useRecentlyViewed'
+import { ArticleCard, ArticleCardSkeleton } from '../components/ui/ArticleCard'
 
 function useReadAloud(text) {
   const [speaking, setSpeaking] = useState(false)
@@ -45,6 +47,29 @@ function useReadAloud(text) {
   }
 
   return { speaking, paused, start, pause, resume, stop }
+}
+
+function RelatedArticles({ currentId }) {
+  const { articles, loading } = useGuardianArticles({ pageSize: 7 })
+  const related = articles.filter(a => a.id !== currentId).slice(0, 3)
+  if (!loading && related.length === 0) return null
+  return (
+    <section className="max-w-5xl mx-auto px-4 sm:px-6 pb-24">
+      <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, rgba(201,168,76,0.18), transparent)', marginBottom: '3.5rem' }} />
+      <div className="mb-9">
+        <span style={{ color: 'var(--color-accent)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.22em', fontWeight: 600, fontFamily: 'Space Mono, monospace' }}>
+          More Coffee
+        </span>
+        <h2 className="font-display text-2xl mt-1.5" style={{ color: 'var(--color-text)' }}>Keep Reading</h2>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        {loading
+          ? Array.from({ length: 3 }).map((_, i) => <ArticleCardSkeleton key={i} />)
+          : related.map(a => <ArticleCard key={a.id} article={a} />)
+        }
+      </div>
+    </section>
+  )
 }
 
 export default function ArticleDetail() {
@@ -293,6 +318,8 @@ export default function ArticleDetail() {
                 </a>
               </div>
             </motion.div>
+
+            <RelatedArticles currentId={article.id} />
           </>
         )}
       </div>

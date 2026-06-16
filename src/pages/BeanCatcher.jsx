@@ -428,6 +428,19 @@ export function BeanCatcherGame() {
     }
   }, [])
 
+  // Non-passive touch listener so preventDefault() actually suppresses scroll
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const handler = (e) => {
+      e.preventDefault()
+      const rect = canvas.getBoundingClientRect()
+      gs.current.mouse = ((e.touches[0].clientX - rect.left) / rect.width) * CW
+    }
+    canvas.addEventListener('touchmove', handler, { passive: false })
+    return () => canvas.removeEventListener('touchmove', handler)
+  }, [])
+
   function onMouseMove(e) {
     const canvas = canvasRef.current
     if (!canvas) return
@@ -436,14 +449,6 @@ export function BeanCatcherGame() {
   }
 
   function onMouseLeave() { gs.current.mouse = null }
-
-  function onTouchMove(e) {
-    e.preventDefault()
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const rect = canvas.getBoundingClientRect()
-    gs.current.mouse = ((e.touches[0].clientX - rect.left) / rect.width) * CW
-  }
 
   return (
     <div className="w-full max-w-4xl mx-auto px-4 sm:px-8 pb-8">
@@ -503,7 +508,6 @@ export function BeanCatcherGame() {
             style={{ touchAction: 'none' }}
             onMouseMove={onMouseMove}
             onMouseLeave={onMouseLeave}
-            onTouchMove={onTouchMove}
           />
 
           {/* Start overlay */}
@@ -562,7 +566,7 @@ export function BeanCatcherGame() {
                   className="text-[10px] uppercase tracking-[0.18em] -mt-3"
                   style={{ color: 'rgba(232,223,208,0.22)', fontFamily: 'Space Mono, monospace' }}
                 >
-                  ← → arrows or mouse to move
+                  ← → keys · mouse · or drag/tap to move
                 </p>
               </motion.div>
             )}
@@ -629,6 +633,32 @@ export function BeanCatcherGame() {
               </motion.div>
             )}
           </AnimatePresence>
+        </div>
+
+        {/* Mobile directional buttons */}
+        <div className="flex gap-3 mt-3 sm:hidden">
+          {[
+            { label: '←', dir: 'left' },
+            { label: '→', dir: 'right' },
+          ].map(({ label, dir }) => (
+            <button
+              key={dir}
+              onPointerDown={() => { gs.current.keys[dir] = true }}
+              onPointerUp={() => { gs.current.keys[dir] = false }}
+              onPointerLeave={() => { gs.current.keys[dir] = false }}
+              className="flex-1 h-14 rounded-xl flex items-center justify-center select-none text-2xl"
+              style={{
+                background: 'rgba(201,168,76,0.08)',
+                border: '1px solid rgba(201,168,76,0.22)',
+                color: '#C9A84C',
+                cursor: 'pointer',
+                touchAction: 'none',
+                WebkitUserSelect: 'none',
+              }}
+            >
+              {label}
+            </button>
+          ))}
         </div>
 
         {/* Legend */}

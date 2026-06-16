@@ -1,5 +1,5 @@
 import { useParams, Navigate, useNavigate } from 'react-router-dom'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { recipes, categories } from '../data'
 import { RecipeCard } from '../components/ui/RecipeCard'
@@ -372,6 +372,18 @@ function StatPill({ label, value, accent = false }) {
   )
 }
 
+function scaleAmount(amount, factor) {
+  if (factor === 1) return amount
+  return amount.replace(/\d+\/\d+|\d+\.?\d*/g, (m) => {
+    const n = m.includes('/')
+      ? m.split('/').reduce((a, b) => Number(a) / Number(b))
+      : parseFloat(m)
+    if (isNaN(n) || n === 0) return m
+    const result = n * factor
+    return Number.isInteger(result) ? String(result) : (Math.round(result * 10) / 10).toString()
+  })
+}
+
 function shareRecipe(recipe, addToast) {
   const difficulty = recipe.difficulty <= 1 ? 'Easy' : recipe.difficulty <= 3 ? 'Intermediate' : 'Advanced'
   const ingredientsList = recipe.ingredients.map(i => `  • ${i.amount} ${i.item}`).join('\n')
@@ -404,6 +416,7 @@ export default function RecipeDetail() {
   const { addToast } = useToast()
   const { addItem } = useRecentlyViewed()
   const recipe = recipes.find((r) => r.slug === slug)
+  const [scale, setScale] = useState(1)
   if (!recipe) return <Navigate to="/recipes" replace />
 
   // Track this visit for Recently Viewed strip
@@ -594,16 +607,37 @@ export default function RecipeDetail() {
           viewport={{ once: true }}
           transition={{ duration: 0.55 }}
         >
-          {/* Section heading */}
-          <div className="flex items-baseline gap-3 mb-2">
-            <h2 className="font-display text-3xl" style={{ color: 'var(--color-accent)' }}>What You'll Need</h2>
-            <span style={{ color: 'var(--color-text-faint)', fontSize: '13px' }}>
-              {recipe.ingredients.length} ingredient{recipe.ingredients.length !== 1 ? 's' : ''}
-            </span>
+          {/* Section heading + serving scale */}
+          <div className="flex items-center justify-between gap-4 mb-8 flex-wrap">
+            <div className="flex items-baseline gap-3">
+              <h2 className="font-display text-3xl" style={{ color: 'var(--color-accent)' }}>What You'll Need</h2>
+              <span style={{ color: 'var(--color-text-faint)', fontSize: '13px' }}>
+                {recipe.ingredients.length} ingredient{recipe.ingredients.length !== 1 ? 's' : ''}
+              </span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span style={{ color: 'var(--color-text-faint)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.18em', marginRight: 4, fontFamily: 'Space Mono, monospace' }}>
+                Serves
+              </span>
+              {[1, 2, 3].map(n => (
+                <button
+                  key={n}
+                  onClick={() => setScale(n)}
+                  className="w-9 h-9 rounded-full transition-all duration-200"
+                  style={{
+                    background: scale === n ? 'var(--color-accent)' : 'var(--color-surface)',
+                    color: scale === n ? 'var(--color-bg)' : 'var(--color-text-muted)',
+                    border: `1px solid ${scale === n ? 'var(--color-accent)' : 'var(--color-border-strong)'}`,
+                    fontFamily: 'Space Mono, monospace',
+                    fontSize: '11px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  ×{n}
+                </button>
+              ))}
+            </div>
           </div>
-          <p className="mb-9 text-sm" style={{ color: 'var(--color-text-muted)' }}>
-            Gather everything before you begin — it makes the process smoother.
-          </p>
 
           {/* Ingredient tiles */}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
@@ -626,7 +660,7 @@ export default function RecipeDetail() {
                 {/* Amount + name */}
                 <div>
                   <p className="text-xs font-bold mb-0.5" style={{ color: 'var(--color-accent)' }}>
-                    {ing.amount}
+                    {scaleAmount(ing.amount, scale)}
                   </p>
                   <p className="text-xs leading-snug" style={{ color: 'var(--color-text-muted)' }}>
                     {ing.item}
