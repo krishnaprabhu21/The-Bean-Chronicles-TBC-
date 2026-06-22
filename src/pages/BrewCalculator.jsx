@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { BackButton } from '../components/ui/BackButton'
+import { SEO } from '../components/ui/SEO'
 
 // ── Data ─────────────────────────────────────────────────────────────────────
 
@@ -153,6 +154,7 @@ export default function BrewCalculator() {
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--color-bg)' }}>
+      <SEO title="Brew Calculator" description="Calculate your perfect coffee-to-water ratio for any brewing method — pour over, espresso, French press, and more." />
       <BackButton to="/tools" label="Tools" />
       <style>{`
         input[type=range] { accent-color: #C9A84C; width: 100%; cursor: pointer; }

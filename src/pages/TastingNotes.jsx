@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { BackButton } from '../components/ui/BackButton'
+import { SEO } from '../components/ui/SEO'
 
 // ── Data ─────────────────────────────────────────────────────────────────────
 
@@ -272,6 +273,7 @@ export default function TastingNotes() {
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--color-bg)' }}>
+      <SEO title="Tasting Notes Generator" description="Generate professional tasting notes for any coffee — pick a roast, origin, and brew method to describe your cup." />
       <BackButton to="/tools" label="Tools" />
       <style>{`input[type=range] { accent-color: #C9A84C; }`}</style>
 

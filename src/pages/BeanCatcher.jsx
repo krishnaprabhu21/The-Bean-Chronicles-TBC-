@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { SEO } from '../components/ui/SEO'
 
 // ── Constants ──────────────────────────────────────────────────────────────────
 const CW = 800
@@ -685,6 +686,7 @@ export function BeanCatcherGame() {
 export default function BeanCatcher() {
   return (
     <div className="min-h-screen pt-24 pb-20">
+      <SEO title="Bean Catcher" description="Catch the good beans and dodge the burnt ones — a quick arcade game for coffee lovers." />
       <section
         className="py-12 px-6 text-center"
         style={{ background: 'linear-gradient(180deg, #2D1B14 0%, transparent 100%)' }}

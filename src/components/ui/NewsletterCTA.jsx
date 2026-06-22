@@ -1,13 +1,18 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import { useToast } from '../../contexts/ToastContext'
 
 export function NewsletterCTA() {
   const [email, setEmail] = useState('')
   const [submitted, setSubmitted] = useState(false)
+  const { addToast } = useToast()
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    if (email) setSubmitted(true)
+    if (email) {
+      setSubmitted(true)
+      addToast({ message: 'Welcome to the field notes!', type: 'success', duration: 4000 })
+    }
   }
 
   return (

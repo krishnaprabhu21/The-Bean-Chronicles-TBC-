@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SEO } from '../components/ui/SEO';
 import { useTheme } from '../contexts/ThemeContext';
@@ -1663,6 +1663,124 @@ const TAB_HERO = {
   },
 };
 
+// ── Devices tab with grouped TOC ─────────────────────────────────────────────
+
+function slugCat(cat) {
+  return cat.toLowerCase().replace(/\s+/g, '-').replace(/[+]/g, 'plus')
+}
+
+function DevicesTab({ selectedId, handleOpen }) {
+  const uniqueCategories = useMemo(
+    () => [...new Set(devices.map(d => d.category))],
+    []
+  )
+
+  const jumpTo = (cat) => {
+    const el = document.getElementById(`dev-section-${slugCat(cat)}`)
+    el?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
+  return (
+    <motion.section
+      key="brewing-devices"
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -8 }}
+      transition={{ duration: 0.28 }}
+      className="w-full max-w-[1600px] mx-auto px-4 sm:px-8 xl:px-16 pb-24"
+    >
+      {/* Sticky jump-to strip */}
+      <div
+        className="sticky z-30 py-3 mb-8 mt-6"
+        style={{
+          top: '5rem',
+          background: 'var(--color-bg)',
+          borderBottom: '1px solid var(--color-border)',
+        }}
+      >
+        <div className="flex items-center gap-2 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
+          <span
+            className="flex-shrink-0 text-[9px] uppercase tracking-[0.2em] mr-1"
+            style={{ fontFamily: 'Space Mono, monospace', color: 'var(--color-text-faint)' }}
+          >
+            Jump to
+          </span>
+          {uniqueCategories.map(cat => (
+            <button
+              key={cat}
+              onClick={() => jumpTo(cat)}
+              className="flex-shrink-0 px-3 py-1 rounded-full text-[9px] uppercase tracking-[0.14em] transition-all duration-150"
+              style={{
+                fontFamily: 'Space Mono, monospace',
+                background: 'var(--color-surface)',
+                color: 'var(--color-text-muted)',
+                border: '1px solid var(--color-border)',
+                cursor: 'pointer',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'var(--color-accent-dim)'
+                e.currentTarget.style.color = 'var(--color-accent)'
+                e.currentTarget.style.borderColor = 'var(--color-accent-border)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'var(--color-surface)'
+                e.currentTarget.style.color = 'var(--color-text-muted)'
+                e.currentTarget.style.borderColor = 'var(--color-border)'
+              }}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Grouped device grid */}
+      {uniqueCategories.map((cat) => {
+        const catDevices = devices.filter(d => d.category === cat)
+        return (
+          <div
+            key={cat}
+            id={`dev-section-${slugCat(cat)}`}
+            style={{ scrollMarginTop: '8rem', marginBottom: '3rem' }}
+          >
+            <div className="flex items-center gap-4 mb-5">
+              <h2
+                className="text-[10px] uppercase tracking-[0.22em]"
+                style={{ fontFamily: 'Space Mono, monospace', color: 'var(--color-accent)' }}
+              >
+                {cat}
+              </h2>
+              <div className="flex-1 h-px" style={{ background: 'var(--color-border)' }} />
+              <span
+                className="text-[9px] uppercase tracking-[0.14em]"
+                style={{ fontFamily: 'Space Mono, monospace', color: 'var(--color-text-faint)' }}
+              >
+                {catDevices.length} {catDevices.length === 1 ? 'device' : 'devices'}
+              </span>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
+              {catDevices.map((device, i) => (
+                <motion.div
+                  key={device.id}
+                  initial={{ opacity: 0, y: 18 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.05, duration: 0.35 }}
+                >
+                  <DeviceCard
+                    device={device}
+                    selected={selectedId === device.id}
+                    onClick={handleOpen}
+                  />
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        )
+      })}
+    </motion.section>
+  )
+}
+
 // ── Page ─────────────────────────────────────────────────────────────────────
 
 export default function BrewingGuides() {
@@ -1780,42 +1898,7 @@ export default function BrewingGuides() {
       {/* ── Tab content ──────────────────────────────────────────────── */}
       <AnimatePresence mode="wait">
         {activeTab === "brewing-devices" && (
-          <motion.section
-            key="brewing-devices"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.28 }}
-            className="w-full max-w-[1600px] mx-auto px-4 sm:px-8 xl:px-16 pb-24"
-          >
-            <p
-              className="text-center mt-10 text-[10px] uppercase tracking-[0.25em]"
-              style={{
-                color: "rgba(201,168,76,0.28)",
-                fontFamily: "Space Mono, monospace",
-                marginBottom: "25px",
-              }}
-            >
-              ✦ Click any device to explore ✦
-            </p>
-
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
-              {devices.map((device, i) => (
-                <motion.div
-                  key={device.id}
-                  initial={{ opacity: 0, y: 18 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.04, duration: 0.35 }}
-                >
-                  <DeviceCard
-                    device={device}
-                    selected={selectedId === device.id}
-                    onClick={handleOpen}
-                  />
-                </motion.div>
-              ))}
-            </div>
-          </motion.section>
+          <DevicesTab selectedId={selectedId} handleOpen={handleOpen} />
         )}
 
         {activeTab === "brands" && (

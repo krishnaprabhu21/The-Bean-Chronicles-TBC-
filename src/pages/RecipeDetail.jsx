@@ -5,6 +5,7 @@ import { recipes, categories } from '../data'
 import { RecipeCard } from '../components/ui/RecipeCard'
 import { RecipeIcon } from '../components/ui/RecipeIcon'
 import { SEO } from '../components/ui/SEO'
+import { BrewTimer } from '../components/ui/BrewTimer'
 import { useTheme } from '../contexts/ThemeContext'
 import { useToast } from '../contexts/ToastContext'
 import { useRecentlyViewed } from '../hooks/useRecentlyViewed'
@@ -594,6 +595,11 @@ export default function RecipeDetail() {
                 value={<BeanRating value={recipe.difficulty} />}
               />
               <StatPill label="Steps" value={recipe.steps.length} />
+            </div>
+
+            {/* Brew timer */}
+            <div className="mt-6">
+              <BrewTimer minutes={recipe.brewTime} label={recipe.title} />
             </div>
           </motion.div>
         </div>

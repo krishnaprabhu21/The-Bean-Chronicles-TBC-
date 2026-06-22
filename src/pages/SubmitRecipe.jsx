@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useToast } from '../contexts/ToastContext'
 import { BackButton } from '../components/ui/BackButton'
+import { SEO } from '../components/ui/SEO'
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -664,6 +665,7 @@ export default function SubmitRecipe() {
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--color-bg)' }}>
+      <SEO title="Submit a Recipe" description="Share your coffee recipe with The Bean Chronicles community — espresso, cold brew, lattes, and more welcome." />
       <BackButton to="/community" label="Community" />
       <div style={{ paddingTop: '6rem' }}>
         {/* Hero */}

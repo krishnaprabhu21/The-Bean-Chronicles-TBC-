@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { BackButton } from '../components/ui/BackButton'
+import { SEO } from '../components/ui/SEO'
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 
@@ -472,6 +473,7 @@ export default function ComparisonTool() {
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--color-bg)' }}>
+      <SEO title="Brewing Device Comparison" description="Compare any two coffee brewing devices side-by-side — flavour, technique, difficulty, and which to choose." />
       <BackButton to="/tools" label="Tools" />
       <div style={{ paddingTop: '6rem' }}>
         {/* Hero */}

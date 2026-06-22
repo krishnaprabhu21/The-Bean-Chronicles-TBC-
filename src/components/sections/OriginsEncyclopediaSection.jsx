@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { originsData } from '../../data/originsData';
+import { ImageWithFallback } from '../ui/ImageWithFallback';
 
 const REGIONS = ['All', 'East Africa', 'Central America', 'South America', 'Southeast Asia', 'Middle East', 'Caribbean'];
 
@@ -37,7 +38,7 @@ function OriginCard({ origin, index }) {
         >
           {/* Cover image */}
           <div className="relative h-44 overflow-hidden">
-            <img src={origin.coverImage} alt={origin.country} className="w-full h-full object-cover" loading="lazy" />
+            <ImageWithFallback src={origin.coverImage} alt={origin.country} className="w-full h-full object-cover" />
             <div
               className="absolute inset-0"
               style={{ background: 'linear-gradient(to top, rgba(13,24,16,0.85) 0%, rgba(13,24,16,0.1) 60%, transparent 100%)' }}
