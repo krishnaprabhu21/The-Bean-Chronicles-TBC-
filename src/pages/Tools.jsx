@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { SEO } from '../components/ui/SEO'
@@ -281,6 +281,405 @@ function ToolCard({ tool, index }) {
   )
 }
 
+// ── BloomTimer ────────────────────────────────────────────────────────────────
+
+const SNAP_DURATIONS = [30, 45, 60]
+
+function durToAngle(s) {
+  return (s / 60) * 360
+}
+
+function angleToDur(deg) {
+  const clamped = Math.max(0, Math.min(360, deg))
+  const raw = Math.round((clamped / 360) * 60)
+  return SNAP_DURATIONS.reduce((prev, curr) =>
+    Math.abs(curr - raw) < Math.abs(prev - raw) ? curr : prev
+  )
+}
+
+function polarToCartesian(cx, cy, r, angleDeg) {
+  const rad = ((angleDeg - 90) * Math.PI) / 180
+  return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) }
+}
+
+function arcPath(cx, cy, r, startDeg, endDeg) {
+  if (Math.abs(endDeg - startDeg) < 0.01) return ''
+  const full = endDeg - startDeg >= 360
+  const effectiveEnd = full ? startDeg + 359.99 : endDeg
+  const start = polarToCartesian(cx, cy, r, startDeg)
+  const end = polarToCartesian(cx, cy, r, effectiveEnd)
+  const largeArc = effectiveEnd - startDeg > 180 ? 1 : 0
+  return `M ${start.x} ${start.y} A ${r} ${r} 0 ${largeArc} 1 ${end.x} ${end.y}`
+}
+
+function annularArcPath(cx, cy, r1, r2, startDeg, endDeg) {
+  if (Math.abs(endDeg - startDeg) < 0.01) return ''
+  const full = endDeg - startDeg >= 360
+  const effectiveEnd = full ? startDeg + 359.99 : endDeg
+  const outerStart = polarToCartesian(cx, cy, r2, startDeg)
+  const outerEnd = polarToCartesian(cx, cy, r2, effectiveEnd)
+  const innerEnd = polarToCartesian(cx, cy, r1, effectiveEnd)
+  const innerStart = polarToCartesian(cx, cy, r1, startDeg)
+  const largeArc = effectiveEnd - startDeg > 180 ? 1 : 0
+  return [
+    `M ${outerStart.x} ${outerStart.y}`,
+    `A ${r2} ${r2} 0 ${largeArc} 1 ${outerEnd.x} ${outerEnd.y}`,
+    `L ${innerEnd.x} ${innerEnd.y}`,
+    `A ${r1} ${r1} 0 ${largeArc} 0 ${innerStart.x} ${innerStart.y}`,
+    'Z',
+  ].join(' ')
+}
+
+function BloomTimer() {
+  const [duration, setDuration] = useState(45)
+  const [remaining, setRemaining] = useState(45)
+  const [running, setRunning] = useState(false)
+  const [liveAngle, setLiveAngle] = useState(durToAngle(45))
+  const [flash, setFlash] = useState(false)
+  const dragging = useRef(false)
+  const svgRef = useRef(null)
+
+  // Drag handlers
+  function getAngleFromEvent(e, svg) {
+    const rect = svg.getBoundingClientRect()
+    const cx = rect.left + rect.width / 2
+    const cy = rect.top + rect.height / 2
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY
+    const dx = clientX - cx
+    const dy = clientY - cy
+    let angle = (Math.atan2(dx, -dy) * 180) / Math.PI
+    if (angle < 0) angle += 360
+    return angle
+  }
+
+  function handleDialStart(e) {
+    if (running) return
+    e.preventDefault()
+    dragging.current = true
+    const angle = getAngleFromEvent(e, svgRef.current)
+    const snapped = angleToDur(angle)
+    setLiveAngle(durToAngle(snapped))
+    setDuration(snapped)
+    setRemaining(snapped)
+  }
+
+  useEffect(() => {
+    function onMove(e) {
+      if (!dragging.current || !svgRef.current) return
+      const angle = getAngleFromEvent(e, svgRef.current)
+      const clamped = Math.max(0, Math.min(360, angle))
+      const snapped = angleToDur(clamped)
+      setLiveAngle(durToAngle(snapped))
+      setDuration(snapped)
+      setRemaining(snapped)
+    }
+    function onEnd() {
+      dragging.current = false
+    }
+    window.addEventListener('mousemove', onMove)
+    window.addEventListener('mouseup', onEnd)
+    window.addEventListener('touchmove', onMove, { passive: false })
+    window.addEventListener('touchend', onEnd)
+    return () => {
+      window.removeEventListener('mousemove', onMove)
+      window.removeEventListener('mouseup', onEnd)
+      window.removeEventListener('touchmove', onMove)
+      window.removeEventListener('touchend', onEnd)
+    }
+  }, [])
+
+  // Countdown logic
+  useEffect(() => {
+    if (!running) return
+    if (remaining <= 0) {
+      setRunning(false)
+      setLiveAngle(0)
+      setRemaining(duration)
+      setFlash(true)
+      setTimeout(() => setFlash(false), 600)
+      return
+    }
+    const id = setInterval(() => {
+      setRemaining((r) => {
+        const next = r - 1
+        setLiveAngle((next / 60) * 360)
+        return next
+      })
+    }, 1000)
+    return () => clearInterval(id)
+  }, [running, remaining])
+
+  function handleReset() {
+    setRunning(false)
+    setRemaining(duration)
+    setLiveAngle(durToAngle(duration))
+  }
+
+  const CX = 140, CY = 140
+
+  // Tick marks
+  const ticks = []
+  for (let i = 0; i < 60; i++) {
+    const isMajor = i % 15 === 0
+    const r1 = isMajor ? 110 : 115
+    const r2 = isMajor ? 125 : 122
+    const angle = (i / 60) * 360
+    const p1 = polarToCartesian(CX, CY, r1, angle)
+    const p2 = polarToCartesian(CX, CY, r2, angle)
+    ticks.push(
+      <line
+        key={i}
+        x1={p1.x} y1={p1.y}
+        x2={p2.x} y2={p2.y}
+        stroke={isMajor ? 'var(--color-text-faint)' : 'var(--color-border)'}
+        strokeWidth={isMajor ? 2 : 0.8}
+      />
+    )
+  }
+
+  // Quadrant labels: 15s at 90°, 30s at 180°, 45s at 270°, 60s at 0°
+  const LABELS = [
+    { label: '60s', deg: 0 },
+    { label: '15s', deg: 90 },
+    { label: '30s', deg: 180 },
+    { label: '45s', deg: 270 },
+  ]
+
+  const labelEls = LABELS.map(({ label, deg }) => {
+    const pos = polarToCartesian(CX, CY, 100, deg)
+    return (
+      <text
+        key={label}
+        x={pos.x} y={pos.y}
+        textAnchor="middle"
+        dominantBaseline="middle"
+        fill="var(--color-text-faint)"
+        fontSize="9"
+        fontFamily='"Space Mono", monospace'
+      >
+        {label}
+      </text>
+    )
+  })
+
+  const trackPath = annularArcPath(CX, CY, 118, 130, 0, liveAngle || 0.01)
+  const progressPath = running ? annularArcPath(CX, CY, 118, 130, 0, (remaining / 60) * 360 || 0.01) : null
+
+  const handColor = running ? '#5A9E6A' : 'var(--color-accent)'
+
+  const fadeUp = {
+    initial: { opacity: 0, y: 24 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true },
+    transition: { duration: 0.5 },
+  }
+
+  return (
+    <section className="w-full max-w-[1600px] mx-auto px-8 sm:px-14 xl:px-20 py-16">
+      {/* Divider */}
+      <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, rgba(80,120,60,0.4), transparent)', marginBottom: '4rem' }} />
+
+      <motion.div {...fadeUp} style={{ marginBottom: '2.5rem' }}>
+        <p style={{ fontFamily: '"Space Mono", monospace', fontSize: '0.72rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--color-accent)', marginBottom: '0.75rem' }}>
+          ✦ Brew Ritual ✦
+        </p>
+        <h2 style={{ fontFamily: '"Playfair Display", serif', fontSize: 'clamp(2rem, 5vw, 3rem)', color: 'var(--color-text)', lineHeight: 1.1 }}>
+          Bloom{' '}
+          <span style={{ color: 'var(--color-accent)', fontStyle: 'italic' }}>Timer</span>
+        </h2>
+      </motion.div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', gap: '3rem', alignItems: 'center' }}>
+        {/* Left: SVG Dial */}
+        <motion.div {...fadeUp} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', position: 'relative' }}>
+          {/* Flash overlay */}
+          {flash && (
+            <motion.div
+              initial={{ scale: 1, opacity: 1 }}
+              animate={{ scale: 1.08, opacity: 0 }}
+              transition={{ duration: 0.6, ease: 'easeOut' }}
+              style={{
+                position: 'absolute',
+                inset: 0,
+                borderRadius: '50%',
+                background: 'rgba(90,158,106,0.35)',
+                zIndex: 10,
+                pointerEvents: 'none',
+                width: 280,
+                height: 280,
+                margin: '0 auto',
+              }}
+            />
+          )}
+
+          <svg
+            ref={svgRef}
+            viewBox="0 0 280 280"
+            width="280"
+            height="280"
+            style={{ cursor: running ? 'default' : 'grab', userSelect: 'none', touchAction: 'none' }}
+            onMouseDown={handleDialStart}
+            onTouchStart={handleDialStart}
+          >
+            {/* Outer ring */}
+            <circle cx={CX} cy={CY} r={130} fill="var(--color-surface)" stroke="var(--color-border)" strokeWidth={1} />
+
+            {/* Track arc (set duration indicator) */}
+            {liveAngle > 0.5 && (
+              <path d={trackPath} fill="rgba(201,168,76,0.25)" />
+            )}
+
+            {/* Active progress arc */}
+            {running && progressPath && (
+              <path d={progressPath} fill="var(--color-accent)" opacity={0.9} />
+            )}
+
+            {/* Tick marks */}
+            {ticks}
+
+            {/* Quadrant labels */}
+            {labelEls}
+
+            {/* Clock hand */}
+            <g
+              style={{
+                transform: `rotate(${liveAngle}deg)`,
+                transformOrigin: `${CX}px ${CY}px`,
+                transition: dragging.current || running ? 'none' : 'transform 0.3s cubic-bezier(0.34,1.56,0.64,1)',
+              }}
+            >
+              <line
+                x1={CX} y1={CY + 10}
+                x2={CX} y2={CY - 100}
+                stroke={handColor}
+                strokeWidth={2.5}
+                strokeLinecap="round"
+              />
+              <circle cx={CX} cy={CY - 100} r={6} fill={handColor} />
+            </g>
+
+            {/* Center hub */}
+            <circle cx={CX} cy={CY} r={14} fill="var(--color-card)" stroke="var(--color-accent)" strokeWidth={1.5} />
+            <text
+              x={CX} y={CY}
+              textAnchor="middle"
+              dominantBaseline="middle"
+              fill="var(--color-text-faint)"
+              fontSize="7"
+              fontFamily='"Space Mono", monospace'
+              letterSpacing="0.05em"
+            >
+              BLOOM
+            </text>
+          </svg>
+
+          {/* Countdown display */}
+          <div style={{ textAlign: 'center' }}>
+            <div style={{
+              fontFamily: '"Space Mono", monospace',
+              fontSize: '3rem',
+              fontWeight: 700,
+              color: running ? '#5A9E6A' : 'var(--color-accent)',
+              lineHeight: 1,
+              marginBottom: '0.4rem',
+              transition: 'color 0.3s',
+            }}>
+              {remaining}s
+            </div>
+            <p style={{ color: 'var(--color-text-faint)', fontSize: '0.8rem', fontFamily: '"Space Mono", monospace', letterSpacing: '0.08em' }}>
+              {running ? 'Brewing...' : 'Bloom phase — set your duration'}
+            </p>
+          </div>
+
+          {/* Buttons */}
+          <div style={{ display: 'flex', gap: '0.75rem' }}>
+            <button
+              onClick={() => setRunning((r) => !r)}
+              style={{
+                background: '#5A9E6A',
+                border: 'none',
+                borderRadius: '0.75rem',
+                color: '#fff',
+                padding: '0.65rem 1.75rem',
+                fontSize: '0.875rem',
+                cursor: 'pointer',
+                fontFamily: '"Space Mono", monospace',
+                letterSpacing: '0.05em',
+                fontWeight: 600,
+                transition: 'opacity 0.15s, transform 0.15s',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.opacity = '0.85' }}
+              onMouseLeave={e => { e.currentTarget.style.opacity = '1' }}
+            >
+              {running ? 'Pause' : 'Start'}
+            </button>
+            <button
+              onClick={handleReset}
+              style={{
+                background: 'transparent',
+                border: '1px solid rgba(90,158,106,0.5)',
+                borderRadius: '0.75rem',
+                color: '#5A9E6A',
+                padding: '0.65rem 1.75rem',
+                fontSize: '0.875rem',
+                cursor: 'pointer',
+                fontFamily: '"Space Mono", monospace',
+                letterSpacing: '0.05em',
+                fontWeight: 600,
+                transition: 'border-color 0.15s, opacity 0.15s',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(90,158,106,0.9)' }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(90,158,106,0.5)' }}
+            >
+              Reset
+            </button>
+          </div>
+        </motion.div>
+
+        {/* Right: explanation */}
+        <motion.div
+          {...fadeUp}
+          transition={{ duration: 0.5, delay: 0.12 }}
+          style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}
+        >
+          <div
+            style={{
+              background: 'var(--color-surface)',
+              border: '1px solid rgba(201,168,76,0.15)',
+              borderRadius: '1.25rem',
+              padding: '2rem',
+            }}
+          >
+            <p style={{ fontFamily: '"Space Mono", monospace', fontSize: '0.65rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--color-accent)', marginBottom: '0.6rem' }}>
+              The Bloom
+            </p>
+            <p style={{ color: 'var(--color-text-muted)', fontSize: '0.95rem', lineHeight: 1.75, margin: 0 }}>
+              The first 30–60 seconds of any pour-over brew. Hot water saturates the grounds, releasing CO₂ trapped during roasting. Fresh beans bloom vigorously — stale beans barely move.
+            </p>
+          </div>
+
+          <div
+            style={{
+              background: 'var(--color-surface)',
+              border: '1px solid rgba(80,120,60,0.15)',
+              borderRadius: '1.25rem',
+              padding: '2rem',
+            }}
+          >
+            <p style={{ fontFamily: '"Space Mono", monospace', fontSize: '0.65rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--color-accent)', marginBottom: '0.6rem' }}>
+              How to use
+            </p>
+            <p style={{ color: 'var(--color-text-muted)', fontSize: '0.95rem', lineHeight: 1.75, margin: 0 }}>
+              Drag the hand to set your bloom time (30, 45, or 60s), then hit Start. Pour just enough water to saturate the grounds — roughly 2× the coffee weight.
+            </p>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  )
+}
+
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function Tools() {
@@ -402,6 +801,9 @@ export default function Tools() {
           </motion.div>
           <BeanCatcherGame />
         </section>
+
+        {/* Bloom Timer */}
+        <BloomTimer />
 
         {/* More coming soon + CTA */}
         <section style={{ maxWidth: '700px', margin: '0 auto', padding: '0 1.5rem 6rem' }}>

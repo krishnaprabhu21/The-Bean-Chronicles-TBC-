@@ -10,36 +10,44 @@ import { useTheme } from '../contexts/ThemeContext'
 import { useToast } from '../contexts/ToastContext'
 import { useRecentlyViewed } from '../hooks/useRecentlyViewed'
 
-function printRecipe(recipe) {
+function printRecipe(recipe, addToast) {
   const el = document.getElementById('recipe-print-root')
   if (!el) return
 
+  const difficultyLabel = ['', 'Easy', 'Moderate', 'Intermediate', 'Advanced', 'Expert'][recipe.difficulty]
+  const totalTime = recipe.brewTime >= 60
+    ? `${Math.round((recipe.prepTime + recipe.brewTime) / 60)}h`
+    : `${recipe.prepTime + recipe.brewTime} min`
+
   el.innerHTML = `
+    ${recipe.coverImage ? `<img src="${recipe.coverImage}" alt="${recipe.title}" class="print-hero-img" />` : ''}
     <h1>${recipe.title}</h1>
     <p class="print-meta">
       Prep: ${recipe.prepTime} min &nbsp;·&nbsp;
       Brew: ${recipe.brewTime} min &nbsp;·&nbsp;
-      Difficulty: ${['', 'Easy', 'Moderate', 'Intermediate', 'Advanced', 'Expert'][recipe.difficulty]} &nbsp;·&nbsp;
-      ${recipe.steps.length} steps · Serves 1
+      Total: ${totalTime} &nbsp;·&nbsp;
+      Difficulty: ${difficultyLabel} &nbsp;·&nbsp;
+      ${recipe.steps.length} steps &nbsp;·&nbsp; Serves 1
     </p>
     <div class="print-divider"></div>
     <h2>Ingredients</h2>
-    <ul>
+    <ul class="print-ingredients">
       ${recipe.ingredients.map(i => `<li><strong>${i.amount}</strong> — ${i.item}</li>`).join('')}
     </ul>
     <div class="print-divider"></div>
     <h2>Method</h2>
-    <ol>
+    <ol class="print-steps">
       ${recipe.steps.map(s => `
         <li>
-          ${s.instruction}
-          ${s.tip ? `<div class="print-tip">💡 ${s.tip}</div>` : ''}
+          <span class="print-step-text">${s.instruction}</span>
+          ${s.tip ? `<div class="print-tip">Tip: ${s.tip}</div>` : ''}
         </li>
       `).join('')}
     </ol>
     <p class="print-footer">The Bean Chronicles &nbsp;·&nbsp; thebeachronicles.com</p>
   `
 
+  addToast?.({ message: 'Choose "Save as PDF" in the print dialog to export this recipe', type: 'info', duration: 5000 })
   window.print()
   el.innerHTML = ''
 }
@@ -596,7 +604,7 @@ export default function RecipeDetail() {
             {/* Action buttons */}
             <div className="flex flex-wrap gap-3 mb-8">
               <button
-                onClick={() => printRecipe(recipe)}
+                onClick={() => printRecipe(recipe, addToast)}
                 className="btn-solid"
                 style={{ fontSize: '0.75rem', padding: '0.85rem 2rem', letterSpacing: '0.18em' }}
               >
@@ -604,7 +612,7 @@ export default function RecipeDetail() {
                   <polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
                   <rect x="6" y="14" width="12" height="8"/>
                 </svg>
-                Print Recipe
+                Print / Save PDF
               </button>
               <button
                 onClick={() => shareRecipe(recipe, addToast)}

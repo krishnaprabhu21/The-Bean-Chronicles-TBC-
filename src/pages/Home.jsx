@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { Link } from 'react-router-dom'
 import { SEO } from '../components/ui/SEO'
 import { HeroSection } from '../components/sections/HeroSection'
 import { FeaturedArticle } from '../components/sections/FeaturedArticle'
@@ -6,6 +7,7 @@ import { ArticleCard, ArticleCardSkeleton } from '../components/ui/ArticleCard'
 import { RecipeCard } from '../components/ui/RecipeCard'
 import { NewsletterCTA } from '../components/ui/NewsletterCTA'
 import { recipes } from '../data'
+import { getDailyEntry } from '../data/dailyCoffee'
 import { useGuardianArticles } from '../hooks/useGuardianArticles'
 
 const fadeUp = {
@@ -21,6 +23,152 @@ function FeaturedSkeleton() {
       className="animate-pulse overflow-hidden"
       style={{ border: '1px solid var(--color-border)', background: 'var(--color-card)', minHeight: 360 }}
     />
+  )
+}
+
+function DailyCoffeeCard() {
+  const entry = getDailyEntry()
+  const today = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })
+
+  return (
+    <motion.div
+      {...fadeUp}
+      className="rounded-3xl overflow-hidden relative"
+      style={{
+        background: `linear-gradient(135deg, #1C2E14 0%, #0D1810 60%, ${entry.color}12 100%)`,
+        border: `1px solid ${entry.color}25`,
+      }}
+    >
+      {/* Accent bar top */}
+      <div className="absolute top-0 left-0 right-0 h-0.5" style={{ background: `linear-gradient(90deg, ${entry.color}, transparent)` }} />
+
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-0">
+        {/* Left panel — date + name */}
+        <div
+          className="lg:col-span-2 p-8 sm:p-10 flex flex-col justify-between gap-6"
+          style={{ borderRight: `1px solid ${entry.color}15` }}
+        >
+          <div>
+            <div className="flex items-center gap-3 mb-6">
+              <span
+                className="text-[9px] uppercase tracking-[0.24em] px-2.5 py-1 rounded-full"
+                style={{
+                  background: `${entry.color}20`,
+                  color: entry.color,
+                  fontFamily: 'Space Mono, monospace',
+                  border: `1px solid ${entry.color}35`,
+                }}
+              >
+                Coffee of the Day
+              </span>
+              <span
+                className="text-[9px] uppercase tracking-[0.14em]"
+                style={{ color: 'var(--color-text-faint)', fontFamily: 'Space Mono, monospace' }}
+              >
+                {today}
+              </span>
+            </div>
+
+            <h2
+              className="font-display text-4xl sm:text-5xl leading-none mb-3"
+              style={{ color: 'var(--color-text)' }}
+            >
+              {entry.name}
+            </h2>
+            <p
+              className="font-display italic text-lg"
+              style={{ color: entry.color }}
+            >
+              {entry.tagline}
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <span
+              className="px-3 py-1.5 rounded-full text-[10px] uppercase tracking-[0.14em]"
+              style={{
+                background: `${entry.color}18`,
+                color: entry.color,
+                fontFamily: 'Space Mono, monospace',
+                border: `1px solid ${entry.color}30`,
+              }}
+            >
+              {entry.category}
+            </span>
+            <span
+              className="text-[10px] uppercase tracking-[0.14em]"
+              style={{ color: 'var(--color-text-faint)', fontFamily: 'Space Mono, monospace' }}
+            >
+              {entry.stat.label}: {entry.stat.value}
+            </span>
+          </div>
+        </div>
+
+        {/* Right panel — description + tip + link */}
+        <div className="lg:col-span-3 p-8 sm:p-10 flex flex-col justify-between gap-6">
+          <div className="flex flex-col gap-5">
+            <p
+              className="text-base leading-loose"
+              style={{ color: 'var(--color-text-muted)' }}
+            >
+              {entry.description}
+            </p>
+
+            {/* Tip callout */}
+            <div
+              className="flex gap-3 p-4 rounded-xl"
+              style={{
+                background: `${entry.color}0D`,
+                border: `1px solid ${entry.color}20`,
+              }}
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke={entry.color}
+                strokeWidth="2"
+                strokeLinecap="round"
+                className="flex-shrink-0 mt-0.5"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+              <p
+                className="text-sm leading-relaxed"
+                style={{ color: 'var(--color-text-muted)', fontStyle: 'italic' }}
+              >
+                {entry.tip}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <Link
+              to="/brewing-guides"
+              className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] transition-colors duration-200"
+              style={{ color: entry.color, fontFamily: 'Space Mono, monospace', textDecoration: 'none' }}
+              onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.7' }}
+              onMouseLeave={(e) => { e.currentTarget.style.opacity = '1' }}
+            >
+              Explore Brewing Guides
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                <line x1="5" y1="12" x2="19" y2="12" />
+                <polyline points="12 5 19 12 12 19" />
+              </svg>
+            </Link>
+            <span
+              className="text-[9px] uppercase tracking-[0.16em]"
+              style={{ color: 'var(--color-text-faint)', fontFamily: 'Space Mono, monospace' }}
+            >
+              Refreshes daily
+            </span>
+          </div>
+        </div>
+      </div>
+    </motion.div>
   )
 }
 
@@ -52,6 +200,15 @@ export default function Home() {
                 ))}
           </div>
         )}
+      </section>
+
+      {/* Daily Coffee Card */}
+      <section className="w-full max-w-[1600px] mx-auto px-8 sm:px-14 xl:px-20 pb-4">
+        <motion.div {...fadeUp} className="mb-10">
+          <p className="label-ornate mb-5">Today's Feature</p>
+          <h2 className="font-display text-4xl md:text-5xl leading-tight" style={{ color: 'var(--color-text)' }}>Daily Coffee</h2>
+        </motion.div>
+        <DailyCoffeeCard />
       </section>
 
       {/* Trending Now */}

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { BackButton } from '../components/ui/BackButton'
 import { SEO } from '../components/ui/SEO'
@@ -130,6 +130,216 @@ function AnimatedNumber({ value, suffix = '' }) {
         {value}{suffix}
       </motion.span>
     </AnimatePresence>
+  )
+}
+
+// ── Water Temperature Data ───────────────────────────────────────────────────
+
+const BREW_RECOMMENDATIONS = [
+  { range: [60, 74],  methods: ['Cold Brew', 'Japanese Iced'],                   note: 'Too cool for hot brewing. Perfect for cold extraction (12–24h).',                                    color: '#6B8FAB' },
+  { range: [75, 82],  methods: ['AeroPress (cool)', 'Siphon'],                    note: 'Lower temps reduce acidity. Good for light-roast iced AeroPress.',                                   color: '#7A9E6A' },
+  { range: [83, 88],  methods: ['AeroPress', 'Cold Brew Concentrate'],             note: 'Sweet spot for AeroPress — extracts sweetness without bitterness.',                                  color: '#7A9E6A' },
+  { range: [89, 92],  methods: ['Pour Over', 'V60', 'Chemex', 'Siphon'],           note: 'Ideal for light-to-medium roasts. Preserves floral and fruit notes.',                               color: '#C9A84C' },
+  { range: [93, 96],  methods: ['Espresso', 'Moka Pot', 'Drip', 'French Press'],  note: 'The standard range. Suits all roast levels and most brew methods.',                                  color: '#C9A84C' },
+  { range: [97, 100], methods: ['French Press (dark)', 'Moka Pot'],               note: 'Very high — use only for dark roasts or French Press. Risks bitterness in lighter roasts.',          color: '#E8624A' },
+]
+
+// ── WaterThermometer Component ───────────────────────────────────────────────
+
+function WaterThermometer() {
+  const [temp, setTemp] = useState(93)
+  const svgRef = useRef(null)
+  const dragging = useRef(false)
+
+  const mercuryColor =
+    temp < 75 ? '#6B8FAB'
+    : temp < 85 ? '#7A9E6A'
+    : temp < 92 ? '#C9A84C'
+    : '#E8624A'
+
+  const fillHeight = ((temp - 60) / 40) * 280
+
+  const currentRec = BREW_RECOMMENDATIONS.find(r => temp >= r.range[0] && temp <= r.range[1])
+
+  const updateTempFromClientY = (clientY) => {
+    if (!svgRef.current) return
+    const svgRect = svgRef.current.getBoundingClientRect()
+    const svgY = (clientY - svgRect.top) / svgRect.height * 420
+    const newTemp = 100 - ((svgY - 60) / 280) * 40
+    setTemp(Math.max(60, Math.min(100, Math.round(newTemp))))
+  }
+
+  useEffect(() => {
+    const onMouseMove = (e) => { if (dragging.current) updateTempFromClientY(e.clientY) }
+    const onMouseUp   = () => { dragging.current = false }
+    const onTouchMove = (e) => { if (dragging.current && e.touches[0]) updateTempFromClientY(e.touches[0].clientY) }
+    const onTouchEnd  = () => { dragging.current = false }
+
+    window.addEventListener('mousemove', onMouseMove)
+    window.addEventListener('mouseup',   onMouseUp)
+    window.addEventListener('touchmove', onTouchMove, { passive: true })
+    window.addEventListener('touchend',  onTouchEnd)
+    return () => {
+      window.removeEventListener('mousemove', onMouseMove)
+      window.removeEventListener('mouseup',   onMouseUp)
+      window.removeEventListener('touchmove', onTouchMove)
+      window.removeEventListener('touchend',  onTouchEnd)
+    }
+  }, [])
+
+  // tick positions in SVG coords: 60°C→y=340, 70°C→y=270, 80°C→y=200, 90°C→y=130, 100°C→y=60
+  const ticks = [
+    { label: '60', y: 340 },
+    { label: '70', y: 270 },
+    { label: '80', y: 200 },
+    { label: '90', y: 130 },
+    { label: '100', y: 60 },
+  ]
+
+  return (
+    <div
+      className="rounded-2xl p-8"
+      style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
+    >
+      <SectionLabel>Extraction Science</SectionLabel>
+      <h2
+        className="font-display text-2xl mb-8"
+        style={{ color: 'var(--color-text)' }}
+      >
+        Water Temperature
+      </h2>
+
+      <div className="grid grid-cols-1 lg:grid-cols-[120px_1fr] gap-8 items-center">
+        {/* Left: SVG thermometer */}
+        <div className="flex justify-center">
+          <svg
+            ref={svgRef}
+            viewBox="0 0 120 420"
+            style={{
+              width: 90,
+              height: 'auto',
+              cursor: dragging.current ? 'grabbing' : 'ns-resize',
+              touchAction: 'none',
+              userSelect: 'none',
+            }}
+            onMouseDown={(e) => { e.preventDefault(); dragging.current = true; updateTempFromClientY(e.clientY) }}
+            onTouchStart={(e) => { dragging.current = true; if (e.touches[0]) updateTempFromClientY(e.touches[0].clientY) }}
+          >
+            {/* Bulb glow */}
+            <circle cx="60" cy="380" r="42" fill={mercuryColor} opacity="0.15" />
+            {/* Outer bulb ring */}
+            <circle cx="60" cy="380" r="38" fill="none" stroke="var(--color-border)" strokeWidth="2" />
+            {/* Bulb fill */}
+            <circle cx="60" cy="380" r="34" fill={mercuryColor} />
+
+            {/* Outer tube */}
+            <rect x="46" y="60" width="28" height="320" rx="14" fill="var(--color-surface)" stroke="var(--color-border)" strokeWidth="1.5" />
+
+            {/* Mercury fill */}
+            <rect
+              x="52"
+              y={340 - fillHeight}
+              width="16"
+              height={fillHeight + 40}
+              rx="8"
+              fill={mercuryColor}
+            />
+
+            {/* Temperature scale ticks + labels */}
+            {ticks.map(({ label, y }) => (
+              <g key={label}>
+                <line x1="78" y1={y} x2="88" y2={y} stroke="var(--color-border)" strokeWidth="1.5" strokeLinecap="round" />
+                <text
+                  x="94"
+                  y={y + 3}
+                  fontSize="9"
+                  fill="var(--color-text-faint)"
+                  fontFamily="Space Mono, monospace"
+                >
+                  {label}
+                </text>
+              </g>
+            ))}
+          </svg>
+        </div>
+
+        {/* Right: temp display + recommendations */}
+        <div>
+          <div className="flex items-end gap-3 mb-2">
+            <span
+              style={{
+                fontFamily: 'Space Mono, monospace',
+                fontSize: 56,
+                fontWeight: 700,
+                color: mercuryColor,
+                lineHeight: 1,
+              }}
+            >
+              {temp}
+            </span>
+            <span
+              style={{
+                fontFamily: 'Space Mono, monospace',
+                fontSize: 24,
+                color: 'var(--color-text-muted)',
+                marginBottom: 8,
+              }}
+            >
+              °C
+            </span>
+          </div>
+
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentRec?.range[0]}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.22 }}
+            >
+              <div className="flex flex-wrap gap-2 mb-4">
+                {currentRec?.methods.map((m) => (
+                  <span
+                    key={m}
+                    className="px-3 py-1.5 rounded-full text-xs font-medium"
+                    style={{
+                      background: currentRec.color + '20',
+                      color: currentRec.color,
+                      border: `1px solid ${currentRec.color}40`,
+                    }}
+                  >
+                    {m}
+                  </span>
+                ))}
+              </div>
+              <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
+                {currentRec?.note}
+              </p>
+            </motion.div>
+          </AnimatePresence>
+
+          {/* Quick preset buttons */}
+          <div className="flex flex-wrap gap-2 mt-6">
+            {[60, 80, 90, 94, 100].map((t) => (
+              <button
+                key={t}
+                onClick={() => setTemp(t)}
+                className="px-3 py-1.5 rounded-full text-[10px] font-medium transition-all duration-200"
+                style={{
+                  background: temp === t ? mercuryColor + '25' : 'var(--color-surface)',
+                  color: temp === t ? mercuryColor : 'var(--color-text-faint)',
+                  border: `1px solid ${temp === t ? mercuryColor + '60' : 'var(--color-border)'}`,
+                  fontFamily: 'Space Mono, monospace',
+                  cursor: 'pointer',
+                }}
+              >
+                {t}°C
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }
 
@@ -522,6 +732,16 @@ export default function BrewCalculator() {
             </div>
           </motion.div>
         </div>
+
+        {/* ── Water Temperature Thermometer ──────────────────────────── */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.25 }}
+          className="mt-8"
+        >
+          <WaterThermometer />
+        </motion.div>
       </section>
     </div>
   )

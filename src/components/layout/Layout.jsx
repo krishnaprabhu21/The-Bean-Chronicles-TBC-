@@ -4,6 +4,8 @@ import { Navbar } from './Navbar'
 import { Footer } from './Footer'
 import { ScrollToTop } from '../ui/ScrollToTop'
 import { Toaster } from '../ui/Toaster'
+import { MiniPlayer } from '../ui/MiniPlayer'
+import { useNowPlaying } from '../../contexts/NowPlayingContext'
 
 function GamepadIcon() {
   return (
@@ -18,6 +20,8 @@ function GamepadIcon() {
 }
 
 export function Layout({ children }) {
+  const { nowPlaying } = useNowPlaying()
+
   return (
     <>
       {/* Skip-to-content for keyboard / screen-reader users */}
@@ -29,14 +33,25 @@ export function Layout({ children }) {
         Skip to main content
       </a>
       <Navbar />
-      <main id="main-content" className="w-full">{children}</main>
+      <main
+        id="main-content"
+        className="w-full"
+        style={{ paddingBottom: nowPlaying ? 76 : 0, transition: 'padding-bottom 0.3s ease' }}
+      >
+        {children}
+      </main>
       <Footer />
       <ScrollToTop />
       <Toaster />
+      <MiniPlayer />
 
-      {/* Floating game button */}
+      {/* Floating game button — rises above mini-bar when active */}
       <motion.div
-        className="fixed bottom-6 left-6 z-40"
+        className="fixed left-6 z-40"
+        style={{
+          bottom: nowPlaying ? 'calc(76px + 1.5rem)' : '1.5rem',
+          transition: 'bottom 0.35s cubic-bezier(0.22,1,0.36,1)',
+        }}
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: 1.4, type: 'spring', stiffness: 260, damping: 20 }}

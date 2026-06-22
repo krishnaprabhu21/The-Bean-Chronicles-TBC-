@@ -5,6 +5,7 @@ import { MotionConfig } from 'framer-motion'
 import App from './App.jsx'
 import { ThemeProvider } from './contexts/ThemeContext.jsx'
 import { ToastProvider } from './contexts/ToastContext.jsx'
+import { NowPlayingProvider } from './contexts/NowPlayingContext.jsx'
 import './styles/global.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
@@ -13,7 +14,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <MotionConfig reducedMotion="user">
         <ToastProvider>
           <ThemeProvider>
-            <App />
+            <NowPlayingProvider>
+              <App />
+            </NowPlayingProvider>
           </ThemeProvider>
         </ToastProvider>
       </MotionConfig>

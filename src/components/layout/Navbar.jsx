@@ -17,6 +17,8 @@ const navLinks = [
       { to: '/brewing-guides', label: 'Brands' },
       { to: '/brewing-guides', label: 'Coffee Types' },
       { to: '/brewing-guides', label: 'Coffee Nerds' },
+      { to: '/brewing-guides', label: 'Brew Beats' },
+      { to: '/reference',     label: 'Coffee Reference' },
     ],
   },
   {
@@ -70,6 +72,7 @@ export function Navbar() {
   const { theme, toggleTheme } = useTheme()
   const { count } = useBookmarks()
   const isLight = theme === 'light'
+  const [hoverMenu, setHoverMenu] = useState(null)
   const [loveOpen, setLoveOpen] = useState(false)
   const [displayLoveCount, setDisplayLoveCount] = useState(getLoveCount)
   const [hasLoved, setHasLoved] = useState(getHasUpvoted)
@@ -135,12 +138,17 @@ export function Navbar() {
 
           {/* Desktop nav */}
           <ul className="hidden md:flex items-center gap-8 lg:gap-10">
-            {navLinks.map(({ to, label }) => (
-              <li key={to}>
+            {navLinks.map(({ to, label, children }) => (
+              <li
+                key={to}
+                className="relative"
+                onMouseEnter={() => children && setHoverMenu(label)}
+                onMouseLeave={() => setHoverMenu(null)}
+              >
                 <NavLink
                   to={to}
                   end={to === '/'}
-                  className="relative text-xs uppercase tracking-[0.18em] font-medium transition-colors duration-200 pb-0.5"
+                  className="relative flex items-center gap-1 text-xs uppercase tracking-[0.18em] font-medium transition-colors duration-200 pb-0.5"
                   style={({ isActive }) => ({
                     color: isActive ? 'var(--color-accent)' : 'var(--color-text-muted)',
                   })}
@@ -148,12 +156,53 @@ export function Navbar() {
                   {({ isActive }) => (
                     <>
                       {label}
+                      {children && (
+                        <svg width="8" height="8" viewBox="0 0 10 6" fill="none" style={{ opacity: 0.5, marginTop: 1 }}>
+                          <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      )}
                       {isActive && (
                         <motion.span layoutId="navUnderline" className="absolute bottom-0 left-0 right-0 h-px" style={{ background: 'var(--color-accent)' }} />
                       )}
                     </>
                   )}
                 </NavLink>
+
+                {/* Dropdown */}
+                <AnimatePresence>
+                  {children && hoverMenu === label && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 4 }}
+                      transition={{ duration: 0.16 }}
+                      className="absolute top-full left-0 pt-3 z-50"
+                    >
+                      <div
+                        className="rounded-xl overflow-hidden py-1.5 min-w-[180px]"
+                        style={{
+                          background: 'var(--color-surface)',
+                          border: '1px solid var(--color-border)',
+                          boxShadow: '0 8px 32px rgba(0,0,0,0.24)',
+                        }}
+                      >
+                        {children.map((child) => (
+                          <NavLink
+                            key={child.to + child.label}
+                            to={child.to}
+                            onClick={() => setHoverMenu(null)}
+                            className="block px-4 py-2.5 text-[10px] uppercase tracking-[0.14em] font-medium transition-colors duration-150"
+                            style={{ color: 'var(--color-text-muted)', display: 'block' }}
+                            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(201,168,76,0.07)'; e.currentTarget.style.color = 'var(--color-accent)' }}
+                            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--color-text-muted)' }}
+                          >
+                            {child.label}
+                          </NavLink>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </li>
             ))}
           </ul>

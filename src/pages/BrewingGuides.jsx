@@ -4,6 +4,7 @@ import { SEO } from '../components/ui/SEO';
 import { useTheme } from '../contexts/ThemeContext';
 import { BackButton } from '../components/ui/BackButton';
 import { BrewTimer } from '../components/ui/BrewTimer';
+import { useNowPlaying } from '../contexts/NowPlayingContext';
 
 // ── Device data ─────────────────────────────────────────────────────────────
 
@@ -2028,7 +2029,7 @@ function CoffeeTypesTab() {
       </div>
 
       {/* Search + filter */}
-      <div className="flex flex-col sm:flex-row gap-4 mb-8">
+      <div className="flex flex-col gap-4 mb-8">
         <div className="relative max-w-xs">
           <svg className="absolute left-3.5 top-1/2 -translate-y-1/2" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(201,168,76,0.45)" strokeWidth="2" strokeLinecap="round">
             <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
@@ -2103,6 +2104,303 @@ function CoffeeTypesTab() {
   );
 }
 
+// ── Coffee Music data ────────────────────────────────────────────────────────
+
+const coffeePlaylists = [
+  {
+    id: "jfKfPfyJRdk",
+    title: "Lofi Hip Hop Radio — Beats to Relax / Study",
+    channel: "Lofi Girl",
+    desc: "The world's most-streamed café station. Gentle beats, rain textures, and that warm late-night desk feel — the soundtrack to a million coffee-fuelled study sessions.",
+    mood: "Focus",
+  },
+  {
+    id: "5qap5aO4i9A",
+    title: "Lofi Hip Hop Radio — Beats to Sleep / Chill",
+    channel: "Lofi Girl",
+    desc: "Slower, dreamier cousin to the study stream. Ideal for unwinding after a long day with a decaf or a glass of cold brew on ice.",
+    mood: "Chill",
+  },
+  {
+    id: "DWcJFNfaw9c",
+    title: "Café Jazz & Bossa Nova BGM",
+    channel: "Cafe Music BGM channel",
+    desc: "Smooth Japanese café vibes: bossa nova guitar, muted trumpet, and the gentle hum of a well-run espresso bar. A perennial favourite for remote workers.",
+    mood: "Jazz",
+  },
+  {
+    id: "7NOSDKb0HlU",
+    title: "Coffee Shop Ambience with Jazz Music",
+    channel: "Yellow Brick Cinema",
+    desc: "Layered café soundscape with conversations, machine pulls, and background jazz. The full sensory coffee shop experience — no commute required.",
+    mood: "Ambient",
+  },
+  {
+    id: "5yx6BWlEVcY",
+    title: "ChillHop Essentials — Café Study Session",
+    channel: "Chillhop Music",
+    desc: "Hand-picked chillhop tracks from the Chillhop community. Vinyl crackles, jazzy chords, and finger-snapping percussion to keep you in the zone.",
+    mood: "Focus",
+  },
+  {
+    id: "Dx5qFachd3A",
+    title: "Relaxing Coffee Shop Music",
+    channel: "Steezy Prime",
+    desc: "Three hours of acoustic café playlist: soft guitar, light piano, and mellow beats curated for the perfect work-from-café afternoon.",
+    mood: "Chill",
+  },
+  {
+    id: "TnTkSXRApWg",
+    title: "Coffee Shop Jazz — Bossa Nova & Cool Jazz",
+    channel: "Relaxing Jazz Café",
+    desc: "Classic bossa nova and cool jazz standards. Contemporary takes on timeless café music to soundtrack your espresso ritual.",
+    mood: "Jazz",
+  },
+  {
+    id: "kgx4WGK0oNU",
+    title: "Indie Folk Coffee House Sessions",
+    channel: "Artisan Sounds",
+    desc: "Acoustic indie folk for the pour-over crowd. Fingerpicked guitar, intimate vocals, and songs that feel written in a corner café booth.",
+    mood: "Indie",
+  },
+];
+
+const MUSIC_MOODS = ["All", "Focus", "Chill", "Jazz", "Ambient", "Indie"];
+
+const MOOD_COLORS = {
+  Focus:   "#7A9E6A",
+  Chill:   "#6B8FAB",
+  Jazz:    "#C9A84C",
+  Ambient: "#A08040",
+  Indie:   "#9E7A6A",
+};
+
+function YouTubeIcon({ size = 20 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <rect x="2" y="4" width="20" height="16" rx="4" fill="#FF0000" />
+      <path d="M10 8.5L16 12L10 15.5V8.5Z" fill="white" />
+    </svg>
+  );
+}
+
+function MusicCard({ playlist, index }) {
+  const { nowPlaying, setNowPlaying } = useNowPlaying();
+  const isPlaying = nowPlaying?.id === playlist.id;
+  const moodColor = MOOD_COLORS[playlist.mood] || "#C9A84C";
+  const thumbnail = `https://img.youtube.com/vi/${playlist.id}/maxresdefault.jpg`;
+  const watchUrl = `https://www.youtube.com/watch?v=${playlist.id}`;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.06, duration: 0.35 }}
+      className="flex flex-col rounded-2xl overflow-hidden"
+      style={{
+        background: "var(--color-card)",
+        border: isPlaying ? `1px solid ${moodColor}55` : "1px solid rgba(80,120,60,0.2)",
+        boxShadow: isPlaying ? `0 0 24px ${moodColor}18` : "none",
+        transition: "border-color 0.3s, box-shadow 0.3s",
+      }}
+    >
+      {/* Thumbnail + play overlay */}
+      <div
+        className="relative overflow-hidden cursor-pointer"
+        style={{ paddingTop: "56.25%" }}
+        onClick={() => setNowPlaying(playlist)}
+        role="button"
+        aria-label={isPlaying ? `Now playing: ${playlist.title}` : `Play ${playlist.title}`}
+      >
+        <img
+          src={thumbnail}
+          alt={playlist.title}
+          loading="lazy"
+          className="absolute inset-0 w-full h-full object-cover"
+          onError={(e) => { e.target.style.background = "#1A2D12" }}
+        />
+
+        {/* Dark scrim */}
+        <div
+          className="absolute inset-0 transition-opacity duration-300"
+          style={{ background: isPlaying ? "rgba(0,0,0,0.15)" : "rgba(0,0,0,0.4)" }}
+        />
+
+        {/* Mood badge — top left */}
+        <span
+          className="absolute top-2 left-2 px-2 py-0.5 rounded-full text-[9px] uppercase tracking-[0.14em]"
+          style={{
+            background: `${moodColor}30`,
+            color: moodColor,
+            fontFamily: "Space Mono, monospace",
+            border: `1px solid ${moodColor}50`,
+            backdropFilter: "blur(6px)",
+          }}
+        >
+          {playlist.mood}
+        </span>
+
+        {/* Centre: play button or now-playing indicator */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          {isPlaying ? (
+            <div
+              className="flex items-center gap-2 px-3.5 py-2 rounded-full"
+              style={{ background: "rgba(0,0,0,0.65)", border: `1px solid ${moodColor}` }}
+            >
+              {/* Animated equalizer */}
+              <div className="flex items-end gap-px" style={{ height: 14 }}>
+                {[0, 1, 2].map((i) => (
+                  <motion.div
+                    key={i}
+                    className="w-0.5 rounded-full"
+                    style={{ background: moodColor }}
+                    animate={{ height: ["5px", "13px", "5px"] }}
+                    transition={{ duration: 0.75, repeat: Infinity, delay: i * 0.16, ease: "easeInOut" }}
+                  />
+                ))}
+              </div>
+              <span
+                className="text-[10px] uppercase tracking-[0.14em]"
+                style={{ color: moodColor, fontFamily: "Space Mono, monospace" }}
+              >
+                Now Playing
+              </span>
+            </div>
+          ) : (
+            <motion.div
+              className="flex items-center justify-center w-14 h-14 rounded-full"
+              style={{ background: "rgba(0,0,0,0.68)", border: "1.5px solid rgba(255,255,255,0.25)" }}
+              whileHover={{ scale: 1.1 }}
+              transition={{ type: "spring", stiffness: 400, damping: 20 }}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            </motion.div>
+          )}
+        </div>
+      </div>
+
+      {/* Metadata */}
+      <div className="flex flex-col gap-2 p-5">
+        <div className="flex items-start justify-between gap-3">
+          <h3
+            className="font-display text-sm leading-snug"
+            style={{ color: "var(--color-text)" }}
+          >
+            {playlist.title}
+          </h3>
+          <a
+            href={watchUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Open on YouTube"
+            className="flex-shrink-0 mt-0.5 transition-transform duration-150 hover:scale-110"
+          >
+            <YouTubeIcon size={22} />
+          </a>
+        </div>
+
+        <p
+          className="text-[10px] uppercase tracking-[0.16em]"
+          style={{ color: "var(--color-accent-border)", fontFamily: "Space Mono, monospace" }}
+        >
+          {playlist.channel}
+        </p>
+
+        <p
+          className="text-xs leading-relaxed"
+          style={{ color: "var(--color-text-muted)", lineHeight: 1.75 }}
+        >
+          {playlist.desc}
+        </p>
+      </div>
+    </motion.div>
+  );
+}
+
+function CoffeeMusicTab() {
+  const [activeMood, setActiveMood] = useState("All");
+  const filtered = activeMood === "All"
+    ? coffeePlaylists
+    : coffeePlaylists.filter((p) => p.mood === activeMood);
+
+  return (
+    <motion.section
+      key="coffee-music"
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -8 }}
+      transition={{ duration: 0.28 }}
+      className="w-full max-w-[1600px] mx-auto px-4 sm:px-8 xl:px-16 pb-24"
+    >
+      {/* Sticky mood filter bar */}
+      <div
+        className="sticky z-30 py-3 mb-8 mt-6"
+        style={{
+          top: "5rem",
+          background: "var(--color-bg)",
+          borderBottom: "1px solid var(--color-border)",
+        }}
+      >
+        <div className="flex items-center gap-2 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
+          <span
+            className="flex-shrink-0 text-[9px] uppercase tracking-[0.2em] mr-1"
+            style={{ fontFamily: "Space Mono, monospace", color: "var(--color-text-faint)" }}
+          >
+            Mood
+          </span>
+          {MUSIC_MOODS.map((mood) => {
+            const isActive = activeMood === mood;
+            const color = mood === "All" ? "var(--color-accent)" : (MOOD_COLORS[mood] || "var(--color-accent)");
+            return (
+              <button
+                key={mood}
+                onClick={() => setActiveMood(mood)}
+                className="flex-shrink-0 px-3 py-1 rounded-full text-[9px] uppercase tracking-[0.14em] transition-all duration-150"
+                style={{
+                  fontFamily: "Space Mono, monospace",
+                  background: isActive ? color : "var(--color-surface)",
+                  color: isActive ? (mood === "All" ? "var(--color-bg)" : "#fff") : "var(--color-text-muted)",
+                  border: `1px solid ${isActive ? color : "var(--color-border)"}`,
+                  cursor: "pointer",
+                }}
+              >
+                {mood}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Video grid */}
+      <AnimatePresence mode="popLayout">
+        <motion.div
+          key={activeMood}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6"
+        >
+          {filtered.map((playlist, i) => (
+            <MusicCard key={playlist.id} playlist={playlist} index={i} />
+          ))}
+        </motion.div>
+      </AnimatePresence>
+
+      {filtered.length === 0 && (
+        <p
+          className="text-center py-20 font-display text-xl italic"
+          style={{ color: "var(--color-text-faint)" }}
+        >
+          No playlists for this mood.
+        </p>
+      )}
+    </motion.section>
+  );
+}
+
 // ── Tab definitions ───────────────────────────────────────────────────────────
 
 const TABS = [
@@ -2110,6 +2408,7 @@ const TABS = [
   { id: "brands", label: "Brands" },
   { id: "coffee-types", label: "Coffee Types" },
   { id: "coffee-nerds", label: "Coffee Nerds" },
+  { id: "coffee-music", label: "Brew Beats" },
 ];
 
 const TAB_HERO = {
@@ -2136,6 +2435,12 @@ const TAB_HERO = {
     titleLine1: "Coffee",
     titleLine2: "Nerds",
     desc: "The internet's finest open-source coffee shop websites and apps — built by developers who can't separate their passion for code from their love of coffee.",
+  },
+  "coffee-music": {
+    eyebrow: "The Listening Room",
+    titleLine1: "Coffee",
+    titleLine2: "Music",
+    desc: "Free café playlists and lofi streams to soundtrack your brew. Play directly in the app or open on YouTube — curated for focus, chill, jazz, and everything in between.",
   },
 };
 
@@ -2415,6 +2720,8 @@ export default function BrewingGuides() {
             <CoffeeNerdsTab />
           </motion.section>
         )}
+
+        {activeTab === "coffee-music" && <CoffeeMusicTab />}
       </AnimatePresence>
     </div>
   );

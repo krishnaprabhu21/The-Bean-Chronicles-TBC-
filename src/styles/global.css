@@ -500,22 +500,52 @@ body::after {
     background: #fff;
     color: #1a0b00;
     font-family: 'Georgia', serif;
-    padding: 2.5cm 2.5cm 2cm;
+    padding: 1.8cm 2.2cm 2cm;
     font-size: 11pt;
     line-height: 1.65;
     z-index: 99999;
   }
 
-  #recipe-print-root h1 { font-size: 22pt; margin-bottom: 6pt; color: #1a0b00; }
-  #recipe-print-root h2 { font-size: 14pt; margin: 18pt 0 6pt; color: #5C3A00; border-bottom: 0.5pt solid #C9A84C; padding-bottom: 3pt; }
-  #recipe-print-root .print-meta { font-size: 9pt; color: #7a5c38; margin-bottom: 14pt; letter-spacing: 0.06em; }
-  #recipe-print-root .print-divider { height: 0.5pt; background: #C9A84C; margin: 12pt 0; }
-  #recipe-print-root ul { padding-left: 18pt; }
-  #recipe-print-root ul li { margin-bottom: 4pt; }
-  #recipe-print-root ol { padding-left: 18pt; }
-  #recipe-print-root ol li { margin-bottom: 6pt; }
-  #recipe-print-root .print-tip { background: #FFF8E7; border-left: 2pt solid #C9A84C; padding: 6pt 10pt; margin: 8pt 0; font-style: italic; font-size: 9.5pt; }
-  #recipe-print-root .print-footer { margin-top: 24pt; font-size: 8pt; color: #aaa; text-align: center; }
+  #recipe-print-root .print-hero-img {
+    width: 100%;
+    max-height: 180pt;
+    object-fit: cover;
+    border-radius: 4pt;
+    margin-bottom: 16pt;
+    display: block;
+  }
+
+  #recipe-print-root h1 { font-size: 22pt; margin-bottom: 5pt; color: #1a0b00; line-height: 1.2; }
+  #recipe-print-root h2 { font-size: 13pt; margin: 16pt 0 6pt; color: #5C3A00; border-bottom: 0.5pt solid #C9A84C; padding-bottom: 3pt; }
+  #recipe-print-root .print-meta { font-size: 9pt; color: #7a5c38; margin-bottom: 12pt; letter-spacing: 0.05em; }
+  #recipe-print-root .print-divider { height: 0.5pt; background: #C9A84C; margin: 10pt 0; }
+
+  #recipe-print-root .print-ingredients { padding-left: 16pt; columns: 2; column-gap: 24pt; }
+  #recipe-print-root .print-ingredients li { margin-bottom: 4pt; break-inside: avoid; }
+
+  #recipe-print-root .print-steps { padding-left: 16pt; }
+  #recipe-print-root .print-steps li { margin-bottom: 8pt; }
+  #recipe-print-root .print-step-text { display: block; }
+
+  #recipe-print-root .print-tip {
+    background: #FFF8E7;
+    border-left: 2pt solid #C9A84C;
+    padding: 5pt 10pt;
+    margin: 6pt 0 0;
+    font-style: italic;
+    font-size: 9.5pt;
+    color: #7a5c38;
+  }
+
+  #recipe-print-root .print-footer {
+    margin-top: 20pt;
+    padding-top: 8pt;
+    border-top: 0.5pt solid #e0d0b0;
+    font-size: 8pt;
+    color: #bbb;
+    text-align: center;
+    letter-spacing: 0.06em;
+  }
 }
 
 /* ── Skeleton shimmer ────────────────────────────────────────────── */
