@@ -826,6 +826,55 @@ export const recipes = [
     ],
   },
 
+  // ── CULTURE / WORLD (continued) ───────────────────────────────────────────
+  {
+    id: 'rec39',
+    title: 'Mexican Café de Olla',
+    slug: 'mexican-cafe-de-olla',
+    category: 'culture',
+    difficulty: 2,
+    prepTime: 5,
+    brewTime: 15,
+    coverImage: 'https://images.unsplash.com/photo-1559496417-e7f25cb247f3?w=800&h=500&fit=crop',
+    ingredients: [
+      { amount: '4 Tbs',    item: 'Coarsely ground dark coffee' },
+      { amount: '4 cups',   item: 'Water' },
+      { amount: '2',        item: 'Cinnamon sticks' },
+      { amount: '1 strip',  item: 'Orange peel' },
+      { amount: '60 g',     item: 'Piloncillo (or dark brown sugar)' },
+      { amount: '2',        item: 'Star anise' },
+      { amount: '3',        item: 'Cloves (optional)' },
+    ],
+    steps: [
+      { order: 1, instruction: 'Pour the water into a clay pot (olla de barro) or saucepan. Add the piloncillo, cinnamon sticks, orange peel, star anise, and cloves. Bring to a boil and stir until the piloncillo is fully dissolved.', tip: 'Using a clay pot imparts a subtle earthiness — if you have one, use it. Otherwise a regular pot works fine.' },
+      { order: 2, instruction: 'Reduce the heat to low. Add the ground coffee and stir gently. Simmer for 5 minutes without letting it boil vigorously.' },
+      { order: 3, instruction: 'Remove from heat and let the coffee steep for 2 minutes so the grounds settle to the bottom.' },
+      { order: 4, instruction: 'Strain through a fine-mesh sieve or cheesecloth into clay mugs (jarritos) or regular mugs and serve immediately.' },
+    ],
+  },
+  {
+    id: 'rec40',
+    title: 'Portuguese Mazagran',
+    slug: 'portuguese-mazagran',
+    category: 'cold-brew',
+    difficulty: 1,
+    prepTime: 5,
+    brewTime: 5,
+    coverImage: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=800&h=500&fit=crop',
+    ingredients: [
+      { amount: '1 double shot', item: 'Strong brewed coffee or espresso' },
+      { amount: 'juice of',      item: '½–1 lemon (to taste)' },
+      { amount: '½ oz',          item: 'Simple syrup or sugar (to taste)' },
+      { amount: 'to fill',       item: 'Ice' },
+      { amount: '1 wedge',       item: 'Lemon (garnish)' },
+    ],
+    steps: [
+      { order: 1, instruction: 'Brew a double espresso or a very strong cup of coffee. Let it cool slightly — 5 minutes at room temperature is enough.', tip: 'For best results, chill the coffee in the fridge for 15 minutes rather than rushing — dilution from melting ice will be minimal.' },
+      { order: 2, instruction: 'Squeeze in fresh lemon juice to taste and stir in simple syrup or sugar until dissolved.' },
+      { order: 3, instruction: 'Fill a tall glass to the top with ice, then pour the lemon-coffee mixture over the ice. Stir to combine. Garnish with a lemon wedge on the rim.' },
+    ],
+  },
+
   // ── GUIDES (continued) ────────────────────────────────────────────────────
   {
     id: 'rec36',

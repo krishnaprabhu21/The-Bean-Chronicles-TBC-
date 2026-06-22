@@ -17,7 +17,11 @@ export function ThemeProvider({ children }) {
     localStorage.setItem('tbc-theme', theme)
   }, [theme])
 
-  const toggleTheme = () => setTheme(t => (t === 'dark' ? 'light' : 'dark'))
+  const toggleTheme = () => {
+    document.documentElement.classList.add('theme-transitioning')
+    setTimeout(() => document.documentElement.classList.remove('theme-transitioning'), 400)
+    setTheme(t => (t === 'dark' ? 'light' : 'dark'))
+  }
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>

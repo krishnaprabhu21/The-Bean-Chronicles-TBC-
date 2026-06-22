@@ -140,6 +140,7 @@ export default function BrewCalculator() {
   const [coffeeG, setCoffeeG]           = useState(20)
   const [tempC, setTempC]               = useState(IDEAL_TEMP['Pour Over'] ?? 93)
   const [grind, setGrind]               = useState(IDEAL_GRIND['Pour Over'])
+  const [copied, setCopied]             = useState(false)
 
   const ratio = RATIOS[activeMethod]
   const waterG = Math.round(coffeeG / ratio)
@@ -150,6 +151,16 @@ export default function BrewCalculator() {
     setActiveMethod(m)
     if (IDEAL_TEMP[m] !== null) setTempC(IDEAL_TEMP[m])
     setGrind(IDEAL_GRIND[m])
+  }
+
+  const copyRatio = async () => {
+    const tempStr = isRoomTemp ? 'room temp' : `${tempC}°C`
+    const text = `${activeMethod} — Coffee: ${coffeeG}g | Water: ${waterG}g | Ratio: 1:${Math.round(1 / ratio)} | Grind: ${grind} | Temp: ${tempStr}`
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {}
   }
 
   return (
@@ -389,6 +400,41 @@ export default function BrewCalculator() {
                 >
                   · {grind} grind
                 </span>
+              </div>
+
+              {/* Copy result button */}
+              <div className="mt-5">
+                <button
+                  onClick={copyRatio}
+                  className="flex items-center gap-2 mx-auto transition-all duration-200"
+                  style={{
+                    background: copied ? 'var(--color-accent-dim)' : 'transparent',
+                    border: '1px solid var(--color-border-strong)',
+                    borderColor: copied ? 'var(--color-accent-border)' : undefined,
+                    borderRadius: '9999px',
+                    color: copied ? 'var(--color-accent)' : 'var(--color-text-muted)',
+                    padding: '0.4rem 1rem',
+                    fontFamily: 'Space Mono, monospace',
+                    fontSize: '0.65rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.16em',
+                    cursor: 'pointer',
+                  }}
+                  onMouseEnter={(e) => { if (!copied) { e.currentTarget.style.borderColor = 'var(--color-accent-border)'; e.currentTarget.style.color = 'var(--color-accent)' } }}
+                  onMouseLeave={(e) => { if (!copied) { e.currentTarget.style.borderColor = 'var(--color-border-strong)'; e.currentTarget.style.color = 'var(--color-text-muted)' } }}
+                >
+                  {copied ? (
+                    <>
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      Copied!
+                    </>
+                  ) : (
+                    <>
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                      Copy Result
+                    </>
+                  )}
+                </button>
               </div>
             </div>
 

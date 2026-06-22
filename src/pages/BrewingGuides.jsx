@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { SEO } from '../components/ui/SEO';
 import { useTheme } from '../contexts/ThemeContext';
 import { BackButton } from '../components/ui/BackButton';
+import { BrewTimer } from '../components/ui/BrewTimer';
 
 // ── Device data ─────────────────────────────────────────────────────────────
 
@@ -995,6 +996,26 @@ function DeviceModal({ device, onClose }) {
                 ))}
               </div>
             </div>
+
+            {/* Brew timer — only for timed brews under 60 min */}
+            {(() => {
+              const t = device.brewTime.toLowerCase()
+              if (t.includes('hour')) return null
+              const match = t.match(/(\d+)/)
+              const mins = match ? Math.max(1, Math.ceil(parseInt(match[1], 10) / 60)) : null
+              if (!mins) return null
+              // brewTime in seconds (e.g. "25–30 sec") → convert to minutes minimum 1
+              const isSeconds = t.includes('sec')
+              const timerMins = isSeconds ? 1 : parseInt(match[1], 10)
+              return (
+                <div className="pt-6" style={{ borderTop: '1px solid var(--color-border)' }}>
+                  <p className="text-[9px] uppercase tracking-[0.2em] mb-3" style={{ color: 'var(--color-text-faint)', fontFamily: 'Space Mono, monospace' }}>
+                    Time it
+                  </p>
+                  <BrewTimer minutes={timerMins} label={device.name} />
+                </div>
+              )
+            })()}
           </div>
         </div>
       </motion.div>
@@ -1002,42 +1023,497 @@ function DeviceModal({ device, onClose }) {
   );
 }
 
-// ── Tab content placeholders ─────────────────────────────────────────────────
+// ── Brand data ────────────────────────────────────────────────────────────────
+
+const brands = [
+  // ── Americas ──────────────────────────────────────────────────────────────
+  {
+    id: 'starbucks', name: 'Starbucks', domain: 'starbucks.com',
+    url: 'https://www.starbucks.com', country: 'USA', flag: '🇺🇸',
+    region: 'Americas', founded: '1971', accentColor: '#00704A',
+    tagline: 'The world\'s largest coffeehouse chain, spanning 35,000+ locations across 80 countries. Pioneered the "third place" and popularised the fully customisable espresso drink.',
+  },
+  {
+    id: 'dunkin', name: "Dunkin'", domain: 'dunkindonuts.com',
+    url: 'https://www.dunkindonuts.com', country: 'USA', flag: '🇺🇸',
+    region: 'Americas', founded: '1950', accentColor: '#FF671F',
+    tagline: '"America Runs on Dunkin\'." Born in Quincy, Massachusetts — the East Coast\'s beloved everyday coffee chain serving 5 million customers daily across 40+ countries.',
+  },
+  {
+    id: 'peets', name: "Peet's Coffee", domain: 'peets.com',
+    url: 'https://www.peets.com', country: 'USA', flag: '🇺🇸',
+    region: 'Americas', founded: '1966', accentColor: '#4A2C2A',
+    tagline: 'The godfather of American specialty coffee. Starbucks\' founders learned everything from Alfred Peet. Known for deep, dark, expertly sourced roasts from Berkeley, California.',
+  },
+  {
+    id: 'blue-bottle', name: 'Blue Bottle Coffee', domain: 'bluebottlecoffee.com',
+    url: 'https://www.bluebottlecoffee.com', country: 'USA', flag: '🇺🇸',
+    region: 'Americas', founded: '2002', accentColor: '#1565C0',
+    tagline: 'Third-wave pioneer from Oakland, California. Roasts to order with a 48-hour freshness promise. Ultra-clean single-origin coffees in minimalist, gallery-like cafés.',
+  },
+  {
+    id: 'intelligentsia', name: 'Intelligentsia', domain: 'intelligentsiacoffee.com',
+    url: 'https://www.intelligentsiacoffee.com', country: 'USA', flag: '🇺🇸',
+    region: 'Americas', founded: '1995', accentColor: '#B71C1C',
+    tagline: 'One of the original third-wave specialty roasters from Chicago. Pioneered transparent direct-trade sourcing where farmers earn significantly above market price.',
+  },
+  {
+    id: 'stumptown', name: 'Stumptown Coffee', domain: 'stumptowncoffee.com',
+    url: 'https://www.stumptowncoffee.com', country: 'USA', flag: '🇺🇸',
+    region: 'Americas', founded: '1999', accentColor: '#C9A84C',
+    tagline: 'Portland, Oregon\'s pioneering third-wave roaster. Known for the iconic Hair Bender blend, direct-trade sourcing, and popularising the cold brew stubby bottle.',
+  },
+  {
+    id: 'death-wish', name: 'Death Wish Coffee', domain: 'deathwishcoffee.com',
+    url: 'https://www.deathwishcoffee.com', country: 'USA', flag: '🇺🇸',
+    region: 'Americas', founded: '2012', accentColor: '#DC143C',
+    tagline: 'Self-proclaimed world\'s strongest coffee. An organic fair-trade Robusta and Arabica blend with nearly double the caffeine of standard coffee. Dark, skull-branded, uncompromising.',
+  },
+  {
+    id: 'folgers', name: 'Folgers', domain: 'folgers.com',
+    url: 'https://www.folgers.com', country: 'USA', flag: '🇺🇸',
+    region: 'Americas', founded: '1850', accentColor: '#B8441E',
+    tagline: 'America\'s best-selling coffee brand for decades. "The best part of waking up." Born in Gold Rush-era San Francisco, the iconic red can remains a fixture in millions of American kitchens.',
+  },
+  {
+    id: 'la-colombe', name: 'La Colombe', domain: 'lacolombe.com',
+    url: 'https://www.lacolombe.com', country: 'USA', flag: '🇺🇸',
+    region: 'Americas', founded: '1994', accentColor: '#1A3A5C',
+    tagline: 'Philadelphia\'s beloved specialty roaster, credited with inventing the Draft Latte — a nitrogen-infused canned latte that changed ready-to-drink coffee forever.',
+  },
+  {
+    id: 'caribou', name: 'Caribou Coffee', domain: 'cariboucoffee.com',
+    url: 'https://www.cariboucoffee.com', country: 'USA', flag: '🇺🇸',
+    region: 'Americas', founded: '1992', accentColor: '#8B4513',
+    tagline: 'America\'s second-largest specialty coffeehouse chain, rooted in Minnesota. Named after an Alaskan mountain vista — known for warm, wilderness-inspired branding and quality espresso.',
+  },
+  {
+    id: 'tim-hortons', name: 'Tim Hortons', domain: 'timhortons.com',
+    url: 'https://www.timhortons.com', country: 'Canada', flag: '🇨🇦',
+    region: 'Americas', founded: '1964', accentColor: '#C8102E',
+    tagline: 'Canada\'s national coffee institution, founded by hockey legend Tim Horton. The "double-double" (double cream, double sugar) is a Canadian cultural touchstone.',
+  },
+  {
+    id: 'juan-valdez', name: 'Juan Valdez', domain: 'juanvaldez.com',
+    url: 'https://www.juanvaldez.com', country: 'Colombia', flag: '🇨🇴',
+    region: 'Americas', founded: '2002', accentColor: '#F5A800',
+    tagline: 'Colombia\'s beloved coffee brand and café chain, representing 500,000+ Colombian farmers. The mustachioed farmer and his mule are icons of global coffee marketing.',
+  },
+  {
+    id: 'cafe-britt', name: 'Café Britt', domain: 'cafebritt.com',
+    url: 'https://www.cafebritt.com', country: 'Costa Rica', flag: '🇨🇷',
+    region: 'Americas', founded: '1985', accentColor: '#2E7D32',
+    tagline: 'Latin America\'s premier specialty coffee brand and pioneer of coffee tourism. Sells farm-to-cup Costa Rican and Peruvian beans to coffee lovers in 30+ countries worldwide.',
+  },
+  {
+    id: 'pilao', name: 'Pilão', domain: 'pilaocafe.com.br',
+    url: 'https://www.pilaocafe.com.br', country: 'Brazil', flag: '🇧🇷',
+    region: 'Americas', founded: '1919', accentColor: '#8B2500',
+    tagline: 'Brazil\'s most iconic espresso brand. The strong, full-bodied pellet-pressed coffee that has fuelled Brazil for over a century — a household institution in the world\'s largest coffee-producing nation.',
+  },
+
+  // ── Europe ────────────────────────────────────────────────────────────────
+  {
+    id: 'lavazza', name: 'Lavazza', domain: 'lavazza.com',
+    url: 'https://www.lavazza.com', country: 'Italy', flag: '🇮🇹',
+    region: 'Europe', founded: '1895', accentColor: '#003087',
+    tagline: 'Italy\'s oldest and most beloved coffee company, born in Turin. Supplies the Vatican. Famous for the Qualità Rossa blend and a century of pioneering Italian espresso culture.',
+  },
+  {
+    id: 'illy', name: 'illycaffè', domain: 'illy.com',
+    url: 'https://www.illy.com', country: 'Italy', flag: '🇮🇹',
+    region: 'Europe', founded: '1933', accentColor: '#C00000',
+    tagline: 'Founded in Trieste by Francesco Illy — inventor of the first automatic espresso machine prototype. Renowned for a single blend of 9 premium Arabica origins in iconic round tins.',
+  },
+  {
+    id: 'segafredo', name: 'Segafredo Zanetti', domain: 'segafredo.it',
+    url: 'https://www.segafredo.it', country: 'Italy', flag: '🇮🇹',
+    region: 'Europe', founded: '1973', accentColor: '#C8102E',
+    tagline: 'Bologna\'s global espresso powerhouse. Operates 1,000+ espresso bars worldwide and supplies to leading hotels, airlines, and cafés. One of Italy\'s largest coffee exporters.',
+  },
+  {
+    id: 'kimbo', name: 'Kimbo Coffee', domain: 'kimbo.it',
+    url: 'https://www.kimbo.it', country: 'Italy', flag: '🇮🇹',
+    region: 'Europe', founded: '1963', accentColor: '#1A1A1A',
+    tagline: 'The authentic taste of Neapolitan espresso, born in Naples in 1963. A beloved southern Italian institution known for intensely rich, thick, velvety blends and old-world roasting character.',
+  },
+  {
+    id: 'nespresso', name: 'Nespresso', domain: 'nespresso.com',
+    url: 'https://www.nespresso.com', country: 'Switzerland', flag: '🇨🇭',
+    region: 'Europe', founded: '1986', accentColor: '#3C3C3C',
+    tagline: 'Nestlé\'s premium single-serve pod system that brought barista-quality espresso to home kitchens worldwide. Over 25 Grand Cru varieties. Pioneered the luxury capsule market.',
+  },
+  {
+    id: 'nescafe', name: 'Nescafé', domain: 'nescafe.com',
+    url: 'https://www.nescafe.com', country: 'Switzerland', flag: '🇨🇭',
+    region: 'Europe', founded: '1938', accentColor: '#DA291C',
+    tagline: 'The world\'s best-selling instant coffee brand, present in 180+ countries. Developed to solve Brazil\'s coffee surplus during the Great Depression. The red mug is a global icon.',
+  },
+  {
+    id: 'julius-meinl', name: 'Julius Meinl', domain: 'meinlcoffee.com',
+    url: 'https://www.meinlcoffee.com', country: 'Austria', flag: '🇦🇹',
+    region: 'Europe', founded: '1862', accentColor: '#C9142A',
+    tagline: 'One of Europe\'s oldest coffee houses, born in Vienna. The boy in a fez is one of Austria\'s most recognisable logos. Crafts blends for the grand Viennese coffee house tradition.',
+  },
+  {
+    id: 'melitta', name: 'Melitta', domain: 'melitta.com',
+    url: 'https://www.melitta.com', country: 'Germany', flag: '🇩🇪',
+    region: 'Europe', founded: '1908', accentColor: '#C8102E',
+    tagline: 'Founded by Melitta Bentz — the inventor of the paper coffee filter. A single punctured brass pot in a Dresden kitchen in 1908 changed how the entire world brews coffee.',
+  },
+  {
+    id: 'tchibo', name: 'Tchibo', domain: 'tchibo.com',
+    url: 'https://www.tchibo.com', country: 'Germany', flag: '🇩🇪',
+    region: 'Europe', founded: '1949', accentColor: '#8B2500',
+    tagline: 'Germany\'s largest coffee brand, founded in Hamburg. Unique retail model selling consumer goods alongside freshly roasted coffee. Supplies ~2 in 5 cups drunk at home in Germany.',
+  },
+  {
+    id: 'jacobs', name: 'Jacobs Coffee', domain: 'jacobs.coffee',
+    url: 'https://www.jacobs.coffee', country: 'Germany', flag: '🇩🇪',
+    region: 'Europe', founded: '1895', accentColor: '#1A237E',
+    tagline: 'Founded in Bremen by Johann Jacobs. One of Europe\'s most recognised coffee brands, sold across 40+ countries. Known for the tagline "Jacobs Krönung — Wir wecken Ihre Sinne" (We awaken your senses).',
+  },
+  {
+    id: 'douwe-egberts', name: 'Douwe Egberts', domain: 'douwe-egberts.com',
+    url: 'https://www.douwe-egberts.com', country: 'Netherlands', flag: '🇳🇱',
+    region: 'Europe', founded: '1753', accentColor: '#8B1A1A',
+    tagline: 'One of the world\'s oldest coffee companies, founded in Joure. Known for its distinctive red seal and beloved filter blends. A household staple across the Netherlands and Belgium for 270+ years.',
+  },
+
+  // ── India ─────────────────────────────────────────────────────────────────
+  {
+    id: 'ccd', name: 'Café Coffee Day', domain: 'cafecoffeeday.com',
+    url: 'https://www.cafecoffeeday.com', country: 'India', flag: '🇮🇳',
+    region: 'India', founded: '1996', accentColor: '#C8102E',
+    tagline: 'India\'s largest coffee chain, founded in Chikmagalur by V.G. Siddhartha. Built on a single coffee estate, it grew to 1,700+ cafés — the brand that introduced an entire generation to café culture.',
+  },
+  {
+    id: 'blue-tokai', name: 'Blue Tokai Coffee', domain: 'bluetokaicoffee.com',
+    url: 'https://www.bluetokaicoffee.com', country: 'India', flag: '🇮🇳',
+    region: 'India', founded: '2013', accentColor: '#1565C0',
+    tagline: 'India\'s leading specialty coffee roaster, with farm-direct partnerships across estates in Coorg, Chikmagalur, Anamalais, and Araku. The brand that put Indian specialty coffee on the world map.',
+  },
+  {
+    id: 'bru', name: 'Bru Coffee', domain: 'bru.co.in',
+    url: 'https://www.bru.co.in', country: 'India', flag: '🇮🇳',
+    region: 'India', founded: '1968', accentColor: '#8B4513',
+    tagline: 'India\'s largest coffee brand by volume and a Hindustan Unilever icon. The beloved chicory-blended instant coffee found in virtually every Indian home — a morning ritual for millions.',
+  },
+  {
+    id: 'sleepy-owl', name: 'Sleepy Owl Coffee', domain: 'sleepyowl.co',
+    url: 'https://www.sleepyowl.co', country: 'India', flag: '🇮🇳',
+    region: 'India', founded: '2018', accentColor: '#2C3E50',
+    tagline: 'India\'s pioneering cold brew brand from Delhi. Brought ready-to-drink cold brew and overnight cold brew bags to Indian consumers, sparking a cold coffee revolution among younger audiences.',
+  },
+  {
+    id: 'araku', name: 'Araku Coffee', domain: 'arakucoffee.com',
+    url: 'https://www.arakucoffee.com', country: 'India', flag: '🇮🇳',
+    region: 'India', founded: '2001', accentColor: '#2E7D32',
+    tagline: 'Grown at 900–1100 m in the tribal highlands of Andhra Pradesh. India\'s first specialty coffee to open a café in Paris. Award-winning biodynamic beans farmed by 10,000+ Adivasi families.',
+  },
+  {
+    id: 'third-wave', name: 'Third Wave Coffee', domain: 'thirdwavecoffee.in',
+    url: 'https://www.thirdwavecoffee.in', country: 'India', flag: '🇮🇳',
+    region: 'India', founded: '2016', accentColor: '#E65100',
+    tagline: 'India\'s fastest-growing specialty coffee chain, born in Bangalore. With 100+ locations across 20+ cities, it bridges the gap between specialty craft and everyday accessibility.',
+  },
+  {
+    id: 'flying-squirrel', name: 'The Flying Squirrel', domain: 'theflyingsquirrel.in',
+    url: 'https://www.theflyingsquirrel.in', country: 'India', flag: '🇮🇳',
+    region: 'India', founded: '2011', accentColor: '#8B4513',
+    tagline: 'Estate-to-cup specialty roaster from Coorg, Karnataka. Grows, processes, roasts, and delivers its own single-estate Arabica without any middlemen — rare farm-direct traceability.',
+  },
+
+  // ── Asia-Pacific ──────────────────────────────────────────────────────────
+  {
+    id: 'arabica', name: '% Arabica', domain: 'arabica.coffee',
+    url: 'https://arabica.coffee', country: 'Japan', flag: '🇯🇵',
+    region: 'Asia-Pacific', founded: '2014', accentColor: '#1A1A1A',
+    tagline: 'Founded in Kyoto by Kenneth Shoji. Blends Japanese design minimalism with world-class single-origin espresso. Iconic percent-sign logo and pristine white interiors across 100+ global locations.',
+  },
+  {
+    id: 'ucc', name: 'UCC Coffee', domain: 'ucc.co.jp',
+    url: 'https://www.ucc.co.jp', country: 'Japan', flag: '🇯🇵',
+    region: 'Asia-Pacific', founded: '1933', accentColor: '#8B2500',
+    tagline: 'Japan\'s largest coffee company, founded in Kobe. Invented the world\'s first canned coffee in 1969, transforming coffee into Japan\'s most consumed vending machine drink.',
+  },
+  {
+    id: 'luckin', name: 'Luckin Coffee', domain: 'lkcoffee.com',
+    url: 'https://www.lkcoffee.com', country: 'China', flag: '🇨🇳',
+    region: 'Asia-Pacific', founded: '2017', accentColor: '#00B4D8',
+    tagline: 'China\'s largest coffee chain with 15,000+ locations. The tech-driven disruptor that surpassed Starbucks in China through app-first ordering, aggressive pricing, and hyper-local Chinese flavour pairings.',
+  },
+  {
+    id: 'pacific-coffee', name: 'Pacific Coffee', domain: 'pacificcoffee.com',
+    url: 'https://www.pacificcoffee.com', country: 'Hong Kong', flag: '🇭🇰',
+    region: 'Asia-Pacific', founded: '1992', accentColor: '#1565C0',
+    tagline: 'Asia\'s pioneering specialty coffee chain, established in Hong Kong before Starbucks reached the region. Known for Pacific Northwest-inspired brews and a laid-back café culture across Asia.',
+  },
+  {
+    id: 'kopiko', name: 'Kopiko', domain: 'kopiko.com',
+    url: 'https://www.kopiko.com', country: 'Indonesia', flag: '🇮🇩',
+    region: 'Asia-Pacific', founded: '1982', accentColor: '#8B4513',
+    tagline: 'Born from Indonesia\'s Mayora Group, creators of the world\'s first coffee candy. A dominant name in Southeast Asian instant coffee culture with reach across Asia, the Middle East, and Latin America.',
+  },
+  {
+    id: 'kopi-kenangan', name: 'Kopi Kenangan', domain: 'kopikenangan.com',
+    url: 'https://www.kopikenangan.com', country: 'Indonesia', flag: '🇮🇩',
+    region: 'Asia-Pacific', founded: '2017', accentColor: '#D4A017',
+    tagline: 'Southeast Asia\'s largest tech-enabled coffee chain with 800+ locations. Indonesia\'s first unicorn café brand — raised $100M+ in funding and brought quality coffee to Indonesian commuters at street-friendly prices.',
+  },
+  {
+    id: 'old-town', name: 'OldTown White Coffee', domain: 'oldtown.com.my',
+    url: 'https://www.oldtown.com.my', country: 'Malaysia', flag: '🇲🇾',
+    region: 'Asia-Pacific', founded: '1999', accentColor: '#8B6914',
+    tagline: 'Rooted in Ipoh, Malaysia — home of a legendary white coffee tradition. Brings the distinctive smooth, creamy Ipoh white coffee to 200+ cafés and millions of households across Southeast Asia.',
+  },
+  {
+    id: 'vittoria', name: 'Vittoria Coffee', domain: 'vittoriacoffee.com',
+    url: 'https://www.vittoriacoffee.com', country: 'Australia', flag: '🇦🇺',
+    region: 'Asia-Pacific', founded: '1958', accentColor: '#1A3A5C',
+    tagline: 'Founded in Sydney by Orazio Cantarella. Australia\'s most loved coffee brand for three generations. Pioneered Italian-style espresso culture Down Under and remains the country\'s No.1 premium brand.',
+  },
+
+  // ── Middle East & Africa ──────────────────────────────────────────────────
+  {
+    id: 'al-ameed', name: 'Al Ameed Coffee', domain: 'alameed.com',
+    url: 'https://www.alameed.com', country: 'Kuwait', flag: '🇰🇼',
+    region: 'Middle East & Africa', founded: '1956', accentColor: '#C9A84C',
+    tagline: 'The Middle East\'s most cherished traditional coffee brand. Specialises in Arabic Qahwa — spiced with cardamom, saffron, and cloves — roasted fresh daily and beloved across the GCC for 70+ years.',
+  },
+  {
+    id: 'cafe-najjar', name: 'Café Najjar', domain: 'cafenajjar.com',
+    url: 'https://www.cafenajjar.com', country: 'Lebanon', flag: '🇱🇧',
+    region: 'Middle East & Africa', founded: '1957', accentColor: '#8B2500',
+    tagline: 'Lebanon\'s finest traditional coffee brand. The iconic cardamom-spiced Lebanese ground coffee, cherished across the Levant and by the global Arab diaspora for its rich, aromatic character.',
+  },
+  {
+    id: 'java-house', name: 'Java House', domain: 'javahouseafrica.com',
+    url: 'https://www.javahouseafrica.com', country: 'Kenya', flag: '🇰🇪',
+    region: 'Middle East & Africa', founded: '1999', accentColor: '#2E7D32',
+    tagline: 'East Africa\'s leading specialty coffee chain with 70+ locations across Kenya, Uganda, Rwanda, and Ethiopia. Celebrates the extraordinary terroir of East African Arabica in a modern café setting.',
+  },
+  {
+    id: 'vida-caffe', name: 'Vida e Caffè', domain: 'vidaecaffe.com',
+    url: 'https://www.vidaecaffe.com', country: 'South Africa', flag: '🇿🇦',
+    region: 'Middle East & Africa', founded: '2001', accentColor: '#C8102E',
+    tagline: 'South Africa\'s leading specialty coffee chain, born in Cape Town. Famous for high-quality espresso, fresh food, and the vibrant "it\'s good to be alive" philosophy that defines every cup.',
+  },
+  {
+    id: 'kaldis', name: "Kaldi's Coffee", domain: 'kaldiscoffee.com',
+    url: 'https://www.kaldiscoffee.com', country: 'Ethiopia', flag: '🇪🇹',
+    region: 'Middle East & Africa', founded: '2003', accentColor: '#8B4513',
+    tagline: 'Named after the legendary Ethiopian goat herder who discovered coffee. Ethiopia\'s largest homegrown coffee chain, celebrating the birthplace of coffee with locally sourced single-origin beans.',
+  },
+]
+
+const BRAND_REGIONS = ['Americas', 'Europe', 'India', 'Asia-Pacific', 'Middle East & Africa']
+
+function slugRegion(r) {
+  return r.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+}
+
+function BrandCard({ brand, index }) {
+  const [imgOk, setImgOk] = useState(true)
+
+  return (
+    <motion.a
+      href={brand.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      initial={{ opacity: 0, y: 18 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.04, duration: 0.35 }}
+      whileHover={{ y: -4 }}
+      whileTap={{ scale: 0.97 }}
+      className="flex flex-col items-center gap-3 px-4 py-7 text-center w-full transition-all duration-200"
+      style={{
+        border: '1px solid var(--color-border-strong)',
+        background: 'var(--color-card)',
+        textDecoration: 'none',
+        cursor: 'pointer',
+        minHeight: 0,
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.borderColor = `${brand.accentColor}80`
+        e.currentTarget.style.background = `${brand.accentColor}0D`
+        e.currentTarget.style.boxShadow = `0 0 28px ${brand.accentColor}18`
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.borderColor = 'var(--color-border-strong)'
+        e.currentTarget.style.background = 'var(--color-card)'
+        e.currentTarget.style.boxShadow = 'none'
+      }}
+    >
+      {/* Logo */}
+      <div
+        className="w-14 h-14 rounded-2xl flex items-center justify-center overflow-hidden flex-shrink-0"
+        style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
+      >
+        {imgOk ? (
+          <img
+            src={`https://logo.clearbit.com/${brand.domain}`}
+            alt={brand.name}
+            className="w-10 h-10 object-contain"
+            onError={() => setImgOk(false)}
+          />
+        ) : (
+          <span className="font-display text-xl font-bold" style={{ color: brand.accentColor }}>
+            {brand.name[0]}
+          </span>
+        )}
+      </div>
+
+      {/* Country */}
+      <span
+        className="text-[9px] uppercase tracking-[0.22em]"
+        style={{ color: 'var(--color-accent)', fontFamily: 'Space Mono, monospace' }}
+      >
+        {brand.flag} {brand.country}
+      </span>
+
+      {/* Name */}
+      <span
+        className="block font-display text-base sm:text-lg leading-snug"
+        style={{ color: 'var(--color-text)', fontWeight: 600 }}
+      >
+        {brand.name}
+      </span>
+
+      {/* Founded */}
+      <span
+        className="text-[9px]"
+        style={{ color: 'var(--color-text-faint)', fontFamily: 'Space Mono, monospace', marginTop: '-4px' }}
+      >
+        est. {brand.founded}
+      </span>
+
+      {/* Description */}
+      <p
+        className="text-[11px] leading-relaxed text-left flex-1"
+        style={{ color: 'var(--color-text-muted)', lineHeight: 1.8 }}
+      >
+        {brand.tagline}
+      </p>
+
+      {/* Visit indicator */}
+      <div
+        className="flex items-center gap-1.5 mt-2"
+        style={{ color: brand.accentColor, opacity: 0.55 }}
+      >
+        <span style={{ fontFamily: 'Space Mono, monospace', fontSize: '9px', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+          {brand.domain}
+        </span>
+        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <line x1="7" y1="17" x2="17" y2="7" /><polyline points="7 7 17 7 17 17" />
+        </svg>
+      </div>
+    </motion.a>
+  )
+}
 
 function BrandsTab() {
+  const jumpTo = (region) => {
+    const el = document.getElementById(`brand-region-${slugRegion(region)}`)
+    el?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
   return (
-    <div className="flex flex-col items-center justify-center py-32 gap-5">
-      <svg
-        width="48"
-        height="48"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="rgba(201,168,76,0.35)"
-        strokeWidth="1.4"
-        strokeLinecap="round"
+    <div>
+      {/* Intro */}
+      <div className="mb-8 max-w-2xl">
+        <p
+          className="text-[10px] uppercase tracking-[0.22em] mb-3"
+          style={{ color: 'rgba(201,168,76,0.5)', fontFamily: 'Space Mono, monospace' }}
+        >
+          The Roaster's Directory
+        </p>
+        <h2
+          className="font-display text-3xl sm:text-4xl mb-4"
+          style={{ color: 'var(--color-text)' }}
+        >
+          World's Finest Coffee Brands
+        </h2>
+        <p className="text-sm leading-loose" style={{ color: 'var(--color-text-muted)' }}>
+          From century-old Italian espresso houses to minimalist Japanese specialty bars — 20 brands that have shaped how the world drinks coffee. Click any card to visit the brand's website.
+        </p>
+      </div>
+
+      {/* Sticky jump-to strip */}
+      <div
+        className="sticky z-30 py-3 mb-8"
+        style={{ top: '5rem', background: 'var(--color-bg)', borderBottom: '1px solid var(--color-border)' }}
       >
-        <rect x="2" y="7" width="20" height="14" rx="2" />
-        <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
-        <line x1="12" y1="12" x2="12" y2="16" />
-        <line x1="10" y1="14" x2="14" y2="14" />
-      </svg>
-      <p
-        className="font-display text-2xl italic"
-        style={{ color: "var(--color-text-faint)" }}
-      >
-        Brands — coming soon
-      </p>
-      <p
-        className="text-sm uppercase tracking-[0.2em]"
-        style={{
-          color: "var(--color-accent-border)",
-          fontFamily: "Space Mono, monospace",
-        }}
-      >
-        Exploring coffee brands
-      </p>
+        <div className="flex items-center gap-2 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
+          <span
+            className="flex-shrink-0 text-[9px] uppercase tracking-[0.2em] mr-1"
+            style={{ fontFamily: 'Space Mono, monospace', color: 'var(--color-text-faint)' }}
+          >
+            Jump to
+          </span>
+          {BRAND_REGIONS.map(region => (
+            <button
+              key={region}
+              onClick={() => jumpTo(region)}
+              className="flex-shrink-0 px-3 py-1 rounded-full text-[9px] uppercase tracking-[0.14em] transition-all duration-150"
+              style={{
+                fontFamily: 'Space Mono, monospace',
+                background: 'var(--color-surface)',
+                color: 'var(--color-text-muted)',
+                border: '1px solid var(--color-border)',
+                cursor: 'pointer',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'var(--color-accent-dim)'
+                e.currentTarget.style.color = 'var(--color-accent)'
+                e.currentTarget.style.borderColor = 'var(--color-accent-border)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'var(--color-surface)'
+                e.currentTarget.style.color = 'var(--color-text-muted)'
+                e.currentTarget.style.borderColor = 'var(--color-border)'
+              }}
+            >
+              {region}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Grouped by region */}
+      {BRAND_REGIONS.map(region => {
+        const regionBrands = brands.filter(b => b.region === region)
+        return (
+          <div
+            key={region}
+            id={`brand-region-${slugRegion(region)}`}
+            style={{ scrollMarginTop: '8rem', marginBottom: '3.5rem' }}
+          >
+            <div className="flex items-center gap-4 mb-5">
+              <h2
+                className="text-[10px] uppercase tracking-[0.22em]"
+                style={{ fontFamily: 'Space Mono, monospace', color: 'var(--color-accent)' }}
+              >
+                {region}
+              </h2>
+              <div className="flex-1 h-px" style={{ background: 'var(--color-border)' }} />
+              <span
+                className="text-[9px] uppercase tracking-[0.14em]"
+                style={{ fontFamily: 'Space Mono, monospace', color: 'var(--color-text-faint)' }}
+              >
+                {regionBrands.length} brands
+              </span>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              {regionBrands.map((brand, i) => (
+                <BrandCard key={brand.id} brand={brand} index={i} />
+              ))}
+            </div>
+          </div>
+        )
+      })}
     </div>
-  );
+  )
 }
 
 const LANG_COLORS = {

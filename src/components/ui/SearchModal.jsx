@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { recipes } from '../../data/recipes'
 import { originsData } from '../../data/originsData'
 import { glossaryTerms } from '../../data/glossaryData'
+import { fetchCoffeeArticles } from '../../api/guardian'
 
 // ── Build static search index once ───────────────────────────────────────────
 
@@ -37,10 +38,11 @@ const STATIC_INDEX = [
 ]
 
 const TYPE_COLORS = {
-  Recipe:  '#C9A84C',
-  Origin:  '#6B9E6B',
-  Glossary:'#7A8ABE',
-  Community: '#9A7A9A',
+  Recipe:   '#C9A84C',
+  Origin:   '#6B9E6B',
+  Glossary: '#7A8ABE',
+  Community:'#9A7A9A',
+  Article:  '#B87A5A',
 }
 
 const TYPE_ICONS = {
@@ -66,6 +68,12 @@ const TYPE_ICONS = {
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
       <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
       <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+    </svg>
+  ),
+  Article: (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+      <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
     </svg>
   ),
 }
@@ -107,17 +115,35 @@ export function SearchModal({ isOpen, onClose }) {
   const listRef = useRef(null)
   const panelRef = useRef(null)
   const navigate = useNavigate()
+  const [guardianIndex, setGuardianIndex] = useState([])
+  const fetchedRef = useRef(false)
 
   useFocusTrap(panelRef, isOpen)
+
+  // Fetch Guardian articles once on first open
+  useEffect(() => {
+    if (!isOpen || fetchedRef.current) return
+    fetchedRef.current = true
+    fetchCoffeeArticles({ pageSize: 30 }).then(({ articles }) => {
+      setGuardianIndex(articles.map(a => ({
+        id: `article-${a.id}`,
+        label: a.title,
+        sub: `${a.sectionName} · ${a.readTime} min read`,
+        type: 'Article',
+        to: `/article/${a.id}`,
+        keywords: `${a.title} ${a.excerpt}`.toLowerCase().slice(0, 300),
+      })))
+    }).catch(() => {})
+  }, [isOpen])
 
   const communityIndex = useMemo(loadCommunity, [isOpen])
 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase()
     if (!q) return []
-    const full = [...STATIC_INDEX, ...communityIndex]
-    return full.filter(item => item.keywords.includes(q)).slice(0, 12)
-  }, [query, communityIndex])
+    const full = [...STATIC_INDEX, ...communityIndex, ...guardianIndex]
+    return full.filter(item => item.keywords.includes(q)).slice(0, 14)
+  }, [query, communityIndex, guardianIndex])
 
   useEffect(() => { setCursor(0) }, [results])
 

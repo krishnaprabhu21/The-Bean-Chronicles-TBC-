@@ -657,6 +657,35 @@ export default function BrewJournal() {
 
   const sortedEntries = [...entries].sort((a, b) => b.id - a.id)
 
+  const exportCSV = useCallback(() => {
+    if (!sortedEntries.length) return
+    const headers = ['Date', 'Time', 'Bean', 'Origin', 'Method', 'Dose (g)', 'Water (ml)', 'Temp (°C)', 'Brew Time', 'Grind', 'Rating', 'Mood', 'Notes']
+    const rows = sortedEntries.map(e => [
+      e.date ?? '',
+      e.time ?? '',
+      e.bean ?? '',
+      e.origin ?? '',
+      e.method ?? '',
+      e.dose ?? '',
+      e.water ?? '',
+      e.temp ?? '',
+      e.brewTime ?? '',
+      e.grind ?? '',
+      e.rating ?? '',
+      e.mood ?? '',
+      `"${(e.notes ?? '').replace(/"/g, '""')}"`,
+    ])
+    const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n')
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `brew-journal-${new Date().toISOString().slice(0, 10)}.csv`
+    a.click()
+    URL.revokeObjectURL(url)
+    addToast({ message: 'Journal exported as CSV!', type: 'success' })
+  }, [sortedEntries, addToast])
+
   return (
     <div className="min-h-screen" style={{ background: 'var(--color-bg)' }}>
       <SEO title="Brew Journal" description="Log every cup — track your brewing variables, tasting notes, and coffee experiments over time." />
@@ -718,27 +747,56 @@ export default function BrewJournal() {
           >
             {entries.length} {entries.length === 1 ? 'entry' : 'entries'}
           </span>
-          <AnimatePresence mode="wait">
-            {!showForm ? (
-              <motion.button
-                key="open"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.97 }}
-                onClick={() => setShowForm(true)}
-                className="btn-solid rounded-full flex items-center gap-2"
-                style={{ borderRadius: '9999px', fontSize: '0.7rem' }}
+          <div className="flex items-center gap-2">
+            {entries.length > 0 && (
+              <button
+                onClick={exportCSV}
+                className="flex items-center gap-1.5 transition-all duration-200"
+                style={{
+                  background: 'transparent',
+                  border: '1px solid var(--color-border-strong)',
+                  borderRadius: '9999px',
+                  color: 'var(--color-text-muted)',
+                  padding: '0.4rem 0.85rem',
+                  fontFamily: 'Space Mono, monospace',
+                  fontSize: '0.68rem',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.12em',
+                  cursor: 'pointer',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--color-accent-border)'; e.currentTarget.style.color = 'var(--color-accent)' }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--color-border-strong)'; e.currentTarget.style.color = 'var(--color-text-muted)' }}
               >
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                  <line x1="12" y1="5" x2="12" y2="19" />
-                  <line x1="5" y1="12" x2="19" y2="12" />
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
                 </svg>
-                New Entry
-              </motion.button>
-            ) : null}
-          </AnimatePresence>
+                Export
+              </button>
+            )}
+            <AnimatePresence mode="wait">
+              {!showForm ? (
+                <motion.button
+                  key="open"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => setShowForm(true)}
+                  className="btn-solid rounded-full flex items-center gap-2"
+                  style={{ borderRadius: '9999px', fontSize: '0.7rem' }}
+                >
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                    <line x1="12" y1="5" x2="12" y2="19" />
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                  </svg>
+                  New Entry
+                </motion.button>
+              ) : null}
+            </AnimatePresence>
+          </div>
         </div>
 
         {/* Collapsible form */}

@@ -373,6 +373,39 @@ function StatPill({ label, value, accent = false }) {
   )
 }
 
+function SidebarIngredient({ ing, scale }) {
+  const [checked, setChecked] = useState(false)
+  return (
+    <li
+      className="flex items-start gap-2.5 py-1.5 cursor-pointer select-none"
+      onClick={() => setChecked(c => !c)}
+      style={{ opacity: checked ? 0.4 : 1, transition: 'opacity 0.2s' }}
+    >
+      <div
+        className="mt-0.5 w-4 h-4 rounded flex-shrink-0 flex items-center justify-center transition-all duration-200"
+        style={{
+          border: `1.5px solid ${checked ? 'var(--color-accent)' : 'var(--color-border-strong)'}`,
+          background: checked ? 'var(--color-accent)' : 'transparent',
+        }}
+      >
+        {checked && (
+          <svg width="8" height="8" viewBox="0 0 12 12" fill="none" stroke="var(--color-bg)" strokeWidth="2.2" strokeLinecap="round">
+            <polyline points="2 6 5 9 10 3"/>
+          </svg>
+        )}
+      </div>
+      <div className="flex-1 min-w-0">
+        <span className="text-[11px] font-semibold" style={{ color: 'var(--color-accent)', fontFamily: 'Space Mono, monospace' }}>
+          {scaleAmount(ing.amount, scale)}
+        </span>
+        <span className="text-[11px] ml-1.5" style={{ color: 'var(--color-text-muted)' }}>
+          {ing.item}
+        </span>
+      </div>
+    </li>
+  )
+}
+
 function scaleAmount(amount, factor) {
   if (factor === 1) return amount
   return amount.replace(/\d+\/\d+|\d+\.?\d*/g, (m) => {
@@ -685,7 +718,31 @@ export default function RecipeDetail() {
 
       {/* ── METHOD ────────────────────────────────────────────── */}
       <section style={{ background: methodSectionBg }}>
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-16 pb-24">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-16 pb-24 lg:grid lg:grid-cols-[240px_1fr] lg:gap-12 lg:items-start">
+
+          {/* Sticky ingredients sidebar — desktop only */}
+          <div className="hidden lg:block">
+            <div className="sticky top-24 rounded-2xl overflow-hidden" style={{ border: '1px solid var(--color-border)', background: 'var(--color-surface)' }}>
+              <div className="px-5 py-4" style={{ borderBottom: '1px solid var(--color-border)' }}>
+                <p className="text-[9px] uppercase tracking-[0.2em]" style={{ fontFamily: 'Space Mono, monospace', color: 'var(--color-accent)' }}>
+                  Ingredients
+                </p>
+                {scale > 1 && (
+                  <p className="text-[9px] mt-0.5" style={{ fontFamily: 'Space Mono, monospace', color: 'var(--color-text-faint)' }}>
+                    scaled ×{scale}
+                  </p>
+                )}
+              </div>
+              <ul className="px-4 py-3 flex flex-col gap-1">
+                {recipe.ingredients.map((ing, i) => (
+                  <SidebarIngredient key={i} ing={ing} scale={scale} />
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {/* Steps column */}
+          <div>
 
           {/* Section header */}
           <motion.div
@@ -785,6 +842,7 @@ export default function RecipeDetail() {
             </button>
           </motion.div>
 
+          </div>{/* end steps column */}
         </div>
       </section>
 
