@@ -746,7 +746,7 @@ export default function SubmitRecipe() {
       console.error('Email send failed:', err)
       // Still mark as submitted locally — don't block the user
       setSubmitted(true)
-      addToast({ message: 'Saved locally. Email delivery may have failed — check your Web3Forms key.', type: 'warning', duration: 6000 })
+      addToast({ message: `Email error: ${err.message}`, type: 'warning', duration: 8000 })
     } finally {
       setSending(false)
     }
