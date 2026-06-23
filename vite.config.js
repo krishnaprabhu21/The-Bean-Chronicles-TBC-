@@ -4,5 +4,5 @@ import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  base: '/The-Bean-Chronicles-TBC/',
+  base: '/The-Bean-Chronicles-TBC-/',
 })
