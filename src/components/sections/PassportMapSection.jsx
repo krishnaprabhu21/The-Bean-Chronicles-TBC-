@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ComposableMap, Geographies, Geography, ZoomableGroup } from 'react-simple-maps'
-import { Link } from 'react-router-dom'
 import { COFFEE_ORIGINS, COFFEE_GEO_NAMES, findOriginByGeoName } from '../../data/coffeeOrigins'
 
 const GEO_URL = 'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json'
@@ -55,13 +54,6 @@ export function PassportMapSection() {
             <span className="font-display text-3xl" style={{ color: 'var(--color-accent)' }}>{visited.length}</span>
             <span className="text-[9px] uppercase tracking-[0.2em]" style={{ color: 'var(--color-text-faint)', fontFamily: 'Space Mono, monospace' }}>/ {COFFEE_ORIGINS.length} Stamped</span>
           </div>
-          <Link
-            to="/passport"
-            className="px-4 py-2.5 rounded-xl text-[10px] uppercase tracking-[0.16em] font-medium transition-all duration-200"
-            style={{ background: 'var(--color-surface)', color: 'var(--color-accent)', border: '1px solid rgba(201,168,76,0.3)', fontFamily: 'Space Mono, monospace' }}
-          >
-            Full Passport →
-          </Link>
         </div>
       </div>
 

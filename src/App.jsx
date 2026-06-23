@@ -32,7 +32,6 @@ const CommunityRecipes = lazy(() => import('./pages/CommunityRecipes'))
 const Shop            = lazy(() => import('./pages/Shop'))
 const BeanCatcher     = lazy(() => import('./pages/BeanCatcher'))
 const CoffeeReference = lazy(() => import('./pages/CoffeeReference'))
-const CoffeePassport  = lazy(() => import('./pages/CoffeePassport'))
 
 function LazyPage({ children }) {
   return (
@@ -81,8 +80,7 @@ export default function App() {
             <Route path="/community"      element={<LazyPage><PageTransition><CommunityRecipes /></PageTransition></LazyPage>} />
             <Route path="/shop"           element={<LazyPage><PageTransition><Shop /></PageTransition></LazyPage>} />
             <Route path="/reference"      element={<LazyPage><PageTransition><CoffeeReference /></PageTransition></LazyPage>} />
-            <Route path="/passport"       element={<LazyPage><PageTransition><CoffeePassport /></PageTransition></LazyPage>} />
-            <Route path="*"               element={<PageTransition><NotFound /></PageTransition>} />
+<Route path="*"               element={<PageTransition><NotFound /></PageTransition>} />
           </Routes>
         </AnimatePresence>
       </Layout>
