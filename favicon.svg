@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Dark background -->
+  <rect width="32" height="32" rx="5" fill="#0D1810"/>
+
+  <!-- Scale original 30×34 art to fit a 28×28 area centered in 32×32
+       uniform scale = 28/34 ≈ 0.824; centered: tx = (32 - 30*0.824)/2 ≈ 3.64, ty = (32 - 34*0.824)/2 ≈ 2 -->
+  <g transform="translate(3.6, 2) scale(0.824)">
+    <!-- Steam -->
+    <path d="M8 8 Q9.5 5 8 2"  stroke="#C9A84C" stroke-width="1.7" stroke-linecap="round" opacity="0.85"/>
+    <path d="M15 8 Q16.5 5 15 2" stroke="#C9A84C" stroke-width="1.7" stroke-linecap="round" opacity="0.85"/>
+    <!-- Mug body -->
+    <rect x="2" y="10" width="20" height="18" rx="3" stroke="#C9A84C" stroke-width="1.8" fill="none"/>
+    <!-- Handle -->
+    <path d="M22 14 Q28 14 28 19 Q28 24 22 24" stroke="#C9A84C" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+    <!-- Bottom rim -->
+    <line x1="2" y1="28" x2="22" y2="28" stroke="#C9A84C" stroke-width="1.8" stroke-linecap="round"/>
+    <!-- Eyes -->
+    <circle cx="9"  cy="18" r="1.8" fill="#C9A84C"/>
+    <circle cx="15" cy="18" r="1.8" fill="#C9A84C"/>
+    <!-- Moustache -->
+    <path d="M7 22.5 Q9 24.5 12 22.5 Q15 24.5 17 22.5" stroke="#C9A84C" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+  </g>
+</svg>
