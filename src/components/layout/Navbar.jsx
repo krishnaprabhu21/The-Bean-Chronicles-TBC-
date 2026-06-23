@@ -41,6 +41,7 @@ const navLinks = [
       { to: '/submit-recipe', label: 'Submit Recipe' },
     ],
   },
+  { to: '/passport', label: 'Passport' },
   { to: '/about', label: 'About' },
 ]
 
