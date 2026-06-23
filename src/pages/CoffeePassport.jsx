@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { ComposableMap, Geographies, Geography, ZoomableGroup } from 'react-simple-maps'
 import { BackButton } from '../components/ui/BackButton'
 import { SEO } from '../components/ui/SEO'
-import { COFFEE_ORIGINS, COFFEE_ISO_SET } from '../data/coffeeOrigins'
+import { COFFEE_ORIGINS, COFFEE_GEO_NAMES, findOriginByGeoName } from '../data/coffeeOrigins'
 
 const STORAGE_KEY = 'tbc-coffee-passport'
 const loadVisited = () => { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]') } catch { return [] } }
@@ -50,10 +50,12 @@ export default function CoffeePassport() {
   }
 
   const handleCountryClick = (geo) => {
-    const iso = geo.properties.ISO_A3
-    const origin = COFFEE_ORIGINS.find(o => o.iso === iso)
+    const origin = findOriginByGeoName(geo.properties.name)
     if (origin) setSelected(origin)
   }
+
+  const handleZoomIn  = () => setPosition(p => ({ ...p, zoom: Math.min(p.zoom * 1.6, 8) }))
+  const handleZoomOut = () => setPosition(p => ({ ...p, zoom: Math.max(p.zoom / 1.6, 1) }))
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--color-bg)' }}>
@@ -104,9 +106,8 @@ export default function CoffeePassport() {
                 <Geographies geography={GEO_URL}>
                   {({ geographies }) =>
                     geographies.map((geo) => {
-                      const iso = geo.properties.ISO_A3
-                      const isCoffee = COFFEE_ISO_SET.has(iso)
-                      const origin = COFFEE_ORIGINS.find(o => o.iso === iso)
+                      const isCoffee = COFFEE_GEO_NAMES.has(geo.properties.name)
+                      const origin = findOriginByGeoName(geo.properties.name)
                       const isVisited = origin && visited.includes(origin.id)
                       const isSelected = selected && origin && selected.id === origin.id
                       return (
@@ -143,6 +144,28 @@ export default function CoffeePassport() {
               </ZoomableGroup>
             </ComposableMap>
 
+            {/* Zoom controls */}
+            <div className="absolute top-4 left-4 flex flex-col gap-1.5">
+              <button
+                onClick={handleZoomIn}
+                className="w-8 h-8 flex items-center justify-center rounded-lg text-base font-bold transition-all duration-150"
+                style={{ background: 'rgba(0,0,0,0.55)', color: '#C9A84C', border: '1px solid rgba(201,168,76,0.3)', backdropFilter: 'blur(8px)' }}
+                title="Zoom in"
+              >+</button>
+              <button
+                onClick={handleZoomOut}
+                className="w-8 h-8 flex items-center justify-center rounded-lg text-base font-bold transition-all duration-150"
+                style={{ background: 'rgba(0,0,0,0.55)', color: '#C9A84C', border: '1px solid rgba(201,168,76,0.3)', backdropFilter: 'blur(8px)' }}
+                title="Zoom out"
+              >−</button>
+            </div>
+
+            {/* Map hint */}
+            <div className="absolute top-4 right-4 px-3 py-2 rounded-xl text-[10px] flex flex-col gap-0.5" style={{ background: 'rgba(0,0,0,0.55)', color: 'var(--color-text-faint)', fontFamily: 'Space Mono, monospace', backdropFilter: 'blur(8px)' }}>
+              <span>Scroll or use +/− to zoom</span>
+              <span>Click a <span style={{ color: '#4A6E38' }}>highlighted</span> country</span>
+            </div>
+
             {/* Map legend */}
             <div className="absolute bottom-4 left-4 flex items-center gap-4">
               {[
@@ -156,13 +179,6 @@ export default function CoffeePassport() {
                 </div>
               ))}
             </div>
-
-            {/* Map hint */}
-            {!selected && (
-              <div className="absolute top-4 right-4 px-3 py-2 rounded-xl text-[10px]" style={{ background: 'rgba(0,0,0,0.5)', color: 'var(--color-text-faint)', fontFamily: 'Space Mono, monospace', backdropFilter: 'blur(8px)' }}>
-                Click a highlighted country
-              </div>
-            )}
           </div>
 
           {/* Detail panel */}

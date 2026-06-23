@@ -1,4 +1,5 @@
 import { lazy, Suspense } from "react";
+import { PassportMapSection } from "../components/sections/PassportMapSection";
 import { motion } from "framer-motion";
 import { SEO } from "../components/ui/SEO";
 import { CoffeeFlavoursSection } from "../components/sections/CoffeeFlavoursSection";
@@ -66,6 +67,11 @@ export default function CultureArticles() {
       {/* Origins encyclopedia — filterable country cards */}
       <div style={{ borderTop: "1px solid rgba(139,94,60,0.1)" }}>
         <OriginsEncyclopediaSection />
+      </div>
+
+      {/* Coffee Passport — interactive map with stamps */}
+      <div style={{ borderTop: "1px solid rgba(139,94,60,0.1)" }}>
+        <PassportMapSection />
       </div>
 
       <RecentlyViewedStrip type="article" />

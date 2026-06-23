@@ -90,7 +90,7 @@ export const COFFEE_ORIGINS = [
     desc: 'The Monsoon Malabar process is unique to India — beans are exposed to coastal monsoon winds for months, swelling and losing acidity. The result is one of the most unusual coffees in the world: heavy, earthy, and almost musty.',
   },
   {
-    id: 'vietnam', name: 'Vietnam', iso: 'VNM', flag: '🇻🇳',
+    id: 'vietnam', name: 'Vietnam', iso: 'VNM', geoName: 'Viet Nam', flag: '🇻🇳',
     regions: ['Dak Lak', 'Lam Dong', 'Gia Lai'],
     flavor: ['Chocolate', 'Nutty', 'Bold', 'Low Acidity'],
     process: ['Natural', 'Washed'],
@@ -146,6 +146,9 @@ export const COFFEE_ORIGINS = [
 ]
 
 export const COFFEE_ISO_SET = new Set(COFFEE_ORIGINS.map(o => o.iso))
+// world-atlas uses geo.properties.name, not ISO_A3
+export const COFFEE_GEO_NAMES = new Set(COFFEE_ORIGINS.map(o => o.geoName || o.name))
+export const findOriginByGeoName = (name) => COFFEE_ORIGINS.find(o => (o.geoName || o.name) === name)
 
 // Legacy export kept for backward compatibility with existing pages
 export const coffeeOrigins = COFFEE_ORIGINS
