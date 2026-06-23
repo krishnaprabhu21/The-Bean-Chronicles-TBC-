@@ -3,6 +3,13 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { ComposableMap, Geographies, Geography, ZoomableGroup } from 'react-simple-maps'
 import { COFFEE_ORIGINS, COFFEE_GEO_NAMES, findOriginByGeoName } from '../../data/coffeeOrigins'
 
+function flagToISO(emoji) {
+  return [...emoji].slice(0, 2)
+    .map(c => String.fromCharCode(c.codePointAt(0) - 0x1F1E6 + 65))
+    .join('')
+    .toLowerCase()
+}
+
 const GEO_URL = 'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json'
 const STORAGE_KEY = 'tbc-coffee-passport'
 const loadVisited = () => { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]') } catch { return [] } }
@@ -133,7 +140,12 @@ export function PassportMapSection() {
               <div className="p-5" style={{ background: `${selected.color}0D`, borderBottom: `1px solid ${selected.color}20` }}>
                 <div className="flex items-start justify-between gap-3 mb-3">
                   <div>
-                    <p className="text-2xl mb-1">{selected.flag}</p>
+                    <img
+                      src={`https://flagcdn.com/32x24/${flagToISO(selected.flag)}.png`}
+                      srcSet={`https://flagcdn.com/64x48/${flagToISO(selected.flag)}.png 2x`}
+                      width={32} height={24} alt={selected.name}
+                      style={{ borderRadius: 3, objectFit: 'cover', marginBottom: 4 }}
+                    />
                     <h3 className="font-display text-2xl" style={{ color: 'var(--color-text)' }}>{selected.name}</h3>
                     <p className="text-[9px] uppercase tracking-[0.16em] mt-0.5" style={{ color: selected.color, fontFamily: 'Space Mono, monospace' }}>
                       {selected.roast} · {selected.altitude}

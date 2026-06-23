@@ -6,6 +6,27 @@ import { ImageWithFallback } from '../ui/ImageWithFallback';
 
 const REGIONS = ['All', 'East Africa', 'Central America', 'South America', 'Southeast Asia', 'Middle East', 'Caribbean'];
 
+function flagToISO(emoji) {
+  return [...emoji].slice(0, 2)
+    .map(c => String.fromCharCode(c.codePointAt(0) - 0x1F1E6 + 65))
+    .join('')
+    .toLowerCase()
+}
+
+function FlagImage({ emoji, country }) {
+  const code = flagToISO(emoji)
+  return (
+    <img
+      src={`https://flagcdn.com/24x18/${code}.png`}
+      srcSet={`https://flagcdn.com/48x36/${code}.png 2x`}
+      width={24}
+      height={18}
+      alt={country}
+      style={{ borderRadius: 2, objectFit: 'cover', flexShrink: 0 }}
+    />
+  )
+}
+
 function DotBar({ value, max = 5 }) {
   return (
     <div className="flex gap-1">
@@ -45,7 +66,7 @@ function OriginCard({ origin, index }) {
             />
             <div className="absolute bottom-0 left-0 right-0 p-4">
               <div className="flex items-center gap-2">
-                <span className="text-2xl leading-none">{origin.flag}</span>
+                <FlagImage emoji={origin.flag} country={origin.country} />
                 <span className="font-display text-cream leading-tight" style={{ fontSize: '1.2rem' }}>
                   {origin.country}
                 </span>
