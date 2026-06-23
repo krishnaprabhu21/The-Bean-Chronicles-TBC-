@@ -6,6 +6,21 @@ import missionImg from "../assets/images/1000089029.jpg";
 import { SEO } from "../components/ui/SEO";
 import { LoveCounter } from "../components/ui/LoveCounter";
 
+const WEB3FORMS_KEY = import.meta.env.VITE_WEB3FORMS_KEY || '3e71bb1e-8798-4f20-b50c-aa5782ccb52b'
+
+async function sendContactEmail({ name, email, roast, message }) {
+  const roastLabel = { light: 'Light Roast — Just a quick question', medium: 'Medium Roast — A proper conversation', dark: 'Dark Roast — Something serious', espresso: 'Espresso Shot — Urgent' }[roast] || roast
+  const fd = new FormData()
+  fd.append('access_key', WEB3FORMS_KEY)
+  fd.append('subject', `[Bean Chronicles] Message from ${name} (${roastLabel})`)
+  fd.append('name', name)
+  fd.append('email', email)
+  fd.append('message', `Message Type: ${roastLabel}\n\n${message}`)
+  const res = await fetch('https://api.web3forms.com/submit', { method: 'POST', body: fd })
+  const json = await res.json()
+  if (!json.success) throw new Error(json.message || 'Submission failed')
+}
+
 const ROAST_OPTIONS = [
   {
     value: "light",
@@ -40,15 +55,21 @@ function ContactForm() {
   const [message, setMessage] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [brewing, setBrewing] = useState(false);
+  const [contactError, setContactError] = useState(null);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!roast || !name || !email || !message) return;
     setBrewing(true);
-    setTimeout(() => {
-      setBrewing(false);
+    setContactError(null);
+    try {
+      await sendContactEmail({ name, email, roast, message });
       setSubmitted(true);
-    }, 1800);
+    } catch (err) {
+      setContactError(err.message || 'Something went wrong. Please try again.');
+    } finally {
+      setBrewing(false);
+    }
   };
 
   const inputStyle = {
@@ -326,6 +347,13 @@ function ContactForm() {
               required
             />
           </div>
+
+          {/* Error message */}
+          {contactError && (
+            <p style={{ color: 'var(--color-accent)', fontFamily: 'Inter, sans-serif', fontSize: '13px', margin: 0 }}>
+              {contactError}
+            </p>
+          )}
 
           {/* Submit */}
           <motion.button
