@@ -27,6 +27,7 @@ jobs:
         run: npm run build
         env:
           VITE_GUARDIAN_API_KEY: ${{ secrets.VITE_GUARDIAN_API_KEY }}
+          VITE_WEB3FORMS_KEY: ${{ secrets.VITE_WEB3FORMS_KEY }}
 
       - name: Copy index.html to 404.html for SPA routing
         run: cp dist/index.html dist/404.html

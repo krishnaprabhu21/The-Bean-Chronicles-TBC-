@@ -5,6 +5,57 @@ import { useToast } from '../contexts/ToastContext'
 import { BackButton } from '../components/ui/BackButton'
 import { SEO } from '../components/ui/SEO'
 
+// ── Email config ──────────────────────────────────────────────────────────────
+// Get your free access key at https://web3forms.com — enter krishnaprabhu21@gmail.com
+// and paste the key you receive below.
+const WEB3FORMS_KEY = import.meta.env.VITE_WEB3FORMS_KEY || 'YOUR_WEB3FORMS_KEY_HERE'
+
+async function sendRecipeEmail(data) {
+  const ingredients = data.ingredients
+    .filter(i => i.item.trim())
+    .map((i, n) => `  ${n + 1}. ${[i.amount, i.item].filter(Boolean).join(' ')}`)
+    .join('\n')
+
+  const steps = data.steps
+    .filter(s => s.instruction.trim())
+    .map((s, n) => `  Step ${n + 1}: ${s.instruction}${s.tip ? `\n         Tip: ${s.tip}` : ''}`)
+    .join('\n\n')
+
+  const message = [
+    `RECIPE: ${data.name}`,
+    `Category: ${data.category}`,
+    `Difficulty: ${'☕'.repeat(data.difficulty)} (${data.difficulty}/5)`,
+    `Prep: ${data.prepTime || '—'} min  |  Brew: ${data.brewTime || '—'} min`,
+    '',
+    'INGREDIENTS:',
+    ingredients || '  (none listed)',
+    '',
+    'METHOD:',
+    steps || '  (none listed)',
+    '',
+    '──────────────────────────────',
+    `From: ${data.submitterName || 'Anonymous'}`,
+    `Email: ${data.submitterEmail || '(not provided)'}`,
+    `Submitted: ${new Date().toLocaleString()}`,
+  ].join('\n')
+
+  const res = await fetch('https://api.web3forms.com/submit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      access_key: WEB3FORMS_KEY,
+      subject: `[Bean Chronicles] New Recipe: ${data.name}`,
+      from_name: data.submitterName || 'Bean Chronicles User',
+      replyto: data.submitterEmail || '',
+      message,
+    }),
+  })
+
+  if (!res.ok) throw new Error(`Web3Forms error: ${res.status}`)
+  const json = await res.json()
+  if (!json.success) throw new Error(json.message || 'Submission failed')
+}
+
 // ── Constants ─────────────────────────────────────────────────────────────────
 
 const CATEGORIES = ['Espresso', 'Cold Brew', 'Lattes', 'Pour Over', 'Culture', 'Guides']
@@ -41,6 +92,36 @@ const labelStyle = {
 function StepBasics({ data, onChange, errors }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      {/* Submitter info */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+        <div>
+          <label style={labelStyle}>Your Name</label>
+          <input
+            type="text"
+            placeholder="e.g. Alex"
+            value={data.submitterName}
+            onChange={e => onChange('submitterName', e.target.value)}
+            style={inputStyle}
+          />
+        </div>
+        <div>
+          <label style={labelStyle}>Your Email</label>
+          <input
+            type="email"
+            placeholder="hello@example.com"
+            value={data.submitterEmail}
+            onChange={e => onChange('submitterEmail', e.target.value)}
+            style={{
+              ...inputStyle,
+              borderColor: errors.submitterEmail ? 'rgba(248,113,113,0.5)' : 'rgba(80,120,60,0.3)',
+            }}
+          />
+          {errors.submitterEmail && (
+            <p style={{ color: '#f87171', fontSize: '0.78rem', marginTop: '0.35rem' }}>{errors.submitterEmail}</p>
+          )}
+        </div>
+      </div>
+
       {/* Recipe Name */}
       <div>
         <label style={labelStyle}>Recipe Name *</label>
@@ -524,7 +605,7 @@ function SuccessScreen({ onReset }) {
           Your recipe has been submitted!
         </h2>
         <p style={{ color: 'var(--color-text-muted)', fontSize: '0.975rem', lineHeight: 1.7, maxWidth: '440px' }}>
-          We review all submissions before publishing. Thank you for contributing to the community.
+          Your recipe has been emailed to the team for review. Thank you for contributing to the Bean Chronicles community.
         </p>
       </div>
 
@@ -574,6 +655,8 @@ function SuccessScreen({ onReset }) {
 
 function defaultFormData() {
   return {
+    submitterName: '',
+    submitterEmail: '',
     name: '',
     category: 'Espresso',
     difficulty: 3,
@@ -589,6 +672,7 @@ export default function SubmitRecipe() {
   const [formData, setFormData] = useState(defaultFormData())
   const [errors, setErrors] = useState({})
   const [submitted, setSubmitted] = useState(false)
+  const [sending, setSending] = useState(false)
   const { addToast } = useToast()
 
   function updateBasics(field, value) {
@@ -633,12 +717,15 @@ export default function SubmitRecipe() {
     setCurrentStep(s => Math.max(s - 1, 1))
   }
 
-  function handleSubmit() {
+  async function handleSubmit() {
     if (!validateStep(currentStep)) return
+    setSending(true)
 
     const submission = {
       id: Date.now(),
       submittedAt: new Date().toISOString(),
+      submitterName: formData.submitterName,
+      submitterEmail: formData.submitterEmail,
       name: formData.name,
       category: formData.category,
       difficulty: formData.difficulty,
@@ -648,10 +735,22 @@ export default function SubmitRecipe() {
       steps: formData.steps.filter(s => s.instruction.trim() !== ''),
     }
 
+    // Save to localStorage regardless of email outcome
     const existing = JSON.parse(localStorage.getItem('tbc-submissions') || '[]')
     localStorage.setItem('tbc-submissions', JSON.stringify([...existing, submission]))
-    setSubmitted(true)
-    addToast({ message: 'Recipe submitted to the community!', type: 'success', duration: 4000 })
+
+    try {
+      await sendRecipeEmail(submission)
+      setSubmitted(true)
+      addToast({ message: 'Recipe sent! We\'ll review it soon.', type: 'success', duration: 4000 })
+    } catch (err) {
+      console.error('Email send failed:', err)
+      // Still mark as submitted locally — don't block the user
+      setSubmitted(true)
+      addToast({ message: 'Saved locally. Email delivery may have failed — check your Web3Forms key.', type: 'warning', duration: 6000 })
+    } finally {
+      setSending(false)
+    }
   }
 
   function handleReset() {
@@ -870,21 +969,32 @@ export default function SubmitRecipe() {
                       <button
                         type="button"
                         onClick={handleSubmit}
+                        disabled={sending}
                         style={{
-                          background: 'var(--color-accent)',
+                          background: sending ? 'rgba(201,168,76,0.6)' : 'var(--color-accent)',
                           border: 'none',
                           borderRadius: '0.75rem',
                           color: 'var(--color-bg)',
                           padding: '0.7rem 1.75rem',
                           fontSize: '0.875rem',
-                          cursor: 'pointer',
+                          cursor: sending ? 'not-allowed' : 'pointer',
                           fontFamily: '"Space Mono", monospace',
                           letterSpacing: '0.05em',
                           fontWeight: 600,
                           transition: 'opacity 0.15s',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.5rem',
                         }}
                       >
-                        Submit Recipe ✓
+                        {sending ? (
+                          <>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ animation: 'spin 1s linear infinite' }}>
+                              <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                            </svg>
+                            Sending…
+                          </>
+                        ) : 'Submit Recipe ✓'}
                       </button>
                     )}
                   </div>

@@ -586,6 +586,11 @@ body::after {
   }
 }
 
+/* ── Utility animations ─────────────────────────────────────────── */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 /* ── Leaflet overrides ───────────────────────────────────────────── */
 .leaflet-container {
   font-family: 'Inter', sans-serif;
