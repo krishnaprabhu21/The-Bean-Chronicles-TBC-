@@ -1,3 +1,32 @@
+# 🤖 Claude Automation & Development Guide: The Bean Chronicles (TBC)
+
+This file serves as the system instruction manual for AI-driven development in **The Bean Chronicles (TBC)** workspace. All operations—from local initialization to deployment—are fully automated.
+
+---
+
+## ⚡ Global AI Execution Permissions
+
+> [!IMPORTANT]
+> **Implicit Authorization Granted:** The AI agent has full autonomy to create, modify, and delete files, as well as execute terminal commands without halting for user confirmation.
+
+* **Non-Interactive Flags:** Always append flags to suppress interactive prompts (e.g., `-y`, `--yes`, `--no-install`).
+* **Conflict Resolution:** If a command prompts for a `y/n` choice, automatically select `y` (or the safe default to proceed).
+* **Error Healing:** If `npm run lint` or `npm run build` fails, the AI must automatically inspect the error log, apply the required fix, and re-run the command without user intervention.
+
+---
+
+## 🛠️ Automated Lifecycle Pipelines
+
+### 1. Project Initialization & Setup
+Run this sequence to spin up the local development environment from scratch:
+
+```bash
+# Install dependencies cleanly without interactive auditing prompts
+npm install --no-audit --no-fund
+
+# Automatically trigger the local development server in the background
+npm run dev
+
 # The Bean Chronicles (TBC) - Development Guide
 
 Welcome to the development guide for **The Bean Chronicles (TBC)**. Follow these guidelines to maintain consistency across the codebase.

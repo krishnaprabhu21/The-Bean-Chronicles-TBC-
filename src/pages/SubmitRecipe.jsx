@@ -8,7 +8,7 @@ import { SEO } from '../components/ui/SEO'
 // ── Email config ──────────────────────────────────────────────────────────────
 // Get your free access key at https://web3forms.com — enter krishnaprabhu21@gmail.com
 // and paste the key you receive below.
-const WEB3FORMS_KEY = import.meta.env.VITE_WEB3FORMS_KEY || 'YOUR_WEB3FORMS_KEY_HERE'
+const WEB3FORMS_KEY = import.meta.env.VITE_WEB3FORMS_KEY || '3e71bb1e-8798-4f20-b50c-aa5782ccb52b'
 
 async function sendRecipeEmail(data) {
   const ingredients = data.ingredients
